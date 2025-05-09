@@ -1,0 +1,139 @@
+@charset "UTF-8";
+/*======================================
+Theme Name: Toro-Ag
+Text Domain:  toro-ag
+Domain Path:  /languages
+Theme URI: https://divicake.com/
+Description: Child Theme per Toro Ag
+Version: 0.9.5
+Author: Andrea Cianni
+Author URI: https://www.novacomitalia.com/
+Template: Divi
+======================================*/
+/* You can add your own CSS styles here. Use !important to overwrite styles if needed. */
+/* COMPILATO DA SCSS */
+/* stili menù */
+#menu-principale #menu-header li a,
+#menu-principale #menu-header-inglese-1 li a {
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+#tipo-blog.et-blog-css-grid article,
+.ctdqb-item {
+  -webkit-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0);
+  -moz-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0);
+  box-shadow: 0px 2px 3px rgba(0, 0, 0, 0);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+#tipo-blog.et-blog-css-grid article:hover,
+.ctdqb-item:hover {
+  -webkit-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.3);
+}
+#tipo-blog.et-blog-css-grid article:hover a,
+.ctdqb-item:hover a {
+  color: #cd2027;
+}
+#tipo-blog.et-blog-css-grid article figure img,
+.ctdqb-item figure img {
+  border-radius: 6px;
+}
+#tipo-blog.et-blog-css-grid article a,
+.ctdqb-item a {
+  color: #1e1e1e;
+}
+
+/* griglia blog Tipo di prodotto */
+#tipo-blog.et-blog-css-grid > div {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+#tipo-blog.et-blog-css-grid > div > div {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  transform: translate(0%, 150%);
+}
+#tipo-blog.et-blog-css-grid .et_pb_post {
+  align-self: start;
+  padding: 15px;
+}
+#tipo-blog.et-blog-css-grid .entry-featured-image-url img {
+  height: 100%;
+  width: 100%;
+  top: 0;
+  object-fit: cover;
+}
+
+#loginform-custom .login-username label,
+#loginform-custom .login-password label {
+  display: inline-block;
+  width: 120px;
+  font-weight: 500;
+}
+#loginform-custom input[type=text],
+#loginform-custom input[type=password] {
+  width: calc(100% - 130px);
+  display: inline-block;
+  vertical-align: middle;
+}
+#loginform-custom .login-remember {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+#loginform-custom .login-remember input[type=checkbox] {
+  margin-left: 125px;
+  margin-right: 0.5rem;
+}
+#loginform-custom input[type=submit] {
+  width: 100%;
+  border-radius: 0.5rem;
+  background-color: #0d6efd;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+}
+#loginform-custom input[type=submit]:hover {
+  background-color: #0262ef;
+}
+
+.gruppo-lingua-italiano .lang-flag {
+  display: none;
+}
+
+.gruppo-lingua .lang-flag {
+  width: 15px;
+}
+.gruppo-lingua a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1.2;
+}
+.gruppo-lingua a .icone {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1.2;
+  margin: 0.25em 0;
+}
+.gruppo-lingua a span:not(.icone) {
+  flex: 1;
+  display: block;
+}
+
+html:lang(it-IT) .documenti-download-table th.lingua,
+html:lang(it-IT) .documenti-download-table td.lingua-italiano {
+  display: none;
+}
+
+.documenti-download-table {
+  line-height: 1.2;
+}/*# sourceMappingURL=style.css.map */
