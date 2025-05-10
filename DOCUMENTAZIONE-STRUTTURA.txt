@@ -1,0 +1,80 @@
+DOCUMENTAZIONE STRUTTURA TEMA CHILD TORO-AG v0.9.5
+Data generazione: 10-05-2025
+
+\================================================================================
+Root del tema child
+===================
+
+1. style.css
+
+   * Header tema (Theme Name, Version, Author, Template)
+   * Override e personalizzazioni CSS
+   * Importazioni di file CSS aggiuntivi via @import o enqueue
+   * Esempio: `.custom-header { background-color: #f5f5f5; }`
+
+2. style.scss
+
+   * Sorgente SCSS principale
+   * Organizza variabili, mixin, partials (se presenti)
+   * Compilato automaticamente in `style.css` tramite task (Gulp/webpack)
+
+3. style.css.map
+
+   * Mappa sorgente per il debug
+   * Associa righe CSS a righe SCSS originali
+   * Utile in strumenti di sviluppo browser
+
+4. functions.php
+
+   * Punto di ingresso del tema child
+   * Hook `wp_enqueue_scripts`: registra e carica script e stili
+   * Hook/filter: modifica comportamento di Divi o plugin (es. Pods, WPML)
+   * include\_once di file in `/inc/` per modularità
+   * Possibili funzioni: `toro_ag_setup()`, `toro_ag_register_shortcodes()`
+
+5. screenshot.png
+
+   * Immagine di anteprima del tema in Dashboard WordPress
+   * Dimensioni consigliate: 1200×900 px
+
+6. .git/
+
+   * Cartella di controllo versione Git
+   * Include configurazioni `.gitignore`, cronologia commit, branch
+
+\================================================================================
+Cartella inc/
+=============
+
+7. inc/shortcodes/
+
+   * Directory per shortcode personalizzati
+   * Ogni file PHP definisce uno shortcode:
+     • button.php: genera pulsante con classi personalizzate
+     • alert.php: mostra avviso/stato con icone e colorazioni
+     • tabs.php: struttura a schede per contenuti organizzati
+   * Funzione pattern:
+
+     ```php
+     function toro_ag_button_shortcode($atts, $content = null) {
+       // parse atts, build markup, return string
+     }
+     add_shortcode('toro_button', 'toro_ag_button_shortcode');
+     ```
+
+8. inc/views/
+
+   * Template parti per rendering PHP avanzato
+   * Esempi di file:
+     • header-custom.php: porzione di header con logo e menu
+     • footer-widgets.php: widget area personalizzata nel footer
+     • content-banner.php: markup per banner dinamico
+   * Inclusione via `get_template_part('inc/views/header', 'custom');`
+
+\================================================================================
+Note utili
+==========
+
+* Posizionare questo file in root con nome `DOCUMENTAZIONE-STRUTTURA.txt` (ASCII)
+* Aggiornare ad ogni modifica di struttura o aggiunta di file/cartelle
+* Consentirà rapido lookup per debugging e sviluppo futuro
