@@ -21,7 +21,9 @@ $img_field = get_query_var('toro_ag_grid_image_field','featured');
             echo wp_get_attachment_image($img_id,'medium');
             if ($link) echo "</a>";
             ?>
-            <h4><?php echo esc_html($title); ?></h4>
+            <?php if ($link) echo "<a href='" . esc_url($link) . "'>"; ?>
+                <h4><?php echo esc_html($title); ?></h4>
+            <?php if ($link) echo "</a>"; ?>
         </div>
     <?php endforeach; ?>
 </div>
