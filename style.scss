@@ -30,7 +30,7 @@ Template: Divi
         font-weight: 700;
       }
     }
-
+    
   }
 }
 
@@ -40,7 +40,7 @@ Template: Divi
   display: grid;
   grid-template-columns: repeat(1, minmax(0, 1fr));
   gap: 1rem;
-
+  
   // Responsive columns using CSS media queries matching Bootstrap breakpoints
   @media (min-width: 576px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -51,44 +51,43 @@ Template: Divi
   @media (min-width: 992px) {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-
-  &.nested-grid {
-    margin-left: 2rem;
-  }
-
+  
   &__item {
     background: #fff;
     // Box shadow similar to previous mixin
-    box-shadow: 0px 2px 3px rgba(0, 0, 0, 0);
+    @include box-shadow(0px 2px 3px rgba(0, 0, 0, 0));
+    // box-shadow: 0px 2px 3px rgba(0, 0, 0, 0);
+    border: 1px solid rgba(0, 0, 0, 0.175);
     border-radius: 6px;
     transition: all 0.3s ease;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
-
+    
     &:hover {
-      box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.3);
+      @include box-shadow(0px 2px 3px rgba(0, 0, 0, 0.3));
+      // box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.3);
       a {
         color: #cd2027; // hover link color
       }
     }
-
+    
     a {
       color: #1e1e1e;
       text-decoration: none;
       display: block;
     }
-
+    
     // Image container if using <figure>
-      img {
-        width: 100%;
-        height: auto;
-        object-fit: cover;
-        border-radius: 6px 6px 0 0;
-        display: block;
-      }
-
+    img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      border-radius: 6px 6px 0 0;
+      display: block;
+    }
+    
     // Title
     h4 {
       margin: 0.75rem;
@@ -98,7 +97,13 @@ Template: Divi
     }
   }
 }
-
+// Add these classes alongside .toro-grid in the wrapper markup (e.g. <div class="toro-grid toro-grid--tipi-prod">)
+// .toro-grid--tipi-prod { }
+// .toro-grid--colture { }
+// .toro-grid--prodotti-tipo { }
+// .toro-grid--culture-prodotto { }
+.toro-grid--prodotti-tipo,
+.toro-grid--tipi-per-coltura { img { padding: 25px 50px ;  } }
 // Error messages styling
 .toro-error {
   background: #fdd;
@@ -166,14 +171,14 @@ Template: Divi
   .lang-flag {
     width: 15px;
   }
-
+  
   // Applica il flex‐layout a ciascun link
   a {
     display: flex;
     align-items: center; // allinea il testo in alto rispetto alle icone
     gap: 0.5rem;             // spazio orizzontale fra icone e testo
     line-height: 1.2;
-
+    
     // wrapper icone (bandiera + file‐icon)
     .icone {
       flex-shrink: 0;        // non si riduce
@@ -183,7 +188,7 @@ Template: Divi
       line-height: 1.2;
       margin: 0.25em 0;
     }
-
+    
     // span contenente il testo vero e proprio
     span:not(.icone) {
       flex: 1;               // occupa tutto lo spazio rimanente

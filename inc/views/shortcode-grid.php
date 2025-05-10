@@ -2,7 +2,7 @@
 $items     = get_query_var('toro_ag_grid_items', []);
 $img_field = get_query_var('toro_ag_grid_image_field','featured');
 ?>
-<div class="toro-grid">
+<div class="toro-grid <?php echo esc_attr( get_query_var('toro_ag_grid_wrapper_class','') ); ?>">
     <?php foreach ($items as $item) : ?>
         <div class="toro-grid__item">
             <?php
