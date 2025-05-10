@@ -79,6 +79,7 @@ require_once get_stylesheet_directory() . '/inc/shortcodes/documenti-cultura.php
 require_once get_stylesheet_directory() . '/inc/shortcodes/documenti-download.php';
 require_once get_stylesheet_directory() . '/inc/shortcodes/hero-tipidiprodotto-colture.php';
 require_once get_stylesheet_directory() . '/inc/shortcodes/grid.php';
+require_once get_stylesheet_directory() . '/inc/shortcodes/video-card.php';
 
 // SHORTCODE PER CARICARE UNA PAGINA PHP
 function shortcode_includi_php($atts) {
@@ -186,9 +187,3 @@ function aggiungi_sottomenu_scheda() {
         'post-new.php?post_type=scheda_prodotto'
     );
 }
-
-
-
-
-
-
