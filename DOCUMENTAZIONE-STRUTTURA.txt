@@ -78,4 +78,3 @@ Note utili
 * Posizionare questo file in root con nome `DOCUMENTAZIONE-STRUTTURA.txt` (ASCII)
 * Aggiornare ad ogni modifica di struttura o aggiunta di file/cartelle
 * Consentirà rapido lookup per debugging e sviluppo futuro
-* altro
