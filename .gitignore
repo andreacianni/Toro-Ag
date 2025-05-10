@@ -1,2 +1,4 @@
 # Escludi configurazioni locali
 .vscode/
+# Escludi file di log
+*.log

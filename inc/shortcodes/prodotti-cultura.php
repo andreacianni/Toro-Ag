@@ -4,7 +4,6 @@ $coltura_term = get_queried_object();
 
 // Controlla che siamo davvero su un termine della tassonomia "coltura"
 if ($coltura_term && $coltura_term->taxonomy === 'coltura') {
-
     // Recupera tutti i termini della tassonomia "tipo_di_prodotto"
     $tipi_prodotto = get_terms(array(
         'taxonomy' => 'tipo_di_prodotto',

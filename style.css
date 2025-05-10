@@ -19,54 +19,72 @@ Template: Divi
   font-weight: 700;
 }
 
-#tipo-blog.et-blog-css-grid article,
-.ctdqb-item {
-  -webkit-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0);
-  -moz-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0);
+.toro-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1rem;
+}
+@media (min-width: 576px) {
+  .toro-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 768px) {
+  .toro-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 992px) {
+  .toro-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.toro-grid.nested-grid {
+  margin-left: 2rem;
+}
+.toro-grid__item {
+  background: #fff;
   box-shadow: 0px 2px 3px rgba(0, 0, 0, 0);
   border-radius: 4px;
   transition: all 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
-#tipo-blog.et-blog-css-grid article:hover,
-.ctdqb-item:hover {
-  -webkit-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.3);
+.toro-grid__item:hover {
   box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.3);
 }
-#tipo-blog.et-blog-css-grid article:hover a,
-.ctdqb-item:hover a {
+.toro-grid__item:hover a {
   color: #cd2027;
 }
-#tipo-blog.et-blog-css-grid article figure img,
-.ctdqb-item figure img {
-  border-radius: 6px;
-}
-#tipo-blog.et-blog-css-grid article a,
-.ctdqb-item a {
+.toro-grid__item a {
   color: #1e1e1e;
+  text-decoration: none;
+  display: block;
+}
+.toro-grid__item figure {
+  margin: 0;
+}
+.toro-grid__item figure img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 6px 6px 0 0;
+  display: block;
+}
+.toro-grid__item h4 {
+  margin: 0.75rem;
+  font-size: 1rem;
+  line-height: 1.2;
+  flex-grow: 1;
 }
 
-/* griglia blog Tipo di prodotto */
-#tipo-blog.et-blog-css-grid > div {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 20px;
-}
-#tipo-blog.et-blog-css-grid > div > div {
-  width: 100%;
-  position: absolute;
-  bottom: 0;
-  transform: translate(0%, 150%);
-}
-#tipo-blog.et-blog-css-grid .et_pb_post {
-  align-self: start;
-  padding: 15px;
-}
-#tipo-blog.et-blog-css-grid .entry-featured-image-url img {
-  height: 100%;
-  width: 100%;
-  top: 0;
-  object-fit: cover;
+.toro-error {
+  background: #fdd;
+  padding: 0.75rem;
+  border: 1px solid #d00;
+  border-radius: 4px;
+  margin: 1rem 0;
 }
 
 #loginform-custom .login-username label,
