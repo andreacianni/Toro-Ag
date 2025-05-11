@@ -1,7 +1,7 @@
 <?php
 /**
  * Shortcode [video_prodotto] – compatibile con WPML e Divi
- * Mostra video associati a prodotti o tassonomie, filtrati per lingua con tassonomia 'lingua_aggiuntiva'.
+ * Mostra video associati a un prodotto, filtrati per lingua con tassonomia 'lingua_aggiuntiva'.
  */
 
 function toroag_filtra_per_lingua_aggiuntiva($video_posts) {
@@ -25,31 +25,13 @@ function toroag_filtra_per_lingua_aggiuntiva($video_posts) {
 function ac_video_prodotto_shortcode() {
     ob_start();
 
-    $is_prod = is_singular('prodotto');
-    $is_taxo = is_tax(array('tipo_di_prodotto','product-types'));
-
-    if (! $is_prod && ! $is_taxo) {
-        return '';
+    if (! is_singular('prodotto')) {
+        return '<!-- [video_prodotto] disponibile solo nelle pagine singolo prodotto -->';
     }
 
-    if ($is_prod) {
-        $pod_context = 'prodotto';
-        $field_name  = 'video_prodotto';
-        $source_id   = get_the_ID();
-    } else {
-        $pod_context = 'term_tipo_di_prodotto';
-        $field_name  = 'tipo-video';
-        $term        = get_queried_object();
-        $source_id   = $term->term_id;
-
-        // Sempre forziamo ID originale in italiano, anche se siamo in italiano
-        if (function_exists('icl_object_id')) {
-            $source_id_orig = apply_filters('wpml_object_id', $source_id, 'tipo_di_prodotto', false, 'it');
-            if (! empty($source_id_orig)) {
-                $source_id = $source_id_orig;
-            }
-        }
-    }
+    $source_id   = get_the_ID();
+    $pod_context = 'prodotto';
+    $field_name  = 'video_prodotto';
 
     $pod = pods($pod_context, $source_id);
     if (! $pod) {
