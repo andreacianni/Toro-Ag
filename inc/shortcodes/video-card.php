@@ -42,13 +42,11 @@ function ac_video_prodotto_shortcode() {
         $term        = get_queried_object();
         $source_id   = $term->term_id;
 
+        // Sempre forziamo ID originale in italiano, anche se siamo in italiano
         if (function_exists('icl_object_id')) {
-            $current_lang = apply_filters('wpml_current_language', null);
-            if ('it' !== $current_lang) {
-                $source_id_orig = apply_filters('wpml_object_id', $source_id, 'tipo_di_prodotto', false, 'it');
-                if (! empty($source_id_orig)) {
-                    $source_id = $source_id_orig;
-                }
+            $source_id_orig = apply_filters('wpml_object_id', $source_id, 'tipo_di_prodotto', false, 'it');
+            if (! empty($source_id_orig)) {
+                $source_id = $source_id_orig;
             }
         }
     }
