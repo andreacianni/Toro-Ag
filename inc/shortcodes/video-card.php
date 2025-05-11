@@ -109,8 +109,9 @@ function ac_video_prodotto_shortcode() {
 
     return $output;
 }
+ */   
 add_shortcode('video_prodotto', 'ac_video_prodotto_shortcode');
-*/
+
 function toroag_filtra_per_lingua_aggiuntiva($video_posts) {
     $current_lang = function_exists('icl_object_id')
         ? apply_filters('wpml_current_language', null)
