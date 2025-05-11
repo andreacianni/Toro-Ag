@@ -2,6 +2,7 @@
 /**
  * Shortcode [video_prodotto] – compatibile con WPML e Divi
  * Mostra video associati a un prodotto, filtrati per lingua con tassonomia 'lingua_aggiuntiva'.
+ * ultima versione
  */
 
 function toroag_filtra_per_lingua_aggiuntiva($video_posts) {
