@@ -2,7 +2,6 @@
 /**
  * Shortcode [video_prodotto] – compatibile con WPML e Divi
  * Mostra video associati a un prodotto, filtrati per lingua con tassonomia 'lingua_aggiuntiva'.
- * ultima versione 16:43
  */
 
 function toroag_filtra_per_lingua_aggiuntiva($video_posts) {
@@ -41,8 +40,7 @@ function ac_video_prodotto_shortcode() {
 
     $raw = $pod->field($field_name);
     if (empty($raw) || ! is_array($raw)) {
-        // return '<!-- Nessun video associato -->';
-        return "<!-- Nessun video associato: campo 'video_prodotto' vuoto. ID post: {$source_id} -->";
+        return "<!-- Nessun video associato: campo '{$field_name}' vuoto. ID post: {$source_id} -->";
     }
 
     $videos_raw = array_map(function($v) {
