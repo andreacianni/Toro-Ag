@@ -1,8 +1,7 @@
 <?php
 /**
  * Shortcode [video_prodotto] – compatibile con WPML e Divi
- * Mostra video associati a un prodotto, filtrati per lingua con tassonomia 'lingua_aggiuntiva'.
- * ultima versione 16:43
+ * Mostra video associati a prodotti o tassonomie, filtrati per lingua con tassonomia 'lingua_aggiuntiva'.
  */
 
 function toroag_filtra_per_lingua_aggiuntiva($video_posts) {
@@ -24,15 +23,27 @@ function toroag_filtra_per_lingua_aggiuntiva($video_posts) {
 }
 
 function ac_video_prodotto_shortcode() {
-    ob_start();
+    ob_start(); // cattura tutto l'output per sicurezza layout Divi
 
-    if (! is_singular('prodotto')) {
-        return '<!-- [video_prodotto] disponibile solo nelle pagine singolo prodotto -->';
+    $is_prod = is_singular('prodotto');
+    $is_taxo = is_tax(array('tipo_di_prodotto','product-types'));
+
+    if (! $is_prod && ! $is_taxo) {
+        return '';
     }
 
-    $source_id   = get_the_ID();
-    $pod_context = 'prodotto';
-    $field_name  = 'video_prodotto';
+    $pod_context = $is_prod ? 'prodotto' : 'term_tipo_di_prodotto';
+    $field_name  = $is_prod ? 'video_prodotto' : 'tipo-video';
+    $source_id   = $is_prod ? get_the_ID() : get_queried_object_id();
+
+    // WPML: recupera l’ID in italiano se possibile, ma solo se la traduzione esiste
+    $current_lang = apply_filters('wpml_current_language', null);
+    if ('it' !== $current_lang) {
+        $mapped_id = apply_filters('wpml_object_id', $source_id, $is_prod ? 'prodotto' : 'tipo_di_prodotto', false, 'it');
+        if (! empty($mapped_id)) {
+            $source_id = $mapped_id;
+        }
+    }
 
     $pod = pods($pod_context, $source_id);
     if (! $pod) {
@@ -44,6 +55,7 @@ function ac_video_prodotto_shortcode() {
         return '<!-- Nessun video associato -->';
     }
 
+    // Verifica oggetti video WP_Post validi
     $videos_raw = array_map(function($v) {
         $id = is_array($v) && !empty($v['ID']) ? intval($v['ID']) : intval($v);
         return get_post($id);
