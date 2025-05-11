@@ -23,7 +23,7 @@ function toroag_filtra_per_lingua_aggiuntiva($video_posts) {
 }
 
 function ac_video_prodotto_shortcode() {
-    ob_start(); // cattura tutto l'output per sicurezza layout Divi
+    ob_start();
 
     $is_prod = is_singular('prodotto');
     $is_taxo = is_tax(array('tipo_di_prodotto','product-types'));
@@ -32,16 +32,24 @@ function ac_video_prodotto_shortcode() {
         return '';
     }
 
-    $pod_context = $is_prod ? 'prodotto' : 'term_tipo_di_prodotto';
-    $field_name  = $is_prod ? 'video_prodotto' : 'tipo-video';
-    $source_id   = $is_prod ? get_the_ID() : get_queried_object_id();
+    if ($is_prod) {
+        $pod_context = 'prodotto';
+        $field_name  = 'video_prodotto';
+        $source_id   = get_the_ID();
+    } else {
+        $pod_context = 'term_tipo_di_prodotto';
+        $field_name  = 'tipo-video';
+        $term        = get_queried_object();
+        $source_id   = $term->term_id;
 
-    // WPML: recupera l’ID in italiano se possibile, ma solo se la traduzione esiste
-    $current_lang = apply_filters('wpml_current_language', null);
-    if ('it' !== $current_lang) {
-        $mapped_id = apply_filters('wpml_object_id', $source_id, $is_prod ? 'prodotto' : 'tipo_di_prodotto', false, 'it');
-        if (! empty($mapped_id)) {
-            $source_id = $mapped_id;
+        if (function_exists('icl_object_id')) {
+            $current_lang = apply_filters('wpml_current_language', null);
+            if ('it' !== $current_lang) {
+                $source_id_orig = apply_filters('wpml_object_id', $source_id, 'tipo_di_prodotto', false, 'it');
+                if (! empty($source_id_orig)) {
+                    $source_id = $source_id_orig;
+                }
+            }
         }
     }
 
@@ -55,7 +63,6 @@ function ac_video_prodotto_shortcode() {
         return '<!-- Nessun video associato -->';
     }
 
-    // Verifica oggetti video WP_Post validi
     $videos_raw = array_map(function($v) {
         $id = is_array($v) && !empty($v['ID']) ? intval($v['ID']) : intval($v);
         return get_post($id);
