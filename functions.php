@@ -187,3 +187,10 @@ function aggiungi_sottomenu_scheda() {
         'post-new.php?post_type=scheda_prodotto'
     );
 }
+add_action('wp_body_open', function() {
+    if (strpos($_SERVER['HTTP_HOST'], 'staging22') !== false) {
+        echo '<div style="background: #ffc107; color: black; text-align: center; padding: 10px;">
+        ⚠️ Stai visualizzando la versione <strong>STAGING</strong> del sito Toro-AG
+        </div>';
+    }
+});
