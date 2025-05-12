@@ -1,7 +1,7 @@
 <?php
 /**
  * @package ToroAG
- * @subpackage Helpers
+ * @subpackage Helpers.AdditionalLanguages
  */
 
 if ( ! function_exists( 'toroag_get_flag_html' ) ) {
@@ -24,6 +24,8 @@ if ( ! function_exists( 'toroag_get_flag_html' ) ) {
             'inglese'   => 'en',
             'francese'  => 'fr',
             'spagnolo'  => 'es',
+            'tedesco'   => 'de',
+            'portoghese'=> 'pt',
             'arabo'    => 'ar',
             // aggiungi qui altre mappature se serve
         ];
