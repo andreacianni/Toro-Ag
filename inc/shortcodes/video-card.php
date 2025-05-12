@@ -4,27 +4,6 @@
  * Mostra tutti i video associati a un prodotto e filtra in base a 'lingua_aggiuntiva'.
  */
 
-function toroag_filtra_per_lingua_aggiuntiva($video_ids) {
-    $current_lang = function_exists('icl_object_id')
-        ? apply_filters('wpml_current_language', null)
-        : 'it';
-
-    $filtered = [];
-    foreach ($video_ids as $id) {
-        $terms = wp_get_post_terms($id, 'lingua_aggiuntiva', ['fields' => 'slugs']);
-        if (is_wp_error($terms) || empty($terms)) continue;
-
-        $term = $terms[0];
-        if ($current_lang === 'it' && $term === 'italiano') {
-            $filtered[] = $id;
-        } elseif ($current_lang !== 'it' && $term !== 'italiano') {
-            $filtered[] = $id;
-        }
-    }
-
-    return $filtered;
-}
-
 function ac_video_prodotto_shortcode() {
     ob_start();
 
@@ -63,13 +42,18 @@ function ac_video_prodotto_shortcode() {
         $embed = wp_oembed_get($src);
         if (! $embed) continue;
 
+        // Ottieni il termine lingua associato
+        $terms = wp_get_post_terms($id, 'lingua_aggiuntiva', ['fields' => 'slugs']);
+        $lang_slug = (!is_wp_error($terms) && !empty($terms)) ? $terms[0] : '';
+        $flag_html = toroag_get_flag_html($lang_slug);
+
         echo '<div class="col">'
            . '<div class="card h-100">'
            . '<div class="card-video embed-responsive embed-responsive-16by9">' . $embed . '</div>'
            . '<div class="card-body">'
            . '<h5 class="card-title text-center py-2 mb-0">'
            . '<a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">'
-           . esc_html(get_the_title($id)) . '</a>'
+           . esc_html(get_the_title($id)) . '</a> ' . $flag_html
            . '</h5></div></div></div>';
     }
     echo '</div>';
