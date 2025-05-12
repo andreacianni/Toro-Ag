@@ -61,7 +61,7 @@ Non è documentato né supportato al di fuori del contesto di sviluppo originale
 
 ## 👤 Autore
 
-Sviluppato da [Andrea Cianni](https://github.com/andreacianni) per [Studio Eco](https://www.studioeco.it/)
+Sviluppato da [Andrea Cianni](https://github.com/andreacianni) per [Novacom Italia](https://www.novacomitalia.com/)
 
 ---
 
