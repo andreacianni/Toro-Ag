@@ -1,22 +1,30 @@
 <?php
 /**
  * Shortcode [video_prodotto] – compatibile con WPML e Divi
- * Mostra video associati a un prodotto, filtrati per lingua con tassonomia 'lingua_aggiuntiva'.
+ * Mostra tutti i video associati a un prodotto e filtra in base a 'lingua_aggiuntiva'.
  */
 
-function toroag_filtra_per_lingua_aggiuntiva($video_posts) {
+function toroag_filtra_per_lingua_aggiuntiva($video_ids) {
     $current_lang = function_exists('icl_object_id')
         ? apply_filters('wpml_current_language', null)
         : 'it';
 
-    $debug = "<!-- lingua attiva: {$current_lang} / video totali prima: " . count($video_posts) . " -->\n";
+    $debug = "<!-- lingua attiva: {$current_lang} / video totali prima: " . count($video_ids) . " -->\n";
 
-    $filtered = array_filter($video_posts, function($p) use (&$debug, $current_lang) {
-        if (! $p instanceof WP_Post) return false;
-        $has_term = has_term('italiano', 'lingua_aggiuntiva', $p->ID);
-        $debug .= "<!-- video ID: {$p->ID} / ha 'italiano': " . ($has_term ? 'sì' : 'no') . " -->\n";
-        return ($current_lang === 'it') ? $has_term : ! $has_term;
-    });
+    $filtered = [];
+    foreach ($video_ids as $id) {
+        $terms = wp_get_post_terms($id, 'lingua_aggiuntiva', ['fields' => 'slugs']);
+        if (is_wp_error($terms) || empty($terms)) continue;
+
+        $term = $terms[0];
+        $debug .= "<!-- video ID: {$id} / lingua_aggiuntiva: {$term} -->\n";
+
+        if ($current_lang === 'it' && $term === 'italiano') {
+            $filtered[] = $id;
+        } elseif ($current_lang !== 'it' && $term !== 'italiano') {
+            $filtered[] = $id;
+        }
+    }
 
     echo $debug;
     return $filtered;
@@ -43,20 +51,20 @@ function ac_video_prodotto_shortcode() {
         return "<!-- Nessun video associato: campo '{$field_name}' vuoto. ID post: {$source_id} -->";
     }
 
-    $videos_raw = array_map(function($v) {
-        $id = is_array($v) && !empty($v['ID']) ? intval($v['ID']) : intval($v);
-        return get_post($id);
+    $video_ids = array_map(function($v) {
+        return is_array($v) && !empty($v['ID']) ? intval($v['ID']) : intval($v);
     }, $raw);
 
-    $videos = toroag_filtra_per_lingua_aggiuntiva(array_filter($videos_raw));
+    $video_ids = array_filter($video_ids);
+    $video_ids = toroag_filtra_per_lingua_aggiuntiva($video_ids);
 
-    if (empty($videos)) {
+    if (empty($video_ids)) {
         return '<!-- Nessun video nella lingua corrente -->';
     }
 
     echo '<div class="video-card-grid row">';
-    foreach ($videos as $video) {
-        $src = get_post_meta($video->ID, 'video_link', true);
+    foreach ($video_ids as $id) {
+        $src = get_post_meta($id, 'video_link', true);
         $embed = wp_oembed_get($src);
         if (! $embed) continue;
 
@@ -66,7 +74,7 @@ function ac_video_prodotto_shortcode() {
            . '<div class="card-body">'
            . '<h5 class="card-title text-center py-2 mb-0">'
            . '<a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">'
-           . esc_html(get_the_title($video->ID)) . '</a>'
+           . esc_html(get_the_title($id)) . '</a>'
            . '</h5></div></div></div>';
     }
     echo '</div>';
