@@ -9,12 +9,16 @@ function toroag_filtra_per_lingua_aggiuntiva($video_ids) {
         ? apply_filters('wpml_current_language', null)
         : 'it';
 
+    $debug = "<!-- lingua attiva: {$current_lang} / video totali prima: " . count($video_ids) . " -->\n";
+
     $filtered = [];
     foreach ($video_ids as $id) {
         $terms = wp_get_post_terms($id, 'lingua_aggiuntiva', ['fields' => 'slugs']);
         if (is_wp_error($terms) || empty($terms)) continue;
 
         $term = $terms[0];
+        $debug .= "<!-- video ID: {$id} / lingua_aggiuntiva: {$term} -->\n";
+
         if ($current_lang === 'it' && $term === 'italiano') {
             $filtered[] = $id;
         } elseif ($current_lang !== 'it' && $term !== 'italiano') {
@@ -22,6 +26,7 @@ function toroag_filtra_per_lingua_aggiuntiva($video_ids) {
         }
     }
 
+    echo $debug;
     return $filtered;
 }
 
