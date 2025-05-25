@@ -1,47 +1,55 @@
 <?php
 /**
  * Shortcode: [scheda_prodotto]
- * Visualizza i link alle Schede Prodotto collegate tramite relazione Pods (type=pick), con badge e bandierina della lingua.
+ * Visualizza i link alle Schede Prodotto collegate al prodotto, con debug e bandierina lingua.
+ * Riprende la logica di [video_prodotto_v2] per caricare tutti i CPT associati.
  */
 function shortcode_scheda_prodotto( $atts ) {
     global $post;
 
-    // Ottieni oggetto Pods del prodotto corrente
-    $pods = pods( get_post_type( $post ), $post->ID );
-    $schede = $pods->field( 'scheda_prodotto' );
+    // Debug: inizio shortcode scheda_prodotto
+    $output = "<!-- Debug [scheda_prodotto]: product ID {$post->ID} -->";
 
-    if ( empty( $schede ) || ! is_array( $schede ) ) {
-        return '';
+    // Ottieni Pods del CPT Scheda Prodotto con relazione al prodotto
+    $params = [
+        'where'    => "t.slug.meta_value = {$post->ID}", // adattare in base alla relazione
+        'limit'    => -1,
+    ];
+    $pods_schede = pods( 'scheda_prodotto', $params );
+
+    $count = $pods_schede->total();
+    $output .= "<!-- Debug [scheda_prodotto]: trovato count = {$count} -->";
+
+    if ( 0 === $count ) {
+        return $output . '<p>Nessuna scheda trovata.</p>';
     }
 
-    $output = '';
-    foreach ( $schede as $item ) {
-        $scheda_id   = intval( $item['ID'] );
-        $scheda_post = get_post( $scheda_id );
-        if ( ! $scheda_post ) {
-            continue;
-        }
+    while ( $pods_schede->fetch() ) {
+        $scheda_id   = $pods_schede->field( 'ID' );
+        $title       = $pods_schede->display( 'post_title' );
+        $permalink   = $pods_schede->field( 'permalink' );
 
-        $url   = get_permalink( $scheda_post );
-        $title = get_the_title( $scheda_post );
+        // Debug per ogni scheda
+        $output .= "<!-- Debug scheda_prodotto: ID={$scheda_id}, title={$title} -->";
 
-        // Recupera la tassonomia Lingue Aggiuntive
+        // Lingua aggiuntiva
         $terms = get_the_terms( $scheda_id, 'lingue_aggiuntive' );
         $flag_html = '';
         if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
             $lang = reset( $terms );
-            $slug = $lang->slug;
-            // Usa la funzione helper per ottenere l'HTML della bandiera
             if ( function_exists( 'toroag_get_flag_html' ) ) {
-                $flag_html = toroag_get_flag_html( $slug );
+                $flag_html = toroag_get_flag_html( $lang->slug );
             }
+            $output .= "<!-- Debug lingua={$lang->slug} -->";
+        } else {
+            $output .= "<!-- Debug lingua assente -->";
         }
 
-        // Costruisci badge
-        $output .= '<a href="' . esc_url( $url ) . '" class="badge badge-info me-1">'
+        // Costruisci link (rimuovendo badge)
+        $output .= '<a href="' . esc_url( $permalink ) . '">'
                  . esc_html( $title )
                  . $flag_html
-                 . '</a>';
+                 . '</a><br />';
     }
 
     return $output;
@@ -51,45 +59,55 @@ add_shortcode( 'scheda_prodotto', 'shortcode_scheda_prodotto' );
 
 /**
  * Shortcode: [documento_prodotto]
- * Visualizza i link ai Documenti Prodotto collegati tramite relazione Pods (type=pick), con badge e bandierina della lingua.
+ * Visualizza i link ai Documenti Prodotto collegati al prodotto, con debug e bandierina lingua.
+ * Riprende la logica di [video_prodotto_v2] per caricare tutti i CPT associati.
  */
 function shortcode_documento_prodotto( $atts ) {
     global $post;
 
-    $pods = pods( get_post_type( $post ), $post->ID );
-    $docs = $pods->field( 'documenti_prodotto' );
+    // Debug: inizio shortcode documento_prodotto
+    $output = "<!-- Debug [documento_prodotto]: product ID {$post->ID} -->";
 
-    if ( empty( $docs ) || ! is_array( $docs ) ) {
-        return '';
+    // Ottieni Pods del CPT Documenti Prodotto con relazione al prodotto
+    $params = [
+        'where'    => "t.slug.meta_value = {$post->ID}", // adattare in base alla relazione
+        'limit'    => -1,
+    ];
+    $pods_docs = pods( 'documenti_prodotto', $params );
+
+    $count = $pods_docs->total();
+    $output .= "<!-- Debug [documento_prodotto]: trovato count = {$count} -->";
+
+    if ( 0 === $count ) {
+        return $output . '<p>Nessun documento trovato.</p>';
     }
 
-    $output = '';
-    foreach ( $docs as $item ) {
-        $doc_id   = intval( $item['ID'] );
-        $doc_post = get_post( $doc_id );
-        if ( ! $doc_post ) {
-            continue;
-        }
+    while ( $pods_docs->fetch() ) {
+        $doc_id     = $pods_docs->field( 'ID' );
+        $title      = $pods_docs->display( 'post_title' );
+        $permalink  = $pods_docs->field( 'permalink' );
 
-        $url   = get_permalink( $doc_post );
-        $title = get_the_title( $doc_post );
+        // Debug per ogni documento
+        $output .= "<!-- Debug documento_prodotto: ID={$doc_id}, title={$title} -->";
 
-        // Recupera la tassonomia Lingue Aggiuntive
+        // Lingua aggiuntiva
         $terms = get_the_terms( $doc_id, 'lingue_aggiuntive' );
         $flag_html = '';
         if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
             $lang = reset( $terms );
-            $slug = $lang->slug;
-            // Usa la funzione helper per ottenere l'HTML della bandiera
             if ( function_exists( 'toroag_get_flag_html' ) ) {
-                $flag_html = toroag_get_flag_html( $slug );
+                $flag_html = toroag_get_flag_html( $lang->slug );
             }
+            $output .= "<!-- Debug lingua={$lang->slug} -->";
+        } else {
+            $output .= "<!-- Debug lingua assente -->";
         }
 
-        $output .= '<a href="' . esc_url( $url ) . '" class="badge badge-success me-1">'
+        // Costruisci link (rimuovendo badge)
+        $output .= '<a href="' . esc_url( $permalink ) . '">'
                  . esc_html( $title )
                  . $flag_html
-                 . '</a>';
+                 . '</a><br />';
     }
 
     return $output;
