@@ -8,20 +8,26 @@
 if (! function_exists('ta_render_documenti_prodotto_view')) {
     function ta_render_documenti_prodotto_view($terms_data) {
         ob_start();
-        if (empty($terms_data)) {
-            echo '<p class="text-center text-muted">' . esc_html__('Non ci sono documenti da visualizzare', 'toro-ag') . '</p>';
+        if (empty($terms_data) || empty($terms_data[0]['products'][0]['schede']) && empty($terms_data[0]['products'][0]['docs'])) {
+            echo '<p class="text-center text-muted">' . esc_html__('Nessuna scheda o documento disponibile', 'toro-ag') . '</p>';
             return ob_get_clean();
         }
+        $prod = $terms_data[0]['products'][0];
+        // Conteggi per pluralizzazione
+        $schede_count = count($prod['schede'] ?: []);
+        $docs_count   = count($prod['docs'] ?: []);
         ?>
         <div class="product-documents">
-        <?php foreach ($terms_data as $term): ?>
-            <?php $prod = $term['products'][0]; ?>
             <div class="row g-3">
                 <div class="col-12">
-                    <?php if (!empty($prod['schede'])): ?>
+                    <?php if ($schede_count > 0): ?>
                         <div class="card shadow-sm mb-3">
                             <div class="card-header">
-                                <strong><?= esc_html__('Schede Prodotto', 'toro-ag'); ?></strong>
+                                <strong>
+                                    <?php echo ($schede_count === 1)
+                                        ? esc_html__('Scheda Prodotto', 'toro-ag')
+                                        : esc_html__('Schede Prodotto', 'toro-ag'); ?>
+                                </strong>
                             </div>
                             <div class="card-body small">
                                 <?php foreach ($prod['schede'] as $group): ?>
@@ -43,10 +49,14 @@ if (! function_exists('ta_render_documenti_prodotto_view')) {
                         </div>
                     <?php endif; ?>
 
-                    <?php if (!empty($prod['docs'])): ?>
+                    <?php if ($docs_count > 0): ?>
                         <div class="card shadow-sm mb-4">
                             <div class="card-header">
-                                <strong><?= esc_html__('Documenti Prodotto', 'toro-ag'); ?></strong>
+                                <strong>
+                                    <?php echo ($docs_count === 1)
+                                        ? esc_html__('Documento Prodotto', 'toro-ag')
+                                        : esc_html__('Documenti Prodotto', 'toro-ag'); ?>
+                                </strong>
                             </div>
                             <div class="card-body small">
                                 <?php foreach ($prod['docs'] as $group): ?>
@@ -69,7 +79,6 @@ if (! function_exists('ta_render_documenti_prodotto_view')) {
                     <?php endif; ?>
                 </div>
             </div>
-        <?php endforeach; ?>
         </div>
         <?php
         return ob_get_clean();
@@ -129,10 +138,6 @@ if (! function_exists('ta_scheda_prodotto_dettaglio_shortcode')) {
 
         $schede = $get_grouped('scheda_prodotto', 'scheda-prodotto');
         $docs   = $get_grouped('documento_prodotto', 'documento-prodotto');
-
-        if (empty($schede) && empty($docs)) {
-            return '<p class="text-center text-muted">' . esc_html__('Nessuna scheda o documento disponibile', 'toro-ag') . '</p>';
-        }
 
         $terms_data = [[
             'term_name' => '',
