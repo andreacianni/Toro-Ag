@@ -1,0 +1,38 @@
+[33mdfbac4d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdevelop[m[33m, [m[1;31mstaging/main[m[33m)[m fix EN 3
+[33m0620f9a[m fix EN 2
+[33m353e63b[m fix EN
+[33mb10ec9a[m fix per inglese
+[33md03468e[m id versus array
+[33mbab8c6d[m[33m ([m[1;31mstaging/master[m[33m)[m cambio nome shortcode
+[33mb5ab19b[m cambio nome shortcode
+[33m36bfc54[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m Nuovo shortdode per video in pagina prodotto
+[33m09d76cb[m Ripristina modifiche manuali in video-card.php
+[33mda7bfd5[m[33m ([m[1;31morigin/feature/gestione-lingue-aggiuntive[m[33m, [m[1;32mfeature/gestione-lingue-aggiuntive[m[33m)[m video filtrati con lingua aggiuntiva funzionante
+[33m273f9e5[m diverso approccio
+[33m0df090f[m documentazione fix + mappa campii e CTP
+[33mf8bb919[m e poi...
+[33m243dec6[m ancora
+[33m6e06e96[m ultima versione 16:43
+[33m6d5f825[m aridange
+[33m3c28452[m video_prodotto
+[33maf363a8[m prova 5
+[33m5d64f19[m prova 4
+[33mf474600[m prova 3
+[33m9400c8a[m prova2
+[33mb8d18d4[m prova filtro
+[33m8775551[m doc aggiornata!
+[33m42a3723[m Aggiunge file wpml-config.xml per WPML
+[33m1be00f6[m generatore xml per wpml
+[33mf607b0c[m documentazione Pods e Divi
+[33mdc3ede5[m documento flusso di lavoro aggiornato
+[33ma8c0bf4[m Rinomina README-TORO-AG.md in README.md per renderlo visibile nel repo
+[33mf85eb8e[m documenti e istruzioni
+[33m2c826f6[m shortcode per video nelle pagine prodotto
+[33m008c5e1[m Aggiunge shortcode grid e aggiorna style.scss
+[33m09ac91d[m griglie e stili
+[33m55599f3[m griglie e stili
+[33m199d943[m shortcode per griglie
+[33m510974f[m test verifica terminale
+[33m24a93ed[m test verifica terminale
+[33ma18de9f[m Aggiunto file di documentazione della struttura
+[33m540747c[m toro-ag V0.9.5
