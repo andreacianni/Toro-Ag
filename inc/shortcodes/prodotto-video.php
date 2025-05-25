@@ -1,9 +1,9 @@
 <?php
 /**
  * Shortcode per mostrare i video associati al prodotto.
- * Uso: [video_prodotto]
+ * Uso: [video_prodotto_v2]
  */
-function ta_render_video_prodotto_shortcode($atts) {
+function ta_render_video_prodotto_v2_shortcode($atts) {
     global $post;
 
     // Controllo Pods
@@ -57,4 +57,4 @@ function ta_render_video_prodotto_shortcode($atts) {
     $output .= '</div>';
     return $output;
 }
-add_shortcode('video_prodotto_v2', 'ta_render_video_prodotto_shortcode');
+add_shortcode('video_prodotto_v2', 'ta_render_video_prodotto_v2_shortcode');
