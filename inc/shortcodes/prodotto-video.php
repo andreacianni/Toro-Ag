@@ -21,7 +21,8 @@ function ta_render_video_prodotto_v2_shortcode($atts) {
     $output .= '<!-- DEBUG: Prodotto ID lingua ' . esc_html($current_lang) . ': ' . esc_html($prod_id_current) . ' -->';
 
     // Carica Pod prodotto
-    $pod = pods('prodotto', $prod_id_current);
+    // Carica Pod prodotto (lingua corrente)
+    $pod = pods('prodotto', $prod_id_current, array('lang' => $current_lang));
     if ( ! $pod->exists() ) {
         return '<!-- DEBUG: Pod prodotto non trovato per ID ' . esc_html($prod_id_current) . ' -->';
     }
@@ -36,7 +37,8 @@ function ta_render_video_prodotto_v2_shortcode($atts) {
         $prod_id_default = $prod_id_default ? intval($prod_id_default) : intval($post->ID);
         $output .= '<!-- DEBUG: Fallback Prodotto IT ID: ' . esc_html($prod_id_default) . ' -->';
 
-        $pod = pods('prodotto', $prod_id_default);
+        // Carica Pod fallback italiano
+        $pod = pods('prodotto', $prod_id_default, array('lang' => $default_lang));
         $videos = $pod->field('video_prodotto');
         $output .= '<!-- DEBUG: Raw fallback video_prodotto: ' . esc_html(var_export($videos, true)) . ' -->';
 
