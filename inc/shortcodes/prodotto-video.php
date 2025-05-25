@@ -17,7 +17,7 @@ if ( ! function_exists('ta_render_video_prodotto_v2_shortcode') ) {
         $output = '';
 
         // Mappa prodotto nella lingua corrente
-        $prod_id_current = apply_filters('wpml_object_id', $post->ID, 'prodotto', false, $current_lang);
+        $prod_id_current = apply_filters('wpml_object_id', $post->ID, 'prodotto', true, $current_lang);
         $prod_id_current = $prod_id_current ? intval($prod_id_current) : intval($post->ID);
         $output .= '<!-- EN fix 8 --><!-- DEBUG: Prodotto ID lingua ' . esc_html($current_lang) . ': ' . esc_html($prod_id_current) . ' -->';
 
@@ -33,19 +33,16 @@ if ( ! function_exists('ta_render_video_prodotto_v2_shortcode') ) {
 
         // Se non ci sono video, fallback IT
         if ( empty($videos) ) {
-            $prod_id_default = apply_filters('wpml_object_id', $post->ID, 'prodotto', false, $default_lang);
+            $prod_id_default = apply_filters('wpml_object_id', $post->ID, 'prodotto', true, $default_lang);
             $prod_id_default = $prod_id_default ? intval($prod_id_default) : intval($post->ID);
             $output .= '<!-- EN fix 8 --><!-- DEBUG: Fallback Prodotto IT ID: ' . esc_html($prod_id_default) . ' -->';
 
-            // Carica Pod fallback italiano (ottieni direttamente il meta)
-            $output .= '<!-- EN fix 8 --><!-- DEBUG: Uso get_post_meta fallback -->';
-            $videos = get_post_meta($prod_id_default, 'video_prodotto', true);
-            // EN fix 7: Normalizza $videos in array se singolo valore
-            if ( ! is_array($videos) ) {
-                $videos = $videos ? array_map('trim', explode(',', $videos)) : array();
-            }
-            $output .= '<!-- EN fix 8 --><!-- DEBUG: Raw get_post_meta fallback: ' . esc_html(var_export($videos, true)) . ' -->';
-            $output .= '<!-- EN fix 8 --><!-- DEBUG: Raw fallback video_prodotto: ' . esc_html(var_export($videos, true)) . ' -->';
+            // Carica direttamente meta fallback multi
+            $output .= '<!-- EN fix 8 --><!-- DEBUG: Uso get_post_meta fallback multi -->';
+            $videos_meta = get_post_meta($prod_id_default, 'video_prodotto', false);
+            $output .= '<!-- EN fix 8 --><!-- DEBUG: Raw get_post_meta fallback array: ' . esc_html(var_export($videos_meta, true)) . ' -->';
+            $videos = array_map('intval', $videos_meta);
+            $output .= '<!-- EN fix 8 --><!-- DEBUG: Videos after map: ' . esc_html(var_export($videos, true)) . ' -->';
 
             if ( empty($videos) ) {
                 $output .= '<!-- EN fix 8 --><!-- DEBUG: Ancora nessun video -->';
@@ -60,7 +57,7 @@ if ( ! function_exists('ta_render_video_prodotto_v2_shortcode') ) {
             $output .= '<!-- EN fix 8 --><!-- DEBUG: ID raw: ' . esc_html($video_id) . ' -->';
 
             // Traduzione video
-            $translated = apply_filters('wpml_object_id', $video_id, 'video', false, $current_lang);
+            $translated = apply_filters('wpml_object_id', $video_id, 'video', true, $current_lang);
             $video_id = $translated ? intval($translated) : $video_id;
             $output .= '<!-- EN fix 8 --><!-- DEBUG: ID tradotto: ' . esc_html($video_id) . ' -->';
 
@@ -77,7 +74,7 @@ if ( ! function_exists('ta_render_video_prodotto_v2_shortcode') ) {
                 $output .= '<!-- EN fix 8 --><!-- DEBUG: Thumbnail -->';
             }
             $output .= '<!-- EN fix 8 --><!-- DEBUG: Link -->'
-                . '<a href="' . esc_url(get_permalink($video_id)) . '">' . esc_html($video->post_title) . '</a>';
+                     . '<a href="' . esc_url(get_permalink($video_id)) . '">' . esc_html($video->post_title) . '</a>';
             $output .= '</div>';
         }
         $output .= '</div>';
