@@ -29,9 +29,16 @@ function ta_render_video_prodotto_v2_shortcode($atts) {
 
     $output .= '<div class="video-prodotto-wrapper">';
 
-    foreach ( (array) $videos as $video_id ) {
-        $video_id = intval($video_id);
-        $output .= '<!-- DEBUG: Elaboro video ID: ' . $video_id . ' -->';
+    foreach ( (array) $videos as $video_item ) {
+        // Estrazione corretta dell'ID dal risultato Pods
+        if ( is_array($video_item) && isset($video_item['ID']) ) {
+            $video_id = intval($video_item['ID']);
+        } elseif ( is_object($video_item) && isset($video_item->ID) ) {
+            $video_id = intval($video_item->ID);
+        } else {
+            $video_id = intval($video_item);
+        }
+        $output .= '<!-- DEBUG: Estratto video ID: ' . $video_id . ' -->';
 
         $video_post = get_post($video_id);
         if ( ! $video_post ) {
