@@ -1,128 +1,63 @@
 <?php
 /**
- * Shortcode: [scheda_prodotto]
- * Recupera schede prodotto associate tramite Pods, con supporto WPML e filtro per lingua_aggiuntive.
+ * Shortcode per mostrare la scheda prodotto associata al prodotto (con fallback WPML robusto).
+ * Uso: [scheda_prodotto]
  */
-function shortcode_scheda_prodotto( $atts ) {
-    global $post;
+if ( ! function_exists('ta_render_scheda_prodotto_shortcode') ) {
+    function ta_render_scheda_prodotto_shortcode($atts) {
+        global $post;
 
-    // Lingua corrente
-    $current_lang = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : apply_filters('wpml_current_language', null);
-
-    // Ottieni relazione pick dal prodotto
-    $pods_prod = pods( get_post_type( $post ), $post->ID );
-    $relations = $pods_prod->field( 'scheda_prodotto' );
-
-    // Se vuoto, fallback metadata IT
-    if ( empty( $relations ) || ! is_array( $relations ) ) {
-        $relations = get_post_meta( $post->ID, 'scheda_prodotto', false );
-    }
-
-    if ( empty( $relations ) ) {
-        return '<p>Nessuna scheda collegata.</p>';
-    }
-
-    $output = '';
-    foreach ( $relations as $item ) {
-        // ID originale
-        $orig_id = intval( is_array($item) ? $item['ID'] : $item );
-        // Mappa alla lingua corrente
-        $trans_id = apply_filters( 'wpml_object_id', $orig_id, 'scheda_prodotto', false, $current_lang );
-        if ( ! $trans_id ) {
-            continue;
+        if ( ! function_exists('pods') ) {
+            return '<!-- shortcode scheda_prodotto --><!-- DEBUG: Pods non disponibile -->';
         }
 
-        // Filtro tassonomia lingua_aggiuntive
-        $terms = get_the_terms( $trans_id, 'lingue_aggiuntive' );
-        $show = false;
-        if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
-            $slugs = wp_list_pluck( $terms, 'slug' );
-            if ( 'it' === $current_lang ) {
-                $show = in_array( 'italiano', $slugs, true );
-            } else {
-                $show = ! in_array( 'italiano', $slugs, true );
+        // Lingua corrente e lingua di default
+        $current_lang = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : apply_filters('wpml_current_language', null);
+        $default_lang = apply_filters('wpml_default_language', null);
+        $output = '<!-- shortcode scheda_prodotto --><!-- DEBUG: Prodotto ID lingua ' . esc_html($current_lang) . ' -->';
+
+        // Recupera l'ID del prodotto nella lingua corrente (fallback al post corrente)
+        $prod_id_current = apply_filters('wpml_object_id', $post->ID, 'prodotto', true, $current_lang);
+        $prod_id_current = $prod_id_current ? intval($prod_id_current) : intval($post->ID);
+
+        // Carica il pod prodotto
+        $pod = pods('prodotto', $prod_id_current, ['lang' => $current_lang]);
+        if ( ! $pod->exists() ) {
+            return '<!-- shortcode scheda_prodotto --><!-- DEBUG: Pod prodotto non trovato per ID ' . esc_html($prod_id_current) . ' -->';
+        }
+
+        // Recupera il campo scheda_prodotto
+        $schede = $pod->field('scheda_prodotto');
+        if ( empty($schede) ) {
+            // Fallback alla lingua di default
+            $prod_id_default = apply_filters('wpml_object_id', $post->ID, 'prodotto', true, $default_lang);
+            $prod_id_default = $prod_id_default ? intval($prod_id_default) : intval($post->ID);
+            $schede = array_map('intval', get_post_meta($prod_id_default, 'scheda_prodotto', false));
+            if ( empty($schede) ) {
+                return '<!-- shortcode scheda_prodotto --><!-- DEBUG: Nessuna scheda prodotto disponibile -->';
             }
-        } elseif ( 'it' === $current_lang ) {
-            // se nessuna tassonomia, in IT mostriamo comunque
-            $show = true;
         }
 
-        if ( ! $show ) {
-            continue;
+        // Output lista schede prodotto
+        $output .= '<ul class="scheda-prod-list">';
+        foreach ( (array) $schede as $item ) {
+            // Determina ID allegato
+            $file_id = is_array($item) && isset($item['ID']) ? intval($item['ID']) : (is_object($item) && isset($item->ID) ? intval($item->ID) : intval($item));
+            if ( ! $file_id ) continue;
+
+            // URL del file (pod o attachment)
+            $file_url = pods_v( 'guid', $item ) ?: wp_get_attachment_url($file_id);
+            // Link sicuro se disponibile
+            $download_url = function_exists('toroag_get_secure_download_url') ? toroag_get_secure_download_url($file_id) : $file_url;
+
+            // Titolo del file
+            $file_title = get_the_title($file_id) ?: basename(get_attached_file($file_id));
+
+            $output .= '<li><a href="' . esc_url($download_url) . '" target="_blank" rel="noopener noreferrer">' . esc_html($file_title) . '</a></li>';
         }
+        $output .= '</ul>';
 
-        $url   = get_permalink( $trans_id );
-        $title = get_the_title( $trans_id );
-        $flag  = function_exists('toroag_get_flag_html') ? toroag_get_flag_html( $current_lang ) : '';
-
-        $output .= '<a href="' . esc_url( $url ) . '">' . esc_html( $title ) . ' ' . $flag . '</a><br />';
+        return $output;
     }
-
-    if ( empty( $output ) ) {
-        return '<p>Nessuna scheda disponibile per lingua.</p>';
-    }
-
-    return $output;
+    add_shortcode('scheda_prodotto', 'ta_render_scheda_prodotto_shortcode');
 }
-add_shortcode( 'scheda_prodotto', 'shortcode_scheda_prodotto' );
-
-
-/**
- * Shortcode: [documento_prodotto]
- * Recupera documenti prodotto associati tramite Pods, con supporto WPML e filtro per lingua_aggiuntive.
- */
-function shortcode_documento_prodotto( $atts ) {
-    global $post;
-
-    $current_lang = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : apply_filters('wpml_current_language', null);
-
-    $pods_prod = pods( get_post_type( $post ), $post->ID );
-    $relations = $pods_prod->field( 'documenti_prodotto' );
-
-    if ( empty( $relations ) || ! is_array( $relations ) ) {
-        $relations = get_post_meta( $post->ID, 'documenti_prodotto', false );
-    }
-
-    if ( empty( $relations ) ) {
-        return '<p>Nessun documento collegato.</p>';
-    }
-
-    $output = '';
-    foreach ( $relations as $item ) {
-        $orig_id = intval( is_array($item) ? $item['ID'] : $item );
-        $trans_id = apply_filters( 'wpml_object_id', $orig_id, 'documenti_prodotto', false, $current_lang );
-        if ( ! $trans_id ) {
-            continue;
-        }
-
-        $terms = get_the_terms( $trans_id, 'lingue_aggiuntive' );
-        $show = false;
-        if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
-            $slugs = wp_list_pluck( $terms, 'slug' );
-            if ( 'it' === $current_lang ) {
-                $show = in_array( 'italiano', $slugs, true );
-            } else {
-                $show = ! in_array( 'italiano', $slugs, true );
-            }
-        } elseif ( 'it' === $current_lang ) {
-            $show = true;
-        }
-
-        if ( ! $show ) {
-            continue;
-        }
-
-        $url   = get_permalink( $trans_id );
-        $title = get_the_title( $trans_id );
-        $flag  = function_exists('toroag_get_flag_html') ? toroag_get_flag_html( $current_lang ) : '';
-
-        $output .= '<a href="' . esc_url( $url ) . '">' . esc_html( $title ) . ' ' . $flag . '</a><br />';
-    }
-
-    if ( empty( $output ) ) {
-        return '<p>Nessun documento disponibile per lingua.</p>';
-    }
-
-    return $output;
-}
-add_shortcode( 'documento_prodotto', 'shortcode_documento_prodotto' );
