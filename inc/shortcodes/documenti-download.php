@@ -20,6 +20,9 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
             'inglese'  => 1,
             'francese' => 2,
             'spagnolo' => 3,
+            'tedesco'   => 4,
+            'portoghese'=> 5,
+            'arabo'    => 6,
         ];
 
         $terms = get_terms(['taxonomy'=>'tipo_di_prodotto','hide_empty'=>false]);
