@@ -47,40 +47,38 @@ if ( ! function_exists('ta_render_scheda_prodotto_shortcode') ) {
                 continue;
             }
 
-            // Preparazione variabili
+            // Variabili
             $raw_field = '';
-            $file_id = $entry_id;
-            $file_url = '';
+            $download_url = '';
+            $file_id = null;
 
-            // Se è un CPT scheda_prodotto, recupera il file PDF via Pods
-            if ( get_post_type($entry_id) === 'scheda_prodotto' ) {
-                $file_pod = pods('scheda_prodotto', $entry_id, ['lang' => $current_lang]);
-                if ( $file_pod->exists() ) {
-                    $file_field = $file_pod->field('file'); // campo file PDF
-                    if ( ! empty($file_field) && isset($file_field['guid']) ) {
-                        $file_url = $file_field['guid'];
-                        $raw_field = $file_field['guid'];
-                        $file_id = intval($file_field['ID']);
-                    }
-                }
+            // Se è un CPT scheda_prodotto, recupera l'ID allegato dal meta key 'scheda-prodotto'
+            if ( 'scheda_prodotto' === get_post_type($entry_id) ) {
+                $meta_fid = get_post_meta($entry_id, 'scheda-prodotto', true);
+                $file_id = $meta_fid ? intval($meta_fid) : null;
+                $raw_field = $file_id;
+                $download_url = $file_id ? wp_get_attachment_url($file_id) : '';
             }
 
-            // Se non determinato, fallback a guid diretto o allegato
-            if ( ! $file_url ) {
+            // Se non determinato, fallback a Pods guid o attachment diretto
+            if ( ! $download_url ) {
                 if ( is_array($item) && isset($item['guid']) ) {
-                    $file_url = $item['guid'];
+                    $download_url = $item['guid'];
                     $raw_field = $item['guid'];
                 } elseif ( is_object($item) && isset($item->guid) ) {
-                    $file_url = $item->guid;
+                    $download_url = $item->guid;
                     $raw_field = $item->guid;
-                } else {
-                    $file_url = wp_get_attachment_url($file_id);
-                    $raw_field = $file_url;
+                } elseif ( $entry_id ) {
+                    $download_url = wp_get_attachment_url($entry_id);
+                    $raw_field = $download_url;
+                    $file_id = $entry_id;
                 }
             }
 
-            // Link di download sicuro
-            $download_url = function_exists('toroag_get_secure_download_url') ? toroag_get_secure_download_url($file_id) : $file_url;
+            // Link sicuro
+            if ( $file_id && function_exists('toroag_get_secure_download_url') ) {
+                $download_url = toroag_get_secure_download_url($file_id);
+            }
 
             // Termini lingua_aggiuntiva
             $lingua_terms = wp_get_post_terms($entry_id, 'lingua_aggiuntiva', ['fields' => 'slugs']);
