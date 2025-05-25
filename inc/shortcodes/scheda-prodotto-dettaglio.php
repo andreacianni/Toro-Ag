@@ -111,28 +111,45 @@ if (! function_exists('ta_scheda_prodotto_dettaglio_shortcode') ) {
             ? ICL_LANGUAGE_CODE
             : apply_filters('wpml_current_language', null);
 
-        // Raccoglie file da meta key, filtra per lingua e ordina
+        // Raccoglie file da meta key Pods, filtra per lingua e ordina
         $collect = function($meta_key, $file_meta_key) use ($lang) {
             $order = ['italiano'=>0, 'inglese'=>1, 'francese'=>2, 'spagnolo'=>3];
-            $items = [];
-            foreach ((array) get_post_meta($post->ID, $meta_key, false) as $did) {
+            // Ottieni relazione Pods
+            if (! function_exists('pods')) {
+                return [];
+            }
+            $prod_pod = pods('prodotto', get_the_ID());
+            if (! $prod_pod->exists()) {
+                return [];
+            }
+            $raw_items = $prod_pod->field($meta_key);
+            if (empty($raw_items)) {
+                return [];
+            }
+            $out = [];
+            foreach ((array) $raw_items as $item) {
+                // estrai ID relazione
+                $did = is_array($item) && isset($item['ID']) ? intval($item['ID']) : (is_object($item) && isset($item->ID) ? intval($item->ID) : intval($item));
+                if (! $did) continue;
+                // lingua aggiuntiva
                 $slug = wp_get_post_terms($did, 'lingua_aggiuntiva', ['fields'=>'slugs'])[0] ?? 'altre';
                 if (($lang === 'it' && $slug !== 'italiano') || ($lang !== 'it' && $slug === 'italiano')) {
                     continue;
                 }
+                // id file dentro CPT
                 $fid = get_post_meta($did, $file_meta_key, true);
-                if (!$fid) continue;
+                if (! $fid) continue;
                 $url = wp_get_attachment_url($fid);
-                if (!$url) continue;
-                $items[] = [
+                if (! $url) continue;
+                $out[] = [
                     'title'=> get_the_title($did),
                     'url'  => $url,
                     'lang' => $slug,
                     'prio' => $order[$slug] ?? 99,
                 ];
             }
-            usort($items, function($a, $b){ return $a['prio'] <=> $b['prio']; });
-            return $items;
+            usort($out, function($a,$b){ return $a['prio'] <=> $b['prio']; });
+            return $out;
         };
 
         // Prepara dati
