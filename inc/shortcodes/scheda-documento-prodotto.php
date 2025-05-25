@@ -16,7 +16,7 @@ if ( ! function_exists('ta_render_scheda_prodotto_shortcode') ) {
         $default_lang = apply_filters('wpml_default_language', null);
         $output = '<!-- shortcode scheda_prodotto --><!-- DEBUG: Prodotto ID lingua ' . esc_html($current_lang) . ' -->';
 
-        // Recupera l'ID del prodotto nella lingua corrente (fallback al post corrente)
+        // Recupera l'ID del prodotto nella lingua corrente
         $prod_id_current = apply_filters('wpml_object_id', $post->ID, 'prodotto', true, $current_lang);
         $prod_id_current = $prod_id_current ? intval($prod_id_current) : intval($post->ID);
 
@@ -26,7 +26,7 @@ if ( ! function_exists('ta_render_scheda_prodotto_shortcode') ) {
             return '<!-- shortcode scheda_prodotto --><!-- DEBUG: Pod prodotto non trovato per ID ' . esc_html($prod_id_current) . ' -->';
         }
 
-        // Recupera il campo scheda_prodotto
+        // Recupera il campo scheda_prodotto (relazione file o CPT)
         $schede = $pod->field('scheda_prodotto');
         if ( empty($schede) ) {
             // Fallback alla lingua di default
@@ -38,23 +38,46 @@ if ( ! function_exists('ta_render_scheda_prodotto_shortcode') ) {
             }
         }
 
-        // Output lista schede prodotto
         $output .= '<ul class="scheda-prod-list">';
-        foreach ( (array) $schede as $item ) {
-            // Determina ID allegato
-            $file_id = is_array($item) && isset($item['ID']) ? intval($item['ID']) : (is_object($item) && isset($item->ID) ? intval($item->ID) : intval($item));
-            if ( ! $file_id ) continue;
 
-            // URL del file (pod o attachment)
-            $file_url = pods_v( 'guid', $item ) ?: wp_get_attachment_url($file_id);
-            // Link sicuro se disponibile
+        foreach ( (array) $schede as $item ) {
+            // Determina ID del file o CPT collegato
+            $file_id = is_array($item) && isset($item['ID']) ? intval($item['ID']) : (is_object($item) && isset($item->ID) ? intval($item->ID) : intval($item));
+            if ( ! $file_id ) {
+                continue;
+            }
+
+            // Recupera URL diretto del file (guid dal field Pods, altrimenti attachment URL)
+            if ( is_array($item) && isset($item['guid']) ) {
+                $file_url = $item['guid'];
+                $raw_field = $item['guid'];
+            } elseif ( is_object($item) && isset($item->guid) ) {
+                $file_url = $item->guid;
+                $raw_field = $item->guid;
+            } else {
+                $file_url = wp_get_attachment_url($file_id);
+                $raw_field = $file_url;
+            }
+
+            // Link di download sicuro se disponibile
             $download_url = function_exists('toroag_get_secure_download_url') ? toroag_get_secure_download_url($file_id) : $file_url;
 
-            // Titolo del file
+            // Recupera termine lingua_aggiuntiva del file/CPT
+            $lingua_terms = wp_get_post_terms($file_id, 'lingua_aggiuntiva', ['fields' => 'slugs']);
+            $lingua_names = wp_get_post_terms($file_id, 'lingua_aggiuntiva', ['fields' => 'names']);
+            $lingua_slug = $lingua_terms[0] ?? '';
+            $lingua_name = $lingua_names[0] ?? '';
+
+            // Commenti di debug
+            $output .= '<!-- DEBUG: scheda_prodotto raw field = ' . esc_html($raw_field) . ' -->';
+            $output .= '<!-- DEBUG: lingua_aggiuntiva term = ' . esc_html($lingua_slug) . ' (' . esc_html($lingua_name) . ') -->';
+
+            // Titolo del file/CPT
             $file_title = get_the_title($file_id) ?: basename(get_attached_file($file_id));
 
             $output .= '<li><a href="' . esc_url($download_url) . '" target="_blank" rel="noopener noreferrer">' . esc_html($file_title) . '</a></li>';
         }
+
         $output .= '</ul>';
 
         return $output;
