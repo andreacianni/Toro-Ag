@@ -16,47 +16,55 @@ if (! function_exists('ta_render_documenti_prodotto_view')) {
         <div class="product-documents">
         <?php foreach ($terms_data as $term): ?>
             <?php $prod = $term['products'][0]; ?>
-            <div class="card shadow-sm mb-4">
-                <div class="card-body small">
+            <div class="row g-3">
+                <div class="col-12">
                     <?php if (!empty($prod['schede'])): ?>
-                        <div class="schede mb-3">
-                            <strong><?= esc_html__('Schede Prodotto', 'toro-ag'); ?></strong>
-                            <?php foreach ($prod['schede'] as $group): ?>
-                                <div class="lang-group d-flex flex-wrap align-items-center mb-2">
-                                    <?php if ($group['lang'] !== 'italiano' && function_exists('toroag_get_flag_html')): ?>
-                                        <span class="me-2"><?= toroag_get_flag_html($group['lang']); ?></span>
-                                    <?php endif; ?>
-                                    <?php foreach ($group['items'] as $item): ?>
-                                        <a href="<?= esc_url($item['url']); ?>" class="doc-link me-3" target="_blank" rel="noopener noreferrer">
-                                            <?php if (function_exists('toroag_get_icon_class')): ?>
-                                                <i class="bi <?= esc_attr(toroag_get_icon_class($item['url'])); ?> me-1"></i>
-                                            <?php endif; ?>
-                                            <?= esc_html($item['title']); ?>
-                                        </a>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php endforeach; ?>
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-header">
+                                <strong><?= esc_html__('Schede Prodotto', 'toro-ag'); ?></strong>
+                            </div>
+                            <div class="card-body small">
+                                <?php foreach ($prod['schede'] as $group): ?>
+                                    <div class="lang-group d-flex flex-wrap align-items-center mb-2">
+                                        <?php if ($group['lang'] !== 'italiano' && function_exists('toroag_get_flag_html')): ?>
+                                            <span class="me-2"><?= toroag_get_flag_html($group['lang']); ?></span>
+                                        <?php endif; ?>
+                                        <?php foreach ($group['items'] as $item): ?>
+                                            <a href="<?= esc_url($item['url']); ?>" class="doc-link me-3" target="_blank" rel="noopener noreferrer">
+                                                <?php if (function_exists('toroag_get_icon_class')): ?>
+                                                    <i class="bi <?= esc_attr(toroag_get_icon_class($item['url'])); ?> me-1"></i>
+                                                <?php endif; ?>
+                                                <?= esc_html($item['title']); ?>
+                                            </a>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
                         </div>
                     <?php endif; ?>
 
                     <?php if (!empty($prod['docs'])): ?>
-                        <div class="documenti">
-                            <strong><?= esc_html__('Documenti Prodotto', 'toro-ag'); ?></strong>
-                            <?php foreach ($prod['docs'] as $group): ?>
-                                <div class="lang-group d-flex flex-wrap align-items-center mb-2">
-                                    <?php if ($group['lang'] !== 'italiano' && function_exists('toroag_get_flag_html')): ?>
-                                        <span class="me-2"><?= toroag_get_flag_html($group['lang']); ?></span>
-                                    <?php endif; ?>
-                                    <?php foreach ($group['items'] as $item): ?>
-                                        <a href="<?= esc_url($item['url']); ?>" class="doc-link me-3" target="_blank" rel="noopener noreferrer">
-                                            <?php if (function_exists('toroag_get_icon_class')): ?>
-                                                <i class="bi <?= esc_attr(toroag_get_icon_class($item['url'])); ?> me-1"></i>
-                                            <?php endif; ?>
-                                            <?= esc_html($item['title']); ?>
-                                        </a>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php endforeach; ?>
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header">
+                                <strong><?= esc_html__('Documenti Prodotto', 'toro-ag'); ?></strong>
+                            </div>
+                            <div class="card-body small">
+                                <?php foreach ($prod['docs'] as $group): ?>
+                                    <div class="lang-group d-flex flex-wrap align-items-center mb-2">
+                                        <?php if ($group['lang'] !== 'italiano' && function_exists('toroag_get_flag_html')): ?>
+                                            <span class="me-2"><?= toroag_get_flag_html($group['lang']); ?></span>
+                                        <?php endif; ?>
+                                        <?php foreach ($group['items'] as $item): ?>
+                                            <a href="<?= esc_url($item['url']); ?>" class="doc-link me-3" target="_blank" rel="noopener noreferrer">
+                                                <?php if (function_exists('toroag_get_icon_class')): ?>
+                                                    <i class="bi <?= esc_attr(toroag_get_icon_class($item['url'])); ?> me-1"></i>
+                                                <?php endif; ?>
+                                                <?= esc_html($item['title']); ?>
+                                            </a>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -68,6 +76,7 @@ if (! function_exists('ta_render_documenti_prodotto_view')) {
     }
 }
 
+// Registra lo shortcode scheda_prodotto_dettaglio
 add_action('init', function() {
     add_shortcode('scheda_prodotto_dettaglio', 'ta_scheda_prodotto_dettaglio_shortcode');
 });
