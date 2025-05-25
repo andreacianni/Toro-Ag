@@ -26,7 +26,7 @@ if ( ! function_exists('ta_render_scheda_prodotto_shortcode') ) {
             return '<!-- shortcode scheda_prodotto --><!-- DEBUG: Pod prodotto non trovato per ID ' . esc_html($prod_id_current) . ' -->';
         }
 
-        // Recupera il campo scheda_prodotto (relazione file o CPT)
+        // Recupera il campo scheda_prodotto (relazione a CPT scheda_prodotto o file)
         $schede = $pod->field('scheda_prodotto');
         if ( empty($schede) ) {
             // Fallback alla lingua di default
@@ -41,39 +41,59 @@ if ( ! function_exists('ta_render_scheda_prodotto_shortcode') ) {
         $output .= '<ul class="scheda-prod-list">';
 
         foreach ( (array) $schede as $item ) {
-            // Determina ID del file o CPT collegato
-            $file_id = is_array($item) && isset($item['ID']) ? intval($item['ID']) : (is_object($item) && isset($item->ID) ? intval($item->ID) : intval($item));
-            if ( ! $file_id ) {
+            // Determina ID del CPT o attachment
+            $entry_id = is_array($item) && isset($item['ID']) ? intval($item['ID']) : (is_object($item) && isset($item->ID) ? intval($item->ID) : intval($item));
+            if ( ! $entry_id ) {
                 continue;
             }
 
-            // Recupera URL diretto del file (guid dal field Pods, altrimenti attachment URL)
-            if ( is_array($item) && isset($item['guid']) ) {
-                $file_url = $item['guid'];
-                $raw_field = $item['guid'];
-            } elseif ( is_object($item) && isset($item->guid) ) {
-                $file_url = $item->guid;
-                $raw_field = $item->guid;
-            } else {
-                $file_url = wp_get_attachment_url($file_id);
-                $raw_field = $file_url;
+            // Preparazione variabili
+            $raw_field = '';
+            $file_id = $entry_id;
+            $file_url = '';
+
+            // Se è un CPT scheda_prodotto, recupera il file PDF via Pods
+            if ( get_post_type($entry_id) === 'scheda_prodotto' ) {
+                $file_pod = pods('scheda_prodotto', $entry_id, ['lang' => $current_lang]);
+                if ( $file_pod->exists() ) {
+                    $file_field = $file_pod->field('file'); // campo file PDF
+                    if ( ! empty($file_field) && isset($file_field['guid']) ) {
+                        $file_url = $file_field['guid'];
+                        $raw_field = $file_field['guid'];
+                        $file_id = intval($file_field['ID']);
+                    }
+                }
             }
 
-            // Link di download sicuro se disponibile
+            // Se non determinato, fallback a guid diretto o allegato
+            if ( ! $file_url ) {
+                if ( is_array($item) && isset($item['guid']) ) {
+                    $file_url = $item['guid'];
+                    $raw_field = $item['guid'];
+                } elseif ( is_object($item) && isset($item->guid) ) {
+                    $file_url = $item->guid;
+                    $raw_field = $item->guid;
+                } else {
+                    $file_url = wp_get_attachment_url($file_id);
+                    $raw_field = $file_url;
+                }
+            }
+
+            // Link di download sicuro
             $download_url = function_exists('toroag_get_secure_download_url') ? toroag_get_secure_download_url($file_id) : $file_url;
 
-            // Recupera termine lingua_aggiuntiva del file/CPT
-            $lingua_terms = wp_get_post_terms($file_id, 'lingua_aggiuntiva', ['fields' => 'slugs']);
-            $lingua_names = wp_get_post_terms($file_id, 'lingua_aggiuntiva', ['fields' => 'names']);
+            // Termini lingua_aggiuntiva
+            $lingua_terms = wp_get_post_terms($entry_id, 'lingua_aggiuntiva', ['fields' => 'slugs']);
+            $lingua_names = wp_get_post_terms($entry_id, 'lingua_aggiuntiva', ['fields' => 'names']);
             $lingua_slug = $lingua_terms[0] ?? '';
             $lingua_name = $lingua_names[0] ?? '';
 
-            // Commenti di debug
+            // Debug
             $output .= '<!-- DEBUG: scheda_prodotto raw field = ' . esc_html($raw_field) . ' -->';
             $output .= '<!-- DEBUG: lingua_aggiuntiva term = ' . esc_html($lingua_slug) . ' (' . esc_html($lingua_name) . ') -->';
 
-            // Titolo del file/CPT
-            $file_title = get_the_title($file_id) ?: basename(get_attached_file($file_id));
+            // Titolo link
+            $file_title = get_the_title($entry_id) ?: basename(get_attached_file($file_id));
 
             $output .= '<li><a href="' . esc_url($download_url) . '" target="_blank" rel="noopener noreferrer">' . esc_html($file_title) . '</a></li>';
         }
