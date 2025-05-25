@@ -8,7 +8,7 @@ if ( ! function_exists('ta_render_video_prodotto_v2_shortcode') ) {
         global $post;
 
         if ( ! function_exists('pods') ) {
-            return '<!-- shortcode video_prodotto_v2 alpha 5 --><!-- DEBUG: Pods non disponibile -->';
+            return '<!-- shortcode video_prodotto_v2.0 --><!-- DEBUG: Pods non disponibile -->';
         }
 
         $current_lang = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : apply_filters('wpml_current_language', null);
@@ -17,11 +17,11 @@ if ( ! function_exists('ta_render_video_prodotto_v2_shortcode') ) {
 
         $prod_id_current = apply_filters('wpml_object_id', $post->ID, 'prodotto', true, $current_lang);
         $prod_id_current = $prod_id_current ? intval($prod_id_current) : intval($post->ID);
-        $output .= '<!-- shortcode video_prodotto_v2 alpha 5 --><!-- DEBUG: Prodotto ID lingua ' . esc_html($current_lang) . ': ' . esc_html($prod_id_current) . ' -->';
+        $output .= '<!-- shortcode video_prodotto_v2.0 --><!-- DEBUG: Prodotto ID lingua ' . esc_html($current_lang) . ': ' . esc_html($prod_id_current) . ' -->';
 
         $pod = pods('prodotto', $prod_id_current, array('lang' => $current_lang));
         if ( ! $pod->exists() ) {
-            return '<!-- shortcode video_prodotto_v2 alpha 5 --><!-- DEBUG: Pod prodotto non trovato per ID ' . esc_html($prod_id_current) . ' -->';
+            return '<!-- shortcode video_prodotto_v2.0 --><!-- DEBUG: Pod prodotto non trovato per ID ' . esc_html($prod_id_current) . ' -->';
         }
 
         $videos = $pod->field('video_prodotto');
@@ -29,7 +29,7 @@ if ( ! function_exists('ta_render_video_prodotto_v2_shortcode') ) {
             $prod_id_default = apply_filters('wpml_object_id', $post->ID, 'prodotto', true, $default_lang);
             $prod_id_default = $prod_id_default ? intval($prod_id_default) : intval($post->ID);
             $videos = array_map('intval', get_post_meta($prod_id_default, 'video_prodotto', false));
-            if ( empty($videos) ) return '<!-- shortcode video_prodotto_v2 alpha 5 --><!-- DEBUG: Nessun video -->';
+            if ( empty($videos) ) return '<!-- shortcode video_prodotto_v2.0 --><!-- DEBUG: Nessun video -->';
         }
 
         $output .= '<div class="video-card-grid row">';
