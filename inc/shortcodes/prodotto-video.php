@@ -57,4 +57,4 @@ function ta_render_video_prodotto_shortcode($atts) {
     $output .= '</div>';
     return $output;
 }
-add_shortcode('video_prodotto', 'ta_render_video_prodotto_shortcode');
+add_shortcode('video_prodotto_v2', 'ta_render_video_prodotto_shortcode');
