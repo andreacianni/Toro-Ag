@@ -23,7 +23,7 @@ if (! function_exists('ta_render_documenti_prodotto_view')) {
                             <strong><?= esc_html__('Schede Prodotto', 'toro-ag'); ?></strong>
                             <?php foreach ($prod['schede'] as $group): ?>
                                 <div class="lang-group d-flex flex-wrap align-items-center mb-2">
-                                    <?php if (function_exists('toroag_get_flag_html')): ?>
+                                    <?php if ($group['lang'] !== 'italiano' && function_exists('toroag_get_flag_html')): ?>
                                         <span class="me-2"><?= toroag_get_flag_html($group['lang']); ?></span>
                                     <?php endif; ?>
                                     <?php foreach ($group['items'] as $item): ?>
@@ -44,7 +44,7 @@ if (! function_exists('ta_render_documenti_prodotto_view')) {
                             <strong><?= esc_html__('Documenti Prodotto', 'toro-ag'); ?></strong>
                             <?php foreach ($prod['docs'] as $group): ?>
                                 <div class="lang-group d-flex flex-wrap align-items-center mb-2">
-                                    <?php if (function_exists('toroag_get_flag_html')): ?>
+                                    <?php if ($group['lang'] !== 'italiano' && function_exists('toroag_get_flag_html')): ?>
                                         <span class="me-2"><?= toroag_get_flag_html($group['lang']); ?></span>
                                     <?php endif; ?>
                                     <?php foreach ($group['items'] as $item): ?>
