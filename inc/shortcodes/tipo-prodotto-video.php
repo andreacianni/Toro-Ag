@@ -2,18 +2,21 @@
 /**
  * Shortcode: [video_tipo_prodotto_v2]
  * Recupera i video collegati via Pods (relationship pick) al campo 'tipo-video'
- * sul termine corrente di tipo_di_prodotto, con debug HTML (alpha1).
+ * sul termine corrente di tipo_di_prodotto, con debug HTML (alpha2).
  */
 function ta_render_video_tipo_prodotto_v2_shortcode( $atts ) {
-    // Debug alpha 1: funzione avviata in contesto tassonomia
-    echo '<!-- shortcode video_tipo_prodotto_v2 alpha 1: funzione avviata in contesto tassonomia -->';
+    // Debug alpha 2: funzione avviata in contesto tassonomia
+    echo '<!-- shortcode video_tipo_prodotto_v2 alpha 2: funzione avviata in contesto tassonomia -->';
 
     // Verifica contesto tassonomia tipo_di_prodotto
     $term = get_queried_object();
     if ( ! $term || ! isset( $term->term_id ) || $term->taxonomy !== 'tipo_di_prodotto' ) {
-        echo '<!-- shortcode video_tipo_prodotto_v2 alpha 1: contesto non tassonomia tipo_di_prodotto -->';
+        echo '<!-- shortcode video_tipo_prodotto_v2 alpha 2: contesto non tassonomia tipo_di_prodotto -->';
         return '';
     }
+
+    // Placeholder immagine Complianz
+    $placeholder = 'https://staging22.toro-ag.spaziodemo.xyz/wp-content/plugins/complianz-gdpr/assets/images/placeholders/default-minimal.jpg';
 
     $terms = [ $term ];
 
@@ -26,7 +29,7 @@ function ta_render_video_tipo_prodotto_v2_shortcode( $atts ) {
     $all_videos = [];
 
     foreach ( $terms as $term ) {
-        echo '<!-- shortcode video_tipo_prodotto_v2 alpha 1: elaboro termine ' . $term->term_id . ' (' . esc_html($term->slug) . ') -->';
+        echo '<!-- shortcode video_tipo_prodotto_v2 alpha 2: elaboro termine ' . $term->term_id . ' (' . esc_html($term->slug) . ') -->';
 
         // Traduzione term WPML
         $term_id_translated = apply_filters(
@@ -43,14 +46,14 @@ function ta_render_video_tipo_prodotto_v2_shortcode( $atts ) {
         // Carico il Pod del termine
         $pod_term = pods( 'tipo_di_prodotto', $term_id, ['lang' => $current_lang] );
         if ( ! $pod_term->exists() ) {
-            echo '<!-- shortcode video_tipo_prodotto_v2 alpha 1: pod termine non esiste per ID ' . $term_id . ' -->';
+            echo '<!-- shortcode video_tipo_prodotto_v2 alpha 2: pod termine non esiste per ID ' . $term_id . ' -->';
             continue;
         }
 
         // Campo Pods 'tipo-video'
         $videos = $pod_term->field( 'tipo-video' );
         if ( empty( $videos ) ) {
-            echo '<!-- shortcode video_tipo_prodotto_v2 alpha 1: nessun video in ' . $term_id . ', fallback lingua default -->';
+            echo '<!-- shortcode video_tipo_prodotto_v2 alpha 2: nessun video in ' . $term_id . ', fallback lingua default -->';
             $term_id_default = apply_filters(
                 'wpml_object_id',
                 $term->term_id,
@@ -66,7 +69,7 @@ function ta_render_video_tipo_prodotto_v2_shortcode( $atts ) {
                 get_term_meta( $term_id_default, 'tipo-video', false )
             );
         }
-        echo '<!-- shortcode video_tipo_prodotto_v2 alpha 1: video trovati per termine ' . $term->term_id . ': ' . (is_array($videos)? implode(',', array_map('intval',$videos)) : '') . ' -->';
+        echo '<!-- shortcode video_tipo_prodotto_v2 alpha 2: video trovati per termine ' . $term->term_id . ': ' . (is_array($videos)? implode(',', array_map('intval',$videos)) : '') . ' -->';
 
         foreach ( (array) $videos as $item ) {
             if ( is_array($item) && isset($item['ID']) ) {
@@ -80,17 +83,17 @@ function ta_render_video_tipo_prodotto_v2_shortcode( $atts ) {
     }
 
     $all_videos = array_unique( $all_videos );
-    echo '<!-- shortcode video_tipo_prodotto_v2 alpha 1: tutti video raccolti: ' . implode(',', $all_videos) . ' -->';
+    echo '<!-- shortcode video_tipo_prodotto_v2 alpha 2: tutti video raccolti: ' . implode(',', $all_videos) . ' -->';
     if ( empty( $all_videos ) ) {
-        echo '<!-- shortcode video_tipo_prodotto_v2 alpha 1: nessun video disponibile -->';
+        echo '<!-- shortcode video_tipo_prodotto_v2 alpha 2: nessun video disponibile -->';
         return '';
     }
 
-    echo '<!-- shortcode video_tipo_prodotto_v2 alpha 1: inizio markup griglia -->';
+    echo '<!-- shortcode video_tipo_prodotto_v2 alpha 2: inizio markup griglia -->';
     $output  = '<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">';
 
     foreach ( $all_videos as $video_id ) {
-        echo '<!-- shortcode video_tipo_prodotto_v2 alpha 1: rendering video ID ' . $video_id . ' -->';
+        echo '<!-- shortcode video_tipo_prodotto_v2 alpha 2: rendering video ID ' . $video_id . ' -->';
 
         // Traduzione video WPML
         $vid_trans = apply_filters(
@@ -104,7 +107,7 @@ function ta_render_video_tipo_prodotto_v2_shortcode( $atts ) {
 
         $video = get_post( $vid_id );
         if ( ! $video ) {
-            echo '<!-- shortcode video_tipo_prodotto_v2 alpha 1: post video non trovato per ID ' . $vid_id . ' -->';
+            echo '<!-- shortcode video_tipo_prodotto_v2 alpha 2: post video non trovato per ID ' . $vid_id . ' -->';
             continue;
         }
 
@@ -118,11 +121,11 @@ function ta_render_video_tipo_prodotto_v2_shortcode( $atts ) {
             ( $current_lang === 'it' && $first_lingua !== 'italiano' ) ||
             ( $current_lang !== 'it' && $first_lingua === 'italiano' )
         ) {
-            echo '<!-- shortcode video_tipo_prodotto_v2 alpha 1: lingua non corrispondente per video ' . $vid_id . ' -->';
+            echo '<!-- shortcode video_tipo_prodotto_v2 alpha 2: lingua non corrispondente per video ' . $vid_id . ' -->';
             continue;
         }
 
-        $video_link   = get_post_meta( $vid_id, 'video_link', true );
+        $video_link    = get_post_meta( $vid_id, 'video_link', true );
         $youtube_embed = str_replace(
             'https://youtu.be/',
             'https://www.youtube.com/embed/',
@@ -134,14 +137,18 @@ function ta_render_video_tipo_prodotto_v2_shortcode( $atts ) {
             $flag_html = toroag_get_flag_html( $first_lingua );
         }
 
+        // Markup card come [video_prodotto_v2]
         $output .= '<div class="col">';
-        $output .=   '<div class="ratio ratio-16x9">';
-        $output .=     '<iframe src="' . esc_url( $youtube_embed ) . '" '
-                   . 'title="' . esc_attr( $video->post_title ) . '" '
-                   . 'allowfullscreen></iframe>';
+        $output .=   '<div class="card h-100">';
+        $output .=     '<div class="card-video embed-responsive embed-responsive-16by9">';
+        $output .=       '<div class="fluid-width-video-wrapper" style="padding-top: 56.25%;" data-placeholder_class_index="1" data-placeholder-image="' . esc_url( $placeholder ) . '">';
+        $output .=         '<iframe data-placeholder-image="' . esc_url( $placeholder ) . '" data-category="marketing" data-service="youtube" class="cmplz-placeholder-element cmplz-video cmplz-processed cmplz-activated" data-cmplz-target="src" data-src-cmplz="' . esc_url( $youtube_embed ) . '" title="' . esc_attr( $video->post_title ) . '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+        $output .=       '</div>';
+        $output .=     '</div>';
+        $output .=     '<div class="card-body">';
+        $output .=       '<h5 class="card-title text-center py-2 mb-0"><a href="' . esc_url( $video_link ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $video->post_title ) . '</a></h5>';
+        $output .=     '</div>';
         $output .=   '</div>';
-        $output .=   '<h5 class="mt-2">' . esc_html( $video->post_title )
-                   . ' ' . $flag_html . '</h5>';
         $output .= '</div>';
     }
 
