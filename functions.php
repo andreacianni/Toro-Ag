@@ -80,6 +80,7 @@ require_once get_stylesheet_directory() . '/inc/shortcodes/documenti-download.ph
 require_once get_stylesheet_directory() . '/inc/shortcodes/hero-tipidiprodotto-colture.php';
 require_once get_stylesheet_directory() . '/inc/shortcodes/grid.php';
 require_once get_stylesheet_directory() . '/inc/shortcodes/video-card.php';
+require_once get_stylesheet_directory() . '/inc/shortcodes/prodotto-video.php';
 
 // SHORTCODE PER CARICARE UNA PAGINA PHP
 function shortcode_includi_php($atts) {
