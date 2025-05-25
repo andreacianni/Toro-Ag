@@ -1,51 +1,72 @@
 <?php
 /**
  * Shortcode: [scheda_prodotto]
- * Visualizza i link alle Schede Prodotto collegate al prodotto, con debug e bandierina lingua.
- * Usa la relazione Pods definita su scheda_prodotto nel CPT prodotto.
+ * Visualizza i link alle Schede Prodotto collegate al prodotto,
+ * con fallback WPML robusto e debug HTML.
  */
 function shortcode_scheda_prodotto( $atts ) {
     global $post;
 
-    // Debug: inizio shortcode scheda_prodotto
-    $output = "<!-- Debug [scheda_prodotto]: product ID {$post->ID} -->";
+    // Lingue correnti e default WPML
+    $current_lang = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : apply_filters('wpml_current_language', null);
+    $default_lang = apply_filters('wpml_default_language', null);
+    $output = "<!-- Debug [scheda_prodotto]: current_lang={$current_lang}, default_lang={$default_lang} -->";
 
-    // Recupera relazione dal pod del prodotto
-    $pods_prod = pods( get_post_type( $post ), $post->ID );
-    $schede = $pods_prod->field( 'scheda_prodotto' );
-
-    $count = is_array( $schede ) ? count( $schede ) : 0;
-    $output .= "<!-- Debug [scheda_prodotto]: trovato count = {$count} -->";
-
-    if ( $count === 0 ) {
-        return $output . '<p>Nessuna scheda trovata.</p>';
+    if ( ! function_exists('pods') ) {
+        return $output . "<!-- DEBUG: Pods non disponibile -->";
     }
 
-    foreach ( $schede as $item ) {
-        $scheda_id = intval( $item['ID'] );
-        $scheda_post = get_post( $scheda_id );
-        
-        // Debug per ogni scheda
-        $output .= "<!-- Debug scheda_prodotto: ID={$scheda_id} -->";
+    // Ottieni relazione pick dal prodotto
+    $pods_prod = pods( get_post_type( $post ), $post->ID );
+    $relations = $pods_prod->field( 'scheda_prodotto' );
+    $count_raw = is_array( $relations ) ? count( $relations ) : 0;
+    $output .= "<!-- Debug [scheda_prodotto]: relations raw count={$count_raw} -->";
 
-        $url   = get_permalink( $scheda_post );
-        $title = get_the_title( $scheda_post );
+    if ( empty( $relations ) || ! is_array( $relations ) ) {
+        return $output . '<p>Nessuna scheda collegata.</p>';
+    }
 
-        // Lingua aggiuntiva
-        $terms = get_the_terms( $scheda_id, 'lingue_aggiuntive' );
-        if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
-            $lang = reset( $terms );
-            $output .= "<!-- Debug lingua={$lang->slug} -->";
-            $flag_html = function_exists( 'toroag_get_flag_html' ) ? toroag_get_flag_html( $lang->slug ) : '';
-        } else {
-            $output .= "<!-- Debug lingua assente -->";
-            $flag_html = '';
+    // Prova a ottenere traduzioni nella lingua corrente
+    $translated_ids = array();
+    foreach ( $relations as $item ) {
+        $orig_id = intval( $item['ID'] );
+        $trans_id = apply_filters( 'wpml_object_id', $orig_id, 'scheda_prodotto', false, $current_lang );
+        $output .= "<!-- Debug scheda orig_id={$orig_id}, trans_id={$trans_id} -->";
+        if ( $trans_id ) {
+            $translated_ids[] = $trans_id;
         }
+    }
 
-        $output .= '<a href="' . esc_url( $url ) . '">'
-                 . esc_html( $title )
-                 . $flag_html
-                 . '</a><br />';
+    // Fallback alla lingua default se non trovate schede
+    if ( empty( $translated_ids ) && $current_lang !== $default_lang ) {
+        $output .= "<!-- Debug fallback to default_lang={$default_lang} -->";
+        foreach ( $relations as $item ) {
+            $orig_id = intval( $item['ID'] );
+            $trans_id = apply_filters( 'wpml_object_id', $orig_id, 'scheda_prodotto', false, $default_lang );
+            $output .= "<!-- Debug fallback orig_id={$orig_id}, trans_id={$trans_id} -->";
+            if ( $trans_id ) {
+                $translated_ids[] = $trans_id;
+            }
+        }
+    }
+
+    $output .= "<!-- Debug final translated count=" . count( $translated_ids ) . " -->";
+
+    if ( empty( $translated_ids ) ) {
+        return $output . '<p>Nessuna scheda nella lingua selezionata.</p>';
+    }
+
+    // Costruisci output
+    foreach ( $translated_ids as $scheda_id ) {
+        $post_obj = get_post( $scheda_id );
+        $url   = get_permalink( $post_obj );
+        $title = get_the_title( $post_obj );
+        $output .= "<!-- Debug scheda output ID={$scheda_id} -->";
+
+        // Bandierina lingua corrente
+        $flag_html = function_exists( 'toroag_get_flag_html' ) ? toroag_get_flag_html( $current_lang ) : '';
+
+        $output .= '<a href="' . esc_url( $url ) . '">' . esc_html( $title ) . ' ' . $flag_html . '</a><br />';
     }
 
     return $output;
@@ -55,50 +76,72 @@ add_shortcode( 'scheda_prodotto', 'shortcode_scheda_prodotto' );
 
 /**
  * Shortcode: [documento_prodotto]
- * Visualizza i link ai Documenti Prodotto collegati al prodotto, con debug e bandierina lingua.
- * Usa la relazione Pods definita su documenti_prodotto nel CPT prodotto.
+ * Visualizza i link ai Documenti Prodotto collegati al prodotto,
+ * con fallback WPML robusto e debug HTML.
  */
 function shortcode_documento_prodotto( $atts ) {
     global $post;
 
-    // Debug: inizio shortcode documento_prodotto
-    $output = "<!-- Debug [documento_prodotto]: product ID {$post->ID} -->";
+    // Lingue correnti e default WPML
+    $current_lang = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : apply_filters('wpml_current_language', null);
+    $default_lang = apply_filters('wpml_default_language', null);
+    $output = "<!-- Debug [documento_prodotto]: current_lang={$current_lang}, default_lang={$default_lang} -->";
 
-    $pods_prod = pods( get_post_type( $post ), $post->ID );
-    $docs = $pods_prod->field( 'documenti_prodotto' );
-
-    $count = is_array( $docs ) ? count( $docs ) : 0;
-    $output .= "<!-- Debug [documento_prodotto]: trovato count = {$count} -->";
-
-    if ( $count === 0 ) {
-        return $output . '<p>Nessun documento trovato.</p>';
+    if ( ! function_exists('pods') ) {
+        return $output . "<!-- DEBUG: Pods non disponibile -->";
     }
 
-    foreach ( $docs as $item ) {
-        $doc_id = intval( $item['ID'] );
-        
-        // Debug per ogni documento
-        $output .= "<!-- Debug documento_prodotto: ID={$doc_id} -->";
+    // Ottieni relazione pick dal prodotto
+    $pods_prod = pods( get_post_type( $post ), $post->ID );
+    $relations = $pods_prod->field( 'documenti_prodotto' );
+    $count_raw = is_array( $relations ) ? count( $relations ) : 0;
+    $output .= "<!-- Debug [documento_prodotto]: relations raw count={$count_raw} -->";
 
-        $doc_post = get_post( $doc_id );
-        $url   = get_permalink( $doc_post );
-        $title = get_the_title( $doc_post );
+    if ( empty( $relations ) || ! is_array( $relations ) ) {
+        return $output . '<p>Nessun documento collegato.</p>';
+    }
 
-        // Lingua aggiuntiva
-        $terms = get_the_terms( $doc_id, 'lingue_aggiuntive' );
-        if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
-            $lang = reset( $terms );
-            $output .= "<!-- Debug lingua={$lang->slug} -->";
-            $flag_html = function_exists( 'toroag_get_flag_html' ) ? toroag_get_flag_html( $lang->slug ) : '';
-        } else {
-            $output .= "<!-- Debug lingua assente -->";
-            $flag_html = '';
+    // Prova a ottenere traduzioni nella lingua corrente
+    $translated_ids = array();
+    foreach ( $relations as $item ) {
+        $orig_id = intval( $item['ID'] );
+        $trans_id = apply_filters( 'wpml_object_id', $orig_id, 'documenti_prodotto', false, $current_lang );
+        $output .= "<!-- Debug doc orig_id={$orig_id}, trans_id={$trans_id} -->";
+        if ( $trans_id ) {
+            $translated_ids[] = $trans_id;
         }
+    }
 
-        $output .= '<a href="' . esc_url( $url ) . '">'
-                 . esc_html( $title )
-                 . $flag_html
-                 . '</a><br />';
+    // Fallback alla lingua default se non trovati documenti
+    if ( empty( $translated_ids ) && $current_lang !== $default_lang ) {
+        $output .= "<!-- Debug fallback to default_lang={$default_lang} -->";
+        foreach ( $relations as $item ) {
+            $orig_id = intval( $item['ID'] );
+            $trans_id = apply_filters( 'wpml_object_id', $orig_id, 'documenti_prodotto', false, $default_lang );
+            $output .= "<!-- Debug fallback doc orig_id={$orig_id}, trans_id={$trans_id} -->";
+            if ( $trans_id ) {
+                $translated_ids[] = $trans_id;
+            }
+        }
+    }
+
+    $output .= "<!-- Debug final translated count=" . count( $translated_ids ) . " -->";
+
+    if ( empty( $translated_ids ) ) {
+        return $output . '<p>Nessun documento nella lingua selezionata.</p>';
+    }
+
+    // Costruisci output
+    foreach ( $translated_ids as $doc_id ) {
+        $post_obj = get_post( $doc_id );
+        $url   = get_permalink( $post_obj );
+        $title = get_the_title( $post_obj );
+        $output .= "<!-- Debug documento output ID={$doc_id} -->";
+
+        // Bandierina lingua corrente
+        $flag_html = function_exists( 'toroag_get_flag_html' ) ? toroag_get_flag_html( $current_lang ) : '';
+
+        $output .= '<a href="' . esc_url( $url ) . '">' . esc_html( $title ) . ' ' . $flag_html . '</a><br />';
     }
 
     return $output;
