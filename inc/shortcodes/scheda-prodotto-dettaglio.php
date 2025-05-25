@@ -112,13 +112,20 @@ if (! function_exists('ta_scheda_prodotto_dettaglio_shortcode') ) {
             : apply_filters('wpml_current_language', null);
 
         // Raccoglie file da meta key Pods, filtra per lingua e ordina
-        $collect = function($meta_key, $file_meta_key) use ($lang) {
+        $default_lang = apply_filters('wpml_default_language', null);
+        $collect = function($meta_key, $file_meta_key) use ($lang, $default_lang) {
             $order = ['italiano'=>0, 'inglese'=>1, 'francese'=>2, 'spagnolo'=>3];
-            // Ottieni relazione Pods
+            // Ottieni relazione Pods con fallback lingua di default (CPT unici)
             if (! function_exists('pods')) {
                 return [];
             }
-            $prod_pod = pods('prodotto', get_the_ID());
+            // prova con lingua corrente
+            $params = ['lang' => $lang];
+            $prod_pod = pods('prodotto', get_the_ID(), $params);
+            if (! $prod_pod->exists() || empty($prod_pod->field($meta_key))) {
+                // fallback default lang
+                $prod_pod = pods('prodotto', get_the_ID(), ['lang' => $default_lang]);
+            }
             if (! $prod_pod->exists()) {
                 return [];
             }
