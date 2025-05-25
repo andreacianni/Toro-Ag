@@ -1,16 +1,17 @@
 <?php
 /**
- * Shortcode per mostrare la scheda prodotto e i documenti nel dettaglio di un singolo prodotto
- * Basato su elenco_prodotti_con_dettagli, adattato al contesto single product
+ * Shortcode per mostrare la scheda e i documenti nel dettaglio di un singolo prodotto,
+ * riutilizzando la view `documenti-download` di elenco_prodotti_con_dettagli per l'HTML.
  * Uso: [scheda_prodotto_dettaglio]
  */
 add_action('init', function() {
     add_shortcode('scheda_prodotto_dettaglio', 'ta_scheda_prodotto_dettaglio_shortcode');
 });
 
-if (!function_exists('ta_scheda_prodotto_dettaglio_shortcode')) {
+if (! function_exists('ta_scheda_prodotto_dettaglio_shortcode') ) {
     function ta_scheda_prodotto_dettaglio_shortcode($atts) {
         global $post;
+        // Solo su single prodotto
         if (!$post || get_post_type($post) !== 'prodotto') {
             return '<!-- shortcode scheda_prodotto_dettaglio --><!-- DEBUG: contesto non prodotto -->';
         }
@@ -20,13 +21,13 @@ if (!function_exists('ta_scheda_prodotto_dettaglio_shortcode')) {
             ? ICL_LANGUAGE_CODE
             : apply_filters('wpml_current_language', null);
 
-        // Helper: raccoglie file da un meta key, filtra per lingua e ordina
-        $collect_files = function($meta_key, $file_meta_key) use ($lang) {
-            $lang_order = ['italiano'=>0, 'inglese'=>1, 'francese'=>2, 'spagnolo'=>3];
-            $items = [];
+        // Helper: raccoglie file da meta key, filtra per lingua e ordina
+        $collect = function($meta_key, $file_meta_key) use ($lang) {
+            $order = ['italiano'=>0, 'inglese'=>1, 'francese'=>2, 'spagnolo'=>3];
+            $out = [];
             foreach ((array) get_post_meta(get_the_ID(), $meta_key, false) as $did) {
-                $term = wp_get_post_terms($did, 'lingua_aggiuntiva', ['fields'=>'slugs']);
-                $slug = !empty($term) ? $term[0] : 'altre';
+                $slug = wp_get_post_terms($did, 'lingua_aggiuntiva', ['fields'=>'slugs'])[0] ?? 'altre';
+                // visibilità
                 if (($lang === 'it' && $slug !== 'italiano') || ($lang !== 'it' && $slug === 'italiano')) {
                     continue;
                 }
@@ -34,56 +35,39 @@ if (!function_exists('ta_scheda_prodotto_dettaglio_shortcode')) {
                 if (!$fid) continue;
                 $url = wp_get_attachment_url($fid);
                 if (!$url) continue;
-                $items[] = [
-                    'title' => get_the_title($did),
-                    'url'   => $url,
-                    'lang'  => $slug,
-                    'prio'  => $lang_order[$slug] ?? 99
+                $out[] = [
+                    'title'=> get_the_title($did),
+                    'url'  => $url,
+                    'lang' => $slug,
+                    'prio' => $order[$slug] ?? 99,
                 ];
             }
-            usort($items, function($a, $b) {
-                return $a['prio'] <=> $b['prio'];
-            });
-            return $items;
+            usort($out, function($a,$b){ return $a['prio'] <=> $b['prio']; });
+            return $out;
         };
 
-        // Raccogli schede prodotto e documenti
-        $schede = $collect_files('scheda_prodotto', 'scheda-prodotto');
-        $docs   = $collect_files('documento_prodotto', 'documento-prodotto');
+        // Prepara dati per la view
+        $schede = $collect('scheda_prodotto','scheda-prodotto');
+        $docs   = $collect('documento_prodotto','documento-prodotto');
 
         if (empty($schede) && empty($docs)) {
             return '<!-- shortcode scheda_prodotto_dettaglio --><!-- DEBUG: Nessuna scheda o documento disponibile -->';
         }
 
-        // Genera output HTML
-        $html = '<div class="product-documents">';
+        // Struttura identica a elenco_prodotti_con_dettagli
+        $terms_data = [ [
+            'term_name'=> get_the_title($post),
+            'products' => [ [
+                'title'=> get_the_title($post),
+                'schede'=> $schede,
+                'docs'  => $docs,
+            ] ],
+        ] ];
 
-        if (!empty($schede)) {
-            $html .= '<h4>' . esc_html__('Schede Prodotto', 'toro-ag') . '</h4>';
-            $html .= '<ul class="scheda-prod-list">';
-            foreach ($schede as $item) {
-                $html .= sprintf(
-                    '<li><a href="%s" target="_blank" rel="noopener noreferrer">%s</a></li>',
-                    esc_url($item['url']), esc_html($item['title'])
-                );
-            }
-            $html .= '</ul>';
-        }
-
-        if (!empty($docs)) {
-            $html .= '<h4>' . esc_html__('Documenti Prodotto', 'toro-ag') . '</h4>';
-            $html .= '<ul class="docs-prod-list">';
-            foreach ($docs as $item) {
-                $html .= sprintf(
-                    '<li><a href="%s" target="_blank" rel="noopener noreferrer">%s</a></li>',
-                    esc_url($item['url']), esc_html($item['title'])
-                );
-            }
-            $html .= '</ul>';
-        }
-
-        $html .= '</div>';
-
-        return $html;
+        // Renderizza la view esistente (layout grid di default)
+        return toroag_load_view('documenti-download', [
+            'terms_data'=> $terms_data,
+            'layout'    => 'grid',
+        ]);
     }
 }
