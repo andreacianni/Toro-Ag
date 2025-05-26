@@ -28,7 +28,7 @@ if (! function_exists('ta_render_documenti_prodotto_view')) {
                             </div>
                             <div class="card-body small">
                                 <?php foreach ($prod['schede'] as $group): ?>
-                                    <div class="row align-items-start mb-2">
+                                    <div class="row align-items-center mb-2">
                                         <div class="col-auto">
                                             <?php if ($group['lang'] !== 'italiano' && function_exists('toroag_get_flag_html')): ?>
                                                 <?= toroag_get_flag_html($group['lang']); ?>
@@ -57,7 +57,7 @@ if (! function_exists('ta_render_documenti_prodotto_view')) {
                             </div>
                             <div class="card-body small">
                                 <?php foreach ($prod['docs'] as $group): ?>
-                                    <div class="row align-items-start mb-2">
+                                    <div class="row align-items-center mb-2">
                                         <div class="col-auto">
                                             <?php if ($group['lang'] !== 'italiano' && function_exists('toroag_get_flag_html')): ?>
                                                 <?= toroag_get_flag_html($group['lang']); ?>
