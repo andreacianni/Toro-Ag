@@ -28,7 +28,7 @@ $img_field = get_query_var('toro_ag_grid_image_field','featured');
             if ($link) echo "</a>";
             ?>
             <?php if ($link) echo "<a href='" . esc_url($link) . "'>"; ?>
-                <h4><?php echo esc_html($title); ?></h4>
+                <h4 class="pb-0" ><?php echo esc_html($title); ?></h4>
             <?php if ($link) echo "</a>"; ?>
         </div>
     <?php endforeach; ?>
