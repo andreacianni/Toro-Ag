@@ -11,7 +11,6 @@ $img_field = get_query_var('toro_ag_grid_image_field','featured');
 <div class="toro-grid <?php echo esc_attr( get_query_var('toro_ag_grid_wrapper_class','') ); ?>">
     <?php foreach ($items as $item) : ?>
         <div class="toro-grid__item">
-    <!-- inc/views/shortcode-grid.php -->
             <?php
             if (is_a($item,'WP_Term')) {
                 $img_id = get_term_meta($item->term_id, $img_field, true);
@@ -24,8 +23,8 @@ $img_field = get_query_var('toro_ag_grid_image_field','featured');
                 $title  = get_the_title($item);
                 $link   = get_permalink($item);
             }
-            if ($link) echo "<a href='" . esc_url($link) . "'>";
-            echo wp_get_attachment_image($img_id,'medium');
+            if ($link) echo "<a class=\"d-block w-100\" href='" . esc_url($link) . "'>";
+            echo wp_get_attachment_image($img_id,'medium', false,['class' => 'd-block w-100 img-fluid', 'alt' => esc_attr($title)]);
             if ($link) echo "</a>";
             ?>
             <?php if ($link) echo "<a href='" . esc_url($link) . "'>"; ?>
