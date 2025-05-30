@@ -2,9 +2,16 @@
 $items     = get_query_var('toro_ag_grid_items', []);
 $img_field = get_query_var('toro_ag_grid_image_field','featured');
 ?>
+
+
+<?php if ( is_singular('prodotto') ) : // solo in singolo prodotto ?>
+  <h5 class="text-bg-dark px-3 py-2 my-4 rounded-2">Applicazioni</h5>
+<?php endif; ?>
+
 <div class="toro-grid <?php echo esc_attr( get_query_var('toro_ag_grid_wrapper_class','') ); ?>">
     <?php foreach ($items as $item) : ?>
         <div class="toro-grid__item">
+    <!-- inc/views/shortcode-grid.php -->
             <?php
             if (is_a($item,'WP_Term')) {
                 $img_id = get_term_meta($item->term_id, $img_field, true);
