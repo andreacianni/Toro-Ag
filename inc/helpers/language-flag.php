@@ -28,7 +28,7 @@ if ( ! function_exists( 'toroag_get_flag_html' ) ) {
             'portoghese'=> 'pt',
             'arabo'    => 'ar',
             'polacco'    => 'pl',
-            'Svedese'    => 'sv',// aggiungi qui altre mappature se serve
+            'svedese'    => 'sv',// aggiungi qui altre mappature se serve
         ];
 
         if ( empty( $map[ $lang_slug ] ) ) {
