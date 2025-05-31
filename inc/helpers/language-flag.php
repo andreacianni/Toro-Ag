@@ -26,9 +26,10 @@ if ( ! function_exists( 'toroag_get_flag_html' ) ) {
             'spagnolo'  => 'es',
             'tedesco'   => 'de',
             'portoghese'=> 'pt',
-            'arabo'    => 'ar',
-            'polacco'    => 'pl',
-            'svedese'    => 'sv',// aggiungi qui altre mappature se serve
+            'arabo'     => 'ar',
+            'polacco'   => 'pl',
+            'svedese'   => 'sv',
+            'afrikaans' => 'af',// aggiungi qui altre mappature se serve
         ];
 
         if ( empty( $map[ $lang_slug ] ) ) {
