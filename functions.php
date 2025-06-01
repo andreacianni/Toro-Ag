@@ -190,3 +190,24 @@ function aggiungi_sottomenu_scheda() {
         'post-new.php?post_type=scheda_prodotto'
     );
 }
+
+/**
+ * Converte i simboli ™ e ® in superscript, evitando che l’utente veda il glifo “®” posizionato male.
+ */
+function toro_ag_trademarks_to_superscript( $text ) {
+    // Prima trasformiamo ™, poi ®
+    $text = str_replace( '™', '<sup>™</sup>', $text );
+    $text = str_replace( '®', '<sup>®</sup>', $text );
+    return $text;
+}
+
+// Applichiamo il filtro al titolo e al contenuto standard di WP
+add_filter( 'the_title', 'toro_ag_trademarks_to_superscript' );
+add_filter( 'the_content', 'toro_ag_trademarks_to_superscript' );
+
+// Se usate Pods per campi personalizzati, includiamo anche quelli
+add_filter( 'pods_content', 'toro_ag_trademarks_to_superscript', 10, 2 );
+add_filter( 'pods_title',   'toro_ag_trademarks_to_superscript', 10, 2 );
+
+// Infine, se qualche modulo Divi sfugge ai filtri normali, lo convertiamo anche qui
+add_filter( 'et_pb_render_content', 'toro_ag_trademarks_to_superscript', 999 );
