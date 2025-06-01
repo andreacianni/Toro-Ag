@@ -200,7 +200,7 @@ sup.r {
 @media (max-width: 767px) {
   sup.tm,
   sup.r {
-    font-size: 0.55em !important;
-    top: -0.28em !important;
+    font-size: 0.6em !important;
+    top: -0.7em !important;
   }
 }/*# sourceMappingURL=style.css.map */
