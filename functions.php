@@ -173,7 +173,7 @@ function toro_ag_divi_breadcrumb_shortcode() {
 
         // Mappa slug pagina archivio per ciascuna tassonomia
         $map = array(
-            'tipo_di_prodotto' => 'tipi-di-prodotto',
+            'tipo_di_prodotto' => 'prodotti',
             'coltura'          => 'applicazioni',
         );
 
