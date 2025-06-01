@@ -203,4 +203,11 @@ sup.r {
     font-size: 0.6em !important;
     top: -0.7em !important;
   }
-}/*# sourceMappingURL=style.css.map */
+}
+/*
+sup.tm,
+sup.r {
+  // padding-left: 0.05em;
+  // padding-right: 0.05em;
+}
+*//*# sourceMappingURL=style.css.map */
