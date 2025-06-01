@@ -110,6 +110,19 @@ function toro_ag_trademarks_shortcodes_wrapper( $output, $tag, $attr, $m ) {
 }
 add_filter( 'do_shortcode_tag', 'toro_ag_trademarks_shortcodes_wrapper', 10, 4 );
 
+function toro_ag_enqueue_sup_classes_script() {
+  // Registra ed enqueue del nostro JS
+  wp_enqueue_script(
+    'toro-ag-sup-classes',
+    get_stylesheet_directory_uri() . '/assets/js/sup-classes.js',
+    [],       // dipendenze (vuoto perché usiamo solo Vanilla JS)
+    null,     // versione (null per non forzare versioni)
+    true      // mettiamo lo script nel footer
+  );
+}
+add_action( 'wp_enqueue_scripts', 'toro_ag_enqueue_sup_classes_script' );
+
+
 // SHORTCODE PER CARICARE UNA PAGINA PHP
 function shortcode_includi_php($atts) {
     $atts = shortcode_atts(array(
