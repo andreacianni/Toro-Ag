@@ -1,7 +1,8 @@
 <?php
 /**
- * Converte i simboli ™ e ® in superscript,
- * aggiungendo classi distinte quando <sup> esiste già o wrappa una volta se non esiste.
+ * Converte i simboli ™ e ® in superscript.
+ * Prima rimuove ogni possibile <sup>…</sup> già esistente (anche se è "escapato"),
+ * poi wrappa una sola volta ciascun simbolo in <sup>…</sup>.
  */
 function toro_ag_trademarks_to_superscript( $text ) {
     if ( empty( $text ) ) {
@@ -11,42 +12,22 @@ function toro_ag_trademarks_to_superscript( $text ) {
     // 1) Rimuove eventuali tag “HTML-escaped”:
     //    &lt;sup&gt;™&lt;/sup&gt; oppure &lt;sup&gt;®&lt;/sup&gt;
     $text = preg_replace(
-        '#(?:&lt;sup&gt;)+(™|®)(?:&lt;/sup&gt;)+#u',
-        '$1',
+        '#&lt;sup&gt;(™|®)&lt;/sup&gt;#u', 
+        '$1', 
         $text
     );
 
-    // 2) Aggiunge la classe se <sup>™</sup> o <sup>®</sup> esistono già (senza classe)
-    $text = preg_replace_callback(
-        '#<sup>(™)</sup>#u',
-        function( $matches ) {
-            return '<sup class="tm">' . $matches[1] . '</sup>';  
-        },
-        $text
-    );
-    $text = preg_replace_callback(
-        '#<sup>(®)</sup>#u',
-        function( $matches ) {
-            return '<sup class="r">' . $matches[1] . '</sup>';  
-        },
-        $text
-    );
-
-    // 3) Rimuove eventuali <sup class="tm">™</sup> o <sup class="r">®</sup> nidificati
+    // 2) Rimuove eventuali tag <sup>™</sup> o <sup>®</sup> già "veri":
     $text = preg_replace(
-        '#<sup class="tm">(™)</sup>#u',
-        '$1',
-        $text
-    );
-    $text = preg_replace(
-        '#<sup class="r">(®)</sup>#u',
-        '$1',
+        '#<sup>(™|®)</sup>#u', 
+        '$1', 
         $text
     );
 
-    // 4) Wrappa una sola volta ciascun simbolo che non è stato wrappato
-    $text = str_replace( '™', '<sup class="tm">™</sup>', $text );
-    $text = str_replace( '®', '<sup class="r">®</sup>', $text );
+    // 3) Ora che non ci sono più sup-wrap duplicati (neanche escapati),
+    //    wrappa TM prima e poi REG:
+    $text = str_replace( '™', '<sup>™</sup>', $text );
+    $text = str_replace( '®', '<sup>®</sup>', $text );
 
     return $text;
 }
