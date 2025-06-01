@@ -161,7 +161,7 @@ html:lang(it-IT) .documenti-download-table td.lingua-italiano {
   line-height: 1.2;
 }
 
-sup.sup {
+sup {
   bottom: auto !important;
   vertical-align: baseline !important;
   line-height: 1 !important;
@@ -170,8 +170,8 @@ sup.sup {
   display: inline-block !important;
 }
 
-sup.sup.tm,
-sup.sup.r {
+sup.tm,
+sup.r {
   font-size: 0.6em !important;
   line-height: 1 !important;
   top: -0.3em !important;
@@ -179,8 +179,8 @@ sup.sup.r {
 }
 
 @media (max-width: 767px) {
-  sup.sup.tm,
-  sup.sup.r {
+  sup.tm,
+  sup.r {
     font-size: 0.55em !important;
     top: -0.28em !important;
   }
