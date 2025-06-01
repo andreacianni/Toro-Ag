@@ -191,44 +191,61 @@ function aggiungi_sottomenu_scheda() {
     );
 }
 
+
 /**
  * Converte i simboli ™ e ® in superscript.
- * Prima “riporta a testo normale” eventuali <sup>™</sup> e <sup>®</sup> già presenti,
- * poi aggiunge un unico wrapping <sup>…</sup> su tutti i simboli trovati.
+ * Prima rimuove ogni possibile <sup>…</sup> già esistente (anche se è "escapato"),
+ * poi wrappa una sola volta ciascun simbolo in <sup>…</sup>.
  */
 function toro_ag_trademarks_to_superscript( $text ) {
     if ( empty( $text ) ) {
         return $text;
     }
 
-    // 1) Rimuove qualsiasi <sup>™</sup> o <sup>®</sup> già esistente
-    //    in modo da non creare incapsulamenti multipli.
-    //    Usiamo una regex che cerca <sup>™</sup> oppure <sup>®</sup> e riporta solo il carattere
-    $text = preg_replace( '#<sup>(™|®)</sup>#', '$1', $text );
+    // 1) Rimuove eventuali tag “HTML-escaped”:
+    //    &lt;sup&gt;™&lt;/sup&gt; oppure &lt;sup&gt;®&lt;/sup&gt;
+    $text = preg_replace(
+        '#&lt;sup&gt;(™|®)&lt;/sup&gt;#u', 
+        '$1', 
+        $text
+    );
 
-    // 2) Ora che abbiamo un testo “pulito” da eventuali <sup>™, <sup>®</sup>,
-    //    applichiamo il wrapping correttamente, una sola volta.
-    //    Notare che è importante prima TM e poi REG, per non sovrascrivere un TM appena creato.
+    // 2) Rimuove eventuali tag <sup>™</sup> o <sup>®</sup> già "veri":
+    $text = preg_replace(
+        '#<sup>(™|®)</sup>#u', 
+        '$1', 
+        $text
+    );
+
+    // 3) Ora che non ci sono più sup-wrap duplicati (neanche escapati),
+    //    wrappa TM prima e poi REG:
     $text = str_replace( '™', '<sup>™</sup>', $text );
     $text = str_replace( '®', '<sup>®</sup>', $text );
 
     return $text;
 }
 
-// Applichiamo il filtro al titolo e al contenuto standard di WP
-add_filter( 'the_title', 'toro_ag_trademarks_to_superscript' );
+// Applichiamo il filtro ai titoli e ai contenuti “normali” di WP
+add_filter( 'the_title',   'toro_ag_trademarks_to_superscript' );
 add_filter( 'the_content', 'toro_ag_trademarks_to_superscript' );
 
-// Se usate Pods per campi personalizzati, includiamo anche quelli
+// Se usi Pods, intercetta anche i Custom Field
 add_filter( 'pods_content', 'toro_ag_trademarks_to_superscript', 10, 2 );
 add_filter( 'pods_title',   'toro_ag_trademarks_to_superscript', 10, 2 );
 
-// Se qualche modulo Divi sfugge ai filtri normali, lo convertiamo anche qui
+// Se Divi “salta” the_content, intercetta anche qui
 add_filter( 'et_pb_render_content', 'toro_ag_trademarks_to_superscript', 999 );
 
 /**
- * Wrapper generico per applicare il filtro anche all'output di QUALSIASI shortcode.
- * Il filtro `do_shortcode_tag` cattura l'HTML restituito da ciascun shortcode.
+ * Wrapper generico per catturare TUTTI gli shortcode:
+ * così l'output di qualsiasi [tuo_shortcode] viene prima “ripulito” dagli sup duplicati
+ * (anche quelli escapati) e poi wrappato correttamente.
+ *
+ * do_shortcode_tag riceve in ingresso:
+ *   - $output = HTML finale dello shortcode
+ *   - $tag    = nome del tag (es. "documenti", "video_card", ecc.)
+ *   - $attr   = array degli attributi
+ *   - $m      = array dei regex‐match originali (non ci serve qui)
  */
 function toro_ag_trademarks_shortcodes_wrapper( $output, $tag, $attr, $m ) {
     return toro_ag_trademarks_to_superscript( $output );
