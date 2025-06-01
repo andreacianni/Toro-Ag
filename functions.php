@@ -191,7 +191,7 @@ function aggiungi_sottomenu_scheda() {
     );
 }
 
-
+/* PIPPO */
 /**
  * Converte i simboli ™ e ® in superscript.
  * Prima rimuove ogni possibile <sup>…</sup> già esistente (anche se è "escapato"),
@@ -219,8 +219,8 @@ function toro_ag_trademarks_to_superscript( $text ) {
 
     // 3) Ora che non ci sono più sup-wrap duplicati (neanche escapati),
     //    wrappa TM prima e poi REG:
-    $text = str_replace( '™', '<sup>™</sup>', $text );
-    $text = str_replace( '®', '<sup>®</sup>', $text );
+    $text = str_replace( '™', '<sup>™</sup>', $text ); //ok
+    $text = str_replace( '®', '<sup>®</sup>', $text ); //ok
 
     return $text;
 }
