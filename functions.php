@@ -238,6 +238,32 @@ function toro_ag_prodotto_permalink( $post_link, $post ) {
 }
 add_filter( 'post_type_link', 'toro_ag_prodotto_permalink', 10, 2 );
 
+// 1) (Opzionale, se Pods non l’ha già registrata)  
+add_action( 'init', function() {
+    add_rewrite_tag( '%tipo_di_prodotto%', '([^/]+)', 'tipo_di_prodotto=' );
+}, 5 );
+
+// 2) Filtro per sostituire il placeholder con il vero slug
+add_filter( 'post_type_link', function( $post_link, $post ) {
+    if ( $post->post_type !== 'prodotto' ) {
+        return $post_link;
+    }
+    $terms = wp_get_post_terms( $post->ID, 'tipo_di_prodotto' );
+    if ( is_wp_error( $terms ) || empty( $terms ) ) {
+        return str_replace( '%tipo_di_prodotto%', 'nessuna-categoria', $post_link );
+    }
+    return str_replace( '%tipo_di_prodotto%', $terms[0]->slug, $post_link );
+}, 10, 2 );
+
+// 3) (Se dopo il flush continua a mancare) Aggiungi la regola manuale di rewrite
+add_action( 'init', function() {
+    add_rewrite_rule(
+        '^prodotti/([^/]+)/([^/]+)/?$',
+        'index.php?post_type=prodotto&tipo_di_prodotto=$matches[1]&name=$matches[2]',
+        'top'
+    );
+}, 10 );
+
 
 
 // Aggiunge "Aggiungi Brochure" sotto la voce "Colture"
