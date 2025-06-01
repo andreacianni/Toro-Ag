@@ -96,6 +96,7 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
                         'schede'=>$schede,
                         'docs'=>$docs,
                     ];
+                    echo "\n<!-- DEBUG shortcode: titolo prodotto (ID {$pid}) = " . esc_html( get_the_title($pid) ) . " -->\n";
                 }
                 wp_reset_postdata();
             }
@@ -106,8 +107,8 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
             ];
         }
 
-        echo "\n<!-- DEBUG shortcode: \$prod['title'] = " . esc_html( $prod['title'] ) . " -->\n";
-        
+        // echo "\n<!-- DEBUG shortcode: \$prod['title'] = " . esc_html( $prod['title'] ) . " -->\n";
+
         return toroag_load_view( 'documenti-download', [
             'terms_data'=>$terms_data,
             'layout'=>$atts['layout'],
