@@ -45,6 +45,9 @@ $terms_data = array_slice( $terms_data, 0, 2 );
             <div class="card-header">
               <p class="card-title mb-0">
                 <a href="<?= esc_url( get_permalink( get_page_by_title( $prod['title'], OBJECT, 'prodotto' )->ID ) ) ?>" class="prod-link">
+                  <?php
+                  echo "\n<!-- DEBUG view: permalink via ID {$prod['ID']} = " . esc_url( get_permalink( $prod['ID'] ) ) . " -->\n";
+                  ?>
                   <?= esc_html($prod['title']) ?>
                 </a>
               </p>
