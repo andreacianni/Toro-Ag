@@ -92,11 +92,13 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
                     }
 
                     $products[] = [
-                        'title'=>get_the_title($pid),
-                        'schede'=>$schede,
-                        'docs'=>$docs,
+                        'ID'     => $pid,
+                        'title'  =>get_the_title($pid),
+                        'schede' =>$schede,
+                        'docs'   =>$docs,
                     ];
-                    echo "\n<!-- DEBUG shortcode: titolo prodotto (ID {$pid}) = " . esc_html( get_the_title($pid) ) . " -->\n";
+                    echo "\n<!-- DEBUG shortcode: slug prodotto (ID {$pid}) = ". esc_html( get_post_field( 'post_name', $pid, true ) ). " -->\n";
+
                 }
                 wp_reset_postdata();
             }
