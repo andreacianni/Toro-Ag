@@ -169,15 +169,34 @@ sup {
   position: relative !important;
   display: inline-block !important;
 }
-
-sup.tm,
-sup.r {
+sup.tm {
   font-size: 0.6em !important;
-  line-height: 1 !important;
   top: -0.3em !important;
-  bottom: auto !important;
+}
+sup.r {
+  font-size: 0.8em !important;
+  top: -0.6em !important;
 }
 
+/*
+sup.tm,
+sup.r {
+  // 0.6em è un valore di partenza: corrisponde circa al 60% del font parent
+  // Modificalo se vuoi un simbolo più grande/piccolo.
+  font-size: 0.6em !important;
+
+  // Mantieni line-height a 1 per evitare “tagli” strani su diverse righe
+  line-height: 1 !important;
+
+  // Solleva il simbolo di 0.3em: sperimenta valori come -0.25em, -0.35em se non
+  // combacia perfettamente con la baseline di Verdana™. Deve essere lo stesso
+  // spostamento per TM e ®.
+  top: -0.3em !important;
+
+  // Si assicura che non vi siano bottom ereditati
+  bottom: auto !important;
+}
+*/
 @media (max-width: 767px) {
   sup.tm,
   sup.r {

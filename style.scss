@@ -210,24 +210,26 @@ html:lang(it-IT) .documenti-download-table{
 // 1. Reset generale per <sup> con classe .sup
 // ============================
 sup {
-  // Rimuove bottom impostato in precedenza (Bootstrap/Divi)
   bottom: auto !important;
-
-  // Rimuove eventuali vertical-align/line-height/font-size predefiniti
   vertical-align: baseline !important;
   line-height: 1 !important;
   font-size: inherit !important;
-
-  // Azzera eventuali position impostate
   position: relative !important;
-
-  // Permette di usare top: per sollevare il simbolo
   display: inline-block !important;
+  &.tm{
+    font-size: 0.6em !important;
+    top: -0.3em !important;
+  }
+  &.r{
+    font-size: 0.8em !important;
+    top: -0.6em !important;
+  }
 }
 
 // ============================
 // 2. Definizione di TM e ® con stili identici
 // ============================
+/*
 sup.tm,
 sup.r {
   // 0.6em è un valore di partenza: corrisponde circa al 60% del font parent
@@ -245,7 +247,7 @@ sup.r {
   // Si assicura che non vi siano bottom ereditati
   bottom: auto !important;
 }
-
+*/
 // ============================
 // 3. (Opzionale) Media query per schermi piccoli
 // ============================
