@@ -159,4 +159,29 @@ html:lang(it-IT) .documenti-download-table td.lingua-italiano {
 
 .documenti-download-table {
   line-height: 1.2;
+}
+
+sup.sup {
+  bottom: auto !important;
+  vertical-align: baseline !important;
+  line-height: 1 !important;
+  font-size: inherit !important;
+  position: relative !important;
+  display: inline-block !important;
+}
+
+sup.sup.tm,
+sup.sup.r {
+  font-size: 0.6em !important;
+  line-height: 1 !important;
+  top: -0.3em !important;
+  bottom: auto !important;
+}
+
+@media (max-width: 767px) {
+  sup.sup.tm,
+  sup.sup.r {
+    font-size: 0.55em !important;
+    top: -0.28em !important;
+  }
 }/*# sourceMappingURL=style.css.map */
