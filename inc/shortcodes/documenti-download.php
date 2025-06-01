@@ -97,7 +97,7 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
                         'schede' =>$schede,
                         'docs'   =>$docs,
                     ];
-                    echo "\n<!-- DEBUG shortcode: slug prodotto (ID {$pid}) = ". esc_html( get_post_field( 'post_name', $pid, true ) ). " -->\n";
+                    // echo "\n<!-- DEBUG shortcode: slug prodotto (ID {$pid}) = ". esc_html( get_post_field( 'post_name', $pid, true ) ). " -->\n";
 
                 }
                 wp_reset_postdata();
