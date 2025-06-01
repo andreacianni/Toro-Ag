@@ -206,6 +206,40 @@ function toro_ag_divi_breadcrumb_shortcode() {
 remove_shortcode( 'my_breadcrumbs' );
 add_shortcode(   'my_breadcrumbs', 'toro_ag_divi_breadcrumb_shortcode' );
 
+/**
+ * Filtra il permalink del CPT "prodotto" sostituendo %tipo_di_prodotto%
+ * con lo slug reale del termine di 'tipo_di_prodotto' assegnato al post.
+ */
+function toro_ag_prodotto_permalink( $post_link, $post ) {
+    // Applico solo ai post type "prodotto"
+    if ( $post->post_type !== 'prodotto' ) {
+        return $post_link;
+    }
+
+    // Prendo i termini assegnati alla tassonomia 'tipo_di_prodotto'
+    $terms = wp_get_post_terms( $post->ID, 'tipo_di_prodotto' );
+    if ( is_wp_error( $terms ) || empty( $terms ) ) {
+        // Se non ci sono termini, metto un fallback (lo slug "nonspecificato" oppure lascio il permalink di default)
+        // Qui potete decidere: 
+        //   - tornare $post_link così com’è, oppure 
+        //   - sostituire %tipo_di_prodotto% con 'nonspecificato' per evitare che compaia il placeholder.
+        return str_replace( '%tipo_di_prodotto%', 'nonspecificato', $post_link );
+    }
+
+    // Prendo il primo termine (se ne avete più di uno, potete decidere come comportarvi)
+    $term = $terms[0];
+    // Recupero lo slug del termine (in lingua corrente, WPML si occupa di restituire lo slug tradotto)
+    $term_slug = $term->slug;
+
+    // Sostituisco nel permalink "%tipo_di_prodotto%" con il vero slug
+    $post_link = str_replace( '%tipo_di_prodotto%', $term_slug, $post_link );
+
+    return $post_link;
+}
+add_filter( 'post_type_link', 'toro_ag_prodotto_permalink', 10, 2 );
+
+
+
 // Aggiunge "Aggiungi Brochure" sotto la voce "Colture"
 add_action('admin_menu', 'aggiungi_sottomenu_brochure', 11);
 function aggiungi_sottomenu_brochure() {
