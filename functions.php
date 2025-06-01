@@ -192,12 +192,26 @@ function aggiungi_sottomenu_scheda() {
 }
 
 /**
- * Converte i simboli ™ e ® in superscript, evitando che l’utente veda il glifo “®” posizionato male.
+ * Converte i simboli ™ e ® in superscript.
+ * Prima “riporta a testo normale” eventuali <sup>™</sup> e <sup>®</sup> già presenti,
+ * poi aggiunge un unico wrapping <sup>…</sup> su tutti i simboli trovati.
  */
 function toro_ag_trademarks_to_superscript( $text ) {
-    // Prima trasformiamo ™, poi ®
+    if ( empty( $text ) ) {
+        return $text;
+    }
+
+    // 1) Rimuove qualsiasi <sup>™</sup> o <sup>®</sup> già esistente
+    //    in modo da non creare incapsulamenti multipli.
+    //    Usiamo una regex che cerca <sup>™</sup> oppure <sup>®</sup> e riporta solo il carattere
+    $text = preg_replace( '#<sup>(™|®)</sup>#', '$1', $text );
+
+    // 2) Ora che abbiamo un testo “pulito” da eventuali <sup>™, <sup>®</sup>,
+    //    applichiamo il wrapping correttamente, una sola volta.
+    //    Notare che è importante prima TM e poi REG, per non sovrascrivere un TM appena creato.
     $text = str_replace( '™', '<sup>™</sup>', $text );
     $text = str_replace( '®', '<sup>®</sup>', $text );
+
     return $text;
 }
 
@@ -209,21 +223,14 @@ add_filter( 'the_content', 'toro_ag_trademarks_to_superscript' );
 add_filter( 'pods_content', 'toro_ag_trademarks_to_superscript', 10, 2 );
 add_filter( 'pods_title',   'toro_ag_trademarks_to_superscript', 10, 2 );
 
-// Infine, se qualche modulo Divi sfugge ai filtri normali, lo convertiamo anche qui
+// Se qualche modulo Divi sfugge ai filtri normali, lo convertiamo anche qui
 add_filter( 'et_pb_render_content', 'toro_ag_trademarks_to_superscript', 999 );
 
 /**
  * Wrapper generico per applicare il filtro anche all'output di QUALSIASI shortcode.
- *
- * Il filtro `do_shortcode_tag` è disponibile a partire da WP 5.4 e riceve
- * in ingresso 4 parametri: l'output HTML ($output), il nome del tag ($tag),
- * gli attributi del shortcode ($attr) e l'array di regex match ($m).
- *
- * Noi ci interessiamo solo di intervenire sull'HTML già “pronto” ($output).
+ * Il filtro `do_shortcode_tag` cattura l'HTML restituito da ciascun shortcode.
  */
 function toro_ag_trademarks_shortcodes_wrapper( $output, $tag, $attr, $m ) {
-    // Passa l'HTML restituito dallo shortcode dentro la nostra funzione di superscript
     return toro_ag_trademarks_to_superscript( $output );
 }
-// Attacca il wrapper a do_shortcode_tag con priorità bassa (10) e 4 parametri
 add_filter( 'do_shortcode_tag', 'toro_ag_trademarks_shortcodes_wrapper', 10, 4 );
