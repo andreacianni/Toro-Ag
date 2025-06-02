@@ -152,3 +152,76 @@ if (! function_exists('ta_scheda_prodotto_dettaglio_shortcode')) {
         return ta_render_documenti_prodotto_view($terms_data);
     }
 }
+
+/**
+ * Shortcode per mostrare schede e documenti associati a un termine della tassonomia tipo_di_prodotto
+ * Uso: [scheda_prodotto_tipo_dettaglio]
+ */
+add_action('init', function() {
+    add_shortcode('scheda_prodotto_tipo_dettaglio', 'ta_scheda_prodotto_tipo_shortcode');
+});
+
+if (! function_exists('ta_scheda_prodotto_tipo_shortcode')) {
+    function ta_scheda_prodotto_tipo_shortcode($atts) {
+        if (!is_tax('tipo_di_prodotto')) {
+            return '';
+        }
+
+        $current = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : apply_filters('wpml_current_language', null);
+        $default = apply_filters('wpml_default_language', null);
+        $term = get_queried_object();
+        if (!$term || !isset($term->term_id)) {
+            return '';
+        }
+
+        // Funzione per raccogliere e raggruppare elementi schede e documenti dal termine
+        $get_grouped_term = function($field, $meta_file_key) use ($term, $current, $default) {
+            $groups = [];
+            $term_id = apply_filters('wpml_object_id', $term->term_id, 'tipo_di_prodotto', true, $current) ?: $term->term_id;
+            $pod = pods('tipo_di_prodotto', $term_id, ['lang' => $current]);
+            $items = ($pod && $pod->exists()) ? $pod->field($field) : [];
+            if (empty($items)) {
+                $term_id_def = apply_filters('wpml_object_id', $term->term_id, 'tipo_di_prodotto', true, $default) ?: $term->term_id;
+                foreach ((array) get_term_meta($term_id_def, $field, false) as $raw) {
+                    $items[] = $raw;
+                }
+            }
+            foreach ((array) $items as $raw) {
+                $id = is_array($raw) && isset($raw['ID']) ? intval($raw['ID']) : (is_object($raw) && isset($raw->ID) ? intval($raw->ID) : intval($raw));
+                if (!$id) continue;
+                $elem_id = apply_filters('wpml_object_id', $id, $field === 'scheda_prodotto_tipo' ? 'scheda_prodotto' : 'documento_prodotto', true, $current) ?: $id;
+                $slug = wp_get_post_terms($elem_id, 'lingua_aggiuntiva', ['fields'=>'slugs'])[0] ?? '';
+                if (($current === 'it' && $slug !== 'italiano') || ($current !== 'it' && $slug === 'italiano')) {
+                    continue;
+                }
+                $file_id = get_post_meta($elem_id, $meta_file_key, true);
+                if (!$file_id) continue;
+                $url = wp_get_attachment_url($file_id);
+                if (!$url) continue;
+                $title = get_the_title($elem_id);
+                $groups[$slug]['items'][] = compact('url', 'title');
+                $groups[$slug]['lang'] = $slug;
+            }
+            // Ordina per priorità lingua
+            $order = ['italiano'=>0, 'inglese'=>1, 'francese'=>2, 'spagnolo'=>3];
+            uksort($groups, function($a, $b) use ($order) {
+                return ($order[$a] ?? 99) <=> ($order[$b] ?? 99);
+            });
+            return array_values($groups);
+        };
+
+        $schede = $get_grouped_term('scheda_prodotto_tipo', 'scheda-prodotto');
+        $docs   = $get_grouped_term('documento_prodotto_tipo', 'documento-prodotto');
+
+        $terms_data = [[
+            'term_name' => $term->name,
+            'products'  => [[
+                'title' => $term->name,
+                'schede'=> $schede,
+                'docs'  => $docs,
+            ]],
+        ]];
+
+        return ta_render_documenti_prodotto_view($terms_data);
+    }
+}
