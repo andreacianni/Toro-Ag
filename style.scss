@@ -165,13 +165,20 @@ Template: Divi
   }
 }
 // documenti download
-.documenti-download-grid{
+.documenti-download-grid,
+.documenti-download-list{
   .card-title {
     a {
       color: #1e1e1e;
       &:hover {
         color: #cd2027; // hover link color
       }
+    }
+  }
+  a.prod-link{
+    color: #1e1e1e;
+    &:hover {
+      color: #cd2027; // hover link color
     }
   }
 }

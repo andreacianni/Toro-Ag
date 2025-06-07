@@ -137,7 +137,7 @@
         ?>
         <li class="list-group-item d-flex">
           <!-- Prima colonna prodotto -->
-          <div class="col-3 ps-0 d-flex align-items-center justify-content-start">
+          <div class="col-3 ps-0 d-flex align-items-center justify-content-start fw-bold">
             <a href="<?= esc_url( get_permalink( $prod['ID'] ) ) ?>" class="prod-link text-start"><?= esc_html( $prod['title'] ) ?></a>
           </div>
           <!-- Seconda colonna: lingua, schede, documenti -->
