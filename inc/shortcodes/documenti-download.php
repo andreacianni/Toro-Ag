@@ -16,17 +16,9 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
             : 'it';
 
         // definisco l'ordine delle lingue
-        $lang_order = [
-            'inglese'   => 1,
-            'spagnolo'  => 2,
-            'francese'  => 3,
-            'tedesco'   => 4,
-            'portoghese'=> 5,
-            'arabo'     => 6,
-            'polacco'   => 7,
-            'svedese'   => 8,
-            'afrikaans' => 9,
-        ];
+        $lang_order = function_exists( 'toroag_get_language_order' )
+            ? toroag_get_language_order()
+            : [];
 
         $terms = get_terms(['taxonomy'=>'tipo_di_prodotto','hide_empty'=>false]);
         if ( is_wp_error($terms) || empty($terms) ) {

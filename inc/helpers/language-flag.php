@@ -82,3 +82,24 @@ if ( ! function_exists( 'toroag_get_language_label' ) ) {
             : ucfirst( $lang_slug );
     }
 }
+
+if ( ! function_exists( 'toroag_get_language_order' ) ) {
+    /**
+     * Restituisce l'array di prioritizzazione delle lingue aggiuntive.
+     *
+     * @return array slug => priorità (int)
+     */
+    function toroag_get_language_order() {
+        return [
+            'inglese'    => 1,
+            'spagnolo'   => 2,
+            'francese'   => 3,
+            'tedesco'    => 4,
+            'portoghese' => 5,
+            'arabo'      => 6,
+            'polacco'    => 7,
+            'svedese'    => 8,
+            'afrikaans'  => 9,
+        ];
+    }
+}
