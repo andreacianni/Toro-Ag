@@ -33,10 +33,10 @@
   <?php endif; ?>
 
   <?php if ( $layout === 'card' ): ?>
-    <!-- GRID invariato -->
+    <!-- CARD -->
     <div class="row g-3 mb-5 documenti-download-grid">
       <?php foreach ( $term['products'] as $prod ): ?>
-        <div class="col-md-3">
+        <div class="col-12 col-md-6 col-lg-4 col-xl-3">
           <div class="card h-100 shadow-sm">
             <div class="card-header">
               <p class="card-title mb-0 fw-bold text-start">
@@ -112,7 +112,7 @@
     </div>
 
   <?php elseif ( $layout === 'grid' ): ?>
-    <!-- CARD: due colonne, prima col prodotto verticalmente centrato, seconda col nested per lingua -->
+    <!-- GRID griglia: due colonne, prima col prodotto verticalmente centrato, seconda col nested per lingua -->
     <ul class="list-group mb-5 documenti-download-list ps-0">
       <li class="list-group-item list-group-item-dark d-flex fw-bold">
         <div class="col-3 ps-0 text-start"><?= esc_html__( 'Prodotti', 'toro-ag' ) ?></div>
