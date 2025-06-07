@@ -81,13 +81,13 @@
           <!-- Seconda colonna: lingua, schede, documenti -->
           <div class="col-9 ps-0">
             <?php foreach ( $groups as $lang => $data ): ?>
-              <div class="row mb-3 gruppo-lingua-<?= esc_attr( $lang ) ?>">
+              <div class="row mb-0 gruppo-lingua-<?= esc_attr( $lang ) ?>">
                 <div class="col-1 d-flex align-items-center">
                   <?= toroag_get_flag_html( $lang ) ?>
                 </div>
                 <div class="col-5">
                   <?php if ( ! empty( $data['schede'] ) ): ?>
-                    <ul class="list-unstyled mb-0">
+                    <ul class="list-unstyled mb-0 pb-0">
                       <?php foreach ( $data['schede'] as $s ): ?>
                         <li class="d-flex align-items-center mb-1">
                           <i class="bi <?= esc_attr( toroag_get_icon_class( $s['url'] ) ) ?> me-2"></i>
