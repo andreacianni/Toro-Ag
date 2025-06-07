@@ -113,7 +113,7 @@
 
   <?php elseif ( $layout === 'card' ): ?>
     <!-- CARD: due colonne, prima col prodotto verticalmente centrato, seconda col nested per lingua -->
-    <ul class="list-group mb-5 documenti-download-list">
+    <ul class="list-group mb-5 documenti-download-list ps-0">
       <li class="list-group-item list-group-item-dark d-flex fw-bold">
         <div class="col-3 ps-0 text-start"><?= esc_html__( 'Prodotti', 'toro-ag' ) ?></div>
         <div class="col-9 ps-0 d-flex">
