@@ -55,7 +55,7 @@
     <!-- CARD: due colonne, prima col prodotto verticalmente centrato, seconda col nested per lingua -->
     <ul class="list-group mb-5 documenti-download-list">
       <li class="list-group-item list-group-item-dark d-flex fw-bold">
-        <div class="col-3 ps-0"><?= esc_html__( 'Prodotti', 'toro-ag' ) ?></div>
+        <div class="col-3 ps-0 text-center"><?= esc_html__( 'Prodotti', 'toro-ag' ) ?></div>
         <div class="col-9 ps-0 d-flex">
           <div class="col-1 ps-0"><?= esc_html__( 'Lingua', 'toro-ag' ) ?></div>
           <div class="col-5"><?= esc_html__( 'Schede', 'toro-ag' ) ?></div>
@@ -81,29 +81,29 @@
           <!-- Seconda colonna: lingua, schede, documenti -->
           <div class="col-9 ps-0">
             <?php foreach ( $groups as $lang => $data ): ?>
-              <div class="row mb-0 gruppo-lingua-<?= esc_attr( $lang ) ?>">
+              <div class="row mb-3 pb-2 border-bottom gruppo-lingua-<?= esc_attr( $lang ) ?>">
                 <div class="col-1 d-flex align-items-center">
                   <?= toroag_get_flag_html( $lang ) ?>
                 </div>
-                <div class="col-5 d-flex align-items-center">
+                <div class="col-5 small d-flex align-items-start">
                   <?php if ( ! empty( $data['schede'] ) ): ?>
-                    <ul class="list-unstyled mb-0 pb-0">
-                      <?php foreach ( $data['schede'] as $s ): ?>
+                    <ul class="list-unstyled mb-0">
+                      <?php foreach ( $data['schede'] as $s_item ): ?>
                         <li class="d-flex align-items-center mb-1">
-                          
-                          <a href="<?= esc_url( $s['url'] ) ?>" target="_blank"><i class="bi <?= esc_attr( toroag_get_icon_class( $s['url'] ) ) ?> me-2"></i><?= esc_html( $s['title'] ) ?></a>
+                          <i class="bi <?= esc_attr( toroag_get_icon_class( $s_item['url'] ) ) ?> me-2"></i>
+                          <a href="<?= esc_url( $s_item['url'] ) ?>" target="_blank"><?= esc_html( $s_item['title'] ) ?></a>
                         </li>
                       <?php endforeach; ?>
                     </ul>
                   <?php endif; ?>
                 </div>
-                <div class="col-5 ">
+                <div class="col-5 small">
                   <?php if ( ! empty( $data['docs'] ) ): ?>
-                    <ul class="list-unstyled mb-0 pb-0">
-                      <?php foreach ( $data['docs'] as $d ): ?>
+                    <ul class="list-unstyled mb-0">
+                      <?php foreach ( $data['docs'] as $d_item ): ?>
                         <li class="d-flex align-items-center mb-1">
-                          
-                          <a href="<?= esc_url( $d['url'] ) ?>" target="_blank"><i class="bi <?= esc_attr( toroag_get_icon_class( $d['url'] ) ) ?> me-2"></i><?= esc_html( $d['title'] ) ?></a>
+                          <i class="bi <?= esc_attr( toroag_get_icon_class( $d_item['url'] ) ) ?> me-2"></i>
+                          <a href="<?= esc_url( $d_item['url'] ) ?>" target="_blank"><?= esc_html( $d_item['title'] ) ?></a>
                         </li>
                       <?php endforeach; ?>
                     </ul>
