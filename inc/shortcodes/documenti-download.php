@@ -112,8 +112,10 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
         // echo "\n<!-- DEBUG shortcode: \$prod['title'] = " . esc_html( $prod['title'] ) . " -->\n";
 
         return toroag_load_view( 'documenti-download', [
-            'terms_data'=>$terms_data,
-            'layout'=>$atts['layout'],
+            'terms_data'    =>$terms_data,
+            'layout'        =>$atts['layout'],
+            'lang'          =>$lang,
+            'lang_order'    =>$lang_order,
         ] );
     }
 }
