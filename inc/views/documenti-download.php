@@ -19,6 +19,25 @@
     $t_obj  = get_term_by( 'slug', $slug, 'tipo_di_prodotto' );
     $t_link = $t_obj ? get_term_link( $t_obj ) : '';
   ?>
+  <?php if ( $lang !== 'it' ): ?>
+  <div class="documenti-filter d-none d-md-flex align-items-center mb-3">
+    <button type="button"
+            data-lang=""
+            class="filter-flag btn btn-sm btn-outline-secondary active"
+            title="<?php esc_attr_e( 'Mostra tutte le lingue', 'toro-ag' ); ?>">
+      <i class="bi bi-globe2"></i>
+    </button>
+    <?php foreach ( $lang_order as $lang_slug => $prio ): ?>
+      <button type="button"
+              data-lang="<?php echo esc_attr( $lang_slug ); ?>"
+              class="filter-flag btn btn-sm btn-outline-secondary ms-1"
+              title="<?php echo esc_attr( ucwords( $lang_slug ) ); ?>">
+        <?php echo toroag_get_flag_html( $lang_slug ); ?>
+      </button>
+    <?php endforeach; ?>
+  </div>
+<?php endif; ?>
+
   <h5 class="text-bg-dark text-center py-2 my-4 rounded-2">
     <?php if ( $t_link ): ?>
       <a href="<?= esc_url( $t_link ) ?>" class="term-link"><?= esc_html( $term['term_name'] ) ?></a>
