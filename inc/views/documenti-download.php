@@ -19,7 +19,7 @@
     $t_obj  = get_term_by( 'slug', $slug, 'tipo_di_prodotto' );
     $t_link = $t_obj ? get_term_link( $t_obj ) : '';
   ?>
-  <h5 class="text-bg-dark text-start py-2 my-4 rounded-2">
+  <h5 class="text-bg-dark text-center py-2 my-4 rounded-2">
     <?php if ( $t_link ): ?>
       <a href="<?= esc_url( $t_link ) ?>" class="term-link"><?= esc_html( $term['term_name'] ) ?></a>
     <?php else: ?>
