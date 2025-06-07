@@ -42,16 +42,27 @@ Template: Divi
   gap: 1rem;
   
   // Responsive columns using CSS media queries matching Bootstrap breakpoints
-  @media (min-width: 576px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  @media (min-width: 992px) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+  &.toro-grid--tipi-prod{
+    @media (min-width: 576px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
   
+    &.toro-grid--colture{
+    @media (min-width: 576px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    @media (min-width: 992px) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
   &__item {
     background: #fff;
     // Box shadow similar to previous mixin
@@ -232,20 +243,20 @@ sup {
 /*
 sup.tm,
 sup.r {
-  // 0.6em è un valore di partenza: corrisponde circa al 60% del font parent
-  // Modificalo se vuoi un simbolo più grande/piccolo.
-  font-size: 0.6em !important;
+// 0.6em è un valore di partenza: corrisponde circa al 60% del font parent
+// Modificalo se vuoi un simbolo più grande/piccolo.
+font-size: 0.6em !important;
 
-  // Mantieni line-height a 1 per evitare “tagli” strani su diverse righe
-  line-height: 1 !important;
+// Mantieni line-height a 1 per evitare “tagli” strani su diverse righe
+line-height: 1 !important;
 
-  // Solleva il simbolo di 0.3em: sperimenta valori come -0.25em, -0.35em se non
-  // combacia perfettamente con la baseline di Verdana™. Deve essere lo stesso
-  // spostamento per TM e ®.
-  top: -0.3em !important;
+// Solleva il simbolo di 0.3em: sperimenta valori come -0.25em, -0.35em se non
+// combacia perfettamente con la baseline di Verdana™. Deve essere lo stesso
+// spostamento per TM e ®.
+top: -0.3em !important;
 
-  // Si assicura che non vi siano bottom ereditati
-  bottom: auto !important;
+// Si assicura che non vi siano bottom ereditati
+bottom: auto !important;
 }
 */
 // ============================
@@ -271,7 +282,7 @@ sup.r {
 /*
 sup.tm,
 sup.r {
-  // padding-left: 0.05em;
-  // padding-right: 0.05em;
+// padding-left: 0.05em;
+// padding-right: 0.05em;
 }
 */
