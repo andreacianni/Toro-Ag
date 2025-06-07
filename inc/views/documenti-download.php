@@ -141,7 +141,7 @@ $terms_data = array_slice( $terms_data, 0, 2 );
       }
     ?>
     <?php foreach ( $groups as $lang_slug => $data ): ?>
-      <li class="list-group-item d-flex align-items-start gruppo-lingua-<?= esc_attr( $lang_slug ) ?>">
+      <li class="list-group-item d-flex align-items-center gruppo-lingua-<?= esc_attr( $lang_slug ) ?>">
         <div class="col-3 ps-0">
           <a href="<?= esc_url( get_permalink( $prod['ID'] ) ) ?>" class="prod-link d-block">
             <?= esc_html( $prod['title'] ) ?>
