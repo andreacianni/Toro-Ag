@@ -20,14 +20,14 @@ if ( $lang !== 'it' ) : ?>
       <button type="button"
               data-lang="<?php echo esc_attr( $lang_slug ); ?>"
               class="filter-flag border-0 bg-white"
-              title="<?php echo esc_attr( ucwords( $lang_slug ) ); ?>">
+              title="<?php echo esc_attr( toroag_get_language_label( $lang_slug ) ); ?>">
         <?php echo toroag_get_flag_html( $lang_slug ); ?>
       </button>
     <?php endforeach; ?>
     <button type="button"
             data-lang=""
             class="filter-flag border-0 bg-white"
-            title="<?php esc_attr_e( 'Mostra tutte le lingue', 'toro-ag' ); ?>">
+            title="<?php esc_attr_e( 'All languages', 'toro-ag' ); ?>">
       <i class="bi bi-globe2"></i>
     </button>
   </div>

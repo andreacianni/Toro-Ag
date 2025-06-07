@@ -55,3 +55,30 @@ if ( ! function_exists( 'toroag_get_flag_html' ) ) {
                'class="lang-flag" />';
     }
 }
+
+if ( ! function_exists( 'toroag_get_language_label' ) ) {
+    /**
+     * Restituisce il nome leggibile della lingua in base allo slug.
+     *
+     * @param string $lang_slug  Slug della lingua (italiano, inglese, ecc.)
+     * @return string            Nome della lingua localizzato
+     */
+    function toroag_get_language_label( $lang_slug ) {
+        $labels = [
+            'italiano'   => __( 'Italian', 'toro-ag' ),
+            'inglese'    => __( 'English', 'toro-ag' ),
+            'spagnolo'   => __( 'Spanish', 'toro-ag' ),
+            'francese'   => __( 'French',  'toro-ag' ),
+            'tedesco'    => __( 'German',  'toro-ag' ),
+            'portoghese' => __( 'Portuguese', 'toro-ag' ),
+            'arabo'      => __( 'Arabic',   'toro-ag' ),
+            'polacco'    => __( 'Polish',   'toro-ag' ),
+            'svedese'    => __( 'Swedish',  'toro-ag' ),
+            'afrikaans'  => __( 'Afrikaans','toro-ag' ),
+        ];
+
+        return isset( $labels[ $lang_slug ] )
+            ? $labels[ $lang_slug ]
+            : ucfirst( $lang_slug );
+    }
+}
