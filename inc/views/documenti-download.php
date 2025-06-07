@@ -123,45 +123,57 @@ $terms_data = array_slice( $terms_data, 0, 2 );
     </div>
 
 <?php elseif ( $layout === 'card' ): ?>
-<ul class="list-group mb-5 documenti-download-list">
-  <li class="list-group-item list-group-item-dark d-flex fw-bold">
-    <div class="flex-fill"><?= esc_html__( 'Prodotti', 'toro-ag' ) ?></div>
-    <div class="flex-fill"><?= esc_html__( 'Lingua', 'toro-ag' ) ?></div>
-    <div class="flex-fill"><?= esc_html__( 'Schede', 'toro-ag' ) ?></div>
-    <div class="flex-fill"><?= esc_html__( 'Documenti', 'toro-ag' ) ?></div>
-  </li>
-  <?php foreach ( $term['products'] as $prod ): ?>
-    <?php
-      $groups = [];
-      foreach ( $prod['schede'] as $item ) {
-        $groups[ $item['lang'] ]['schede'][] = $item;
-      }
-      foreach ( $prod['docs'] as $item ) {
-        $groups[ $item['lang'] ]['docs'][] = $item;
-      }
-    ?>
-    <?php foreach ( $groups as $lang_slug => $data ): ?>
-      <li class="list-group-item d-flex align-items-start gruppo-lingua-<?= esc_attr( $lang_slug ) ?>">
-        <div class="flex-fill">
-          <a href="<?= esc_url( get_permalink( $prod['ID'] ) ) ?>" class="prod-link"><?php echo esc_html( $prod['title'] ); ?></a>
-        </div>
-        <div class="flex-fill">
-          <?= toroag_get_flag_html( $lang_slug ) ?>
-        </div>
-        <div class="flex-fill">
-          <?php foreach ( $data['schede'] ?? [] as $sc ): ?>
-            <div><a href="<?= esc_url( $sc['url'] ) ?>" target="_blank"><?= esc_html( $sc['title'] ) ?></a></div>
-          <?php endforeach; ?>
-        </div>
-        <div class="flex-fill">
-          <?php foreach ( $data['docs'] ?? [] as $doc ): ?>
-            <div><a href="<?= esc_url( $doc['url'] ) ?>" target="_blank"><?= esc_html( $doc['title'] ) ?></a></div>
-          <?php endforeach; ?>
-        </div>
-      </li>
+<div class="table-responsive mb-5 documenti-download-card">
+  <ul class="list-group">
+    <li class="list-group-item list-group-item-dark d-flex fw-bold">
+      <div class="flex-fill"><?= esc_html__( 'Prodotti', 'toro-ag' ) ?></div>
+      <div class="flex-fill"><?= esc_html__( 'Lingua', 'toro-ag' ) ?></div>
+      <div class="flex-fill"><?= esc_html__( 'Schede', 'toro-ag' ) ?></div>
+      <div class="flex-fill"><?= esc_html__( 'Documenti', 'toro-ag' ) ?></div>
+    </li>
+    <?php foreach ( $term['products'] as $prod ): ?>
+      <?php
+        $groups = [];
+        foreach ( $prod['schede'] as $item ) {
+          $groups[ $item['lang'] ]['schede'][] = $item;
+        }
+        foreach ( $prod['docs'] as $item ) {
+          $groups[ $item['lang'] ]['docs'][] = $item;
+        }
+      ?>
+      <?php foreach ( $groups as $lang_slug => $data ): ?>
+        <li class="list-group-item d-flex align-items-start gruppo-lingua-<?= esc_attr( $lang_slug ) ?>">
+          <div class="flex-fill">
+            <a href="<?= esc_url( get_permalink( $prod['ID'] ) ) ?>" class="prod-link"><?= esc_html( $prod['title'] ) ?></a>
+          </div>
+          <div class="flex-fill d-flex align-items-center">
+            <?= toroag_get_flag_html( $lang_slug ) ?>
+          </div>
+          <div class="flex-fill">
+            <ul class="list-unstyled mb-0">
+              <?php foreach ( $data['schede'] ?? [] as $sc ): ?>
+                <li class="d-flex align-items-center mb-1">
+                  <i class="bi <?= esc_attr( toroag_get_icon_class( $sc['url'] ) ) ?> me-1"></i>
+                  <a href="<?= esc_url( $sc['url'] ) ?>" target="_blank"><?= esc_html( $sc['title'] ) ?></a>
+                </li>
+              <?php endforeach; ?>
+            </ul>
+          </div>
+          <div class="flex-fill">
+            <ul class="list-unstyled mb-0">
+              <?php foreach ( $data['docs'] ?? [] as $doc ): ?>
+                <li class="d-flex align-items-center mb-1">
+                  <i class="bi <?= esc_attr( toroag_get_icon_class( $doc['url'] ) ) ?> me-1"></i>
+                  <a href="<?= esc_url( $doc['url'] ) ?>" target="_blank"><?= esc_html( $doc['title'] ) ?></a>
+                </li>
+              <?php endforeach; ?>
+            </ul>
+          </div>
+        </li>
+      <?php endforeach; ?>
     <?php endforeach; ?>
-  <?php endforeach; ?>
-</ul>
+  </ul>
+</div>
 <?php else: /* table layout */ ?>
 <div class="table-responsive mb-5 documenti-download-table">
   <div class="row fw-bold border-bottom py-2 gx-2">
@@ -183,24 +195,39 @@ $terms_data = array_slice( $terms_data, 0, 2 );
       ?>
       <?php foreach ( $groups as $lang_slug => $data ): ?>
         <div class="row align-items-start py-2 gx-2 gruppo-lingua-<?= esc_attr( $lang_slug ) ?>">
-          <div class="col-4">
+          <div class="col-4 d-flex align-items-center">
             <a href="<?= esc_url( get_permalink( $prod['ID'] ) ) ?>"><?= esc_html( $prod['title'] ) ?></a>
           </div>
-          <div class="col-2"><?= toroag_get_flag_html( $lang_slug ) ?></div>
-          <div class="col-3">
-            <?php foreach ( $data['schede'] ?? [] as $sc ): ?>
-              <div><a href="<?= esc_url( $sc['url'] ) ?>" target="_blank"><?= esc_html( $sc['title'] ) ?></a></div>
-            <?php endforeach; ?>
+          <div class="col-2 d-flex align-items-center">
+            <?= toroag_get_flag_html( $lang_slug ) ?>
           </div>
           <div class="col-3">
-            <?php foreach ( $data['docs'] ?? [] as $doc ): ?>
-              <div><a href="<?= esc_url( $doc['url'] ) ?>" target="_blank"><?= esc_html( $doc['title'] ) ?></a></div>
-            <?php endforeach; ?>
+            <ul class="list-unstyled mb-0">
+              <?php foreach ( $data['schede'] ?? [] as $sc ): ?>
+                <li class="d-flex align-items-center">
+                  <span class="icone me-1">
+                    <i class="bi <?= esc_attr( toroag_get_icon_class( $sc['url'] ) ) ?>"></i>
+                  </span>
+                  <a href="<?= esc_url( $sc['url'] ) ?>" target="_blank"><?= esc_html( $sc['title'] ) ?></a>
+                </li>
+              <?php endforeach; ?>
+            </ul>
+          </div>
+          <div class="col-3">
+            <ul class="list-unstyled mb-0">
+              <?php foreach ( $data['docs'] ?? [] as $doc ): ?>
+                <li class="d-flex align-items-center">
+                  <span class="icone me-1">
+                    <i class="bi <?= esc_attr( toroag_get_icon_class( $doc['url'] ) ) ?>"></i>
+                  </span>
+                  <a href="<?= esc_url( $doc['url'] ) ?>" target="_blank"><?= esc_html( $doc['title'] ) ?></a>
+                </li>
+              <?php endforeach; ?>
+            </ul>
           </div>
         </div>
       <?php endforeach; ?>
     <?php endforeach; ?>
   </div>
 </div>
-<?php endif; ?>
-<?php endforeach; ?>
+<?php endif; ?><?php endforeach; ?>
