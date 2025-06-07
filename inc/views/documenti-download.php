@@ -44,7 +44,67 @@
               </p>
             </div>
             <div class="card-body small">
-              <?php // SCHEDE & DOCUMENTI per lingua come prima ?>
+              <?php // SCHEDE
+              if (! empty( $prod['schede'] ) ) : ?>
+                <div class="schede card-subtitle text-body-secondary">
+                  <?= esc_html__( 'Schede', 'toro-ag' ) ?>:
+                </div>
+                  <?php
+                  // raggruppa per lingua
+                  $schede_by_lang = [];
+                  foreach ( $prod['schede'] as $item ) {
+                      $schede_by_lang[ $item['lang'] ][] = $item;
+                  }
+                  foreach ( $schede_by_lang as $lang_slug => $items ) : ?>
+                    <div class="gruppo-lingua gruppo-lingua-<?= esc_attr( $lang_slug ) ?>">
+                      <?php foreach ( $items as $item ) : ?>
+                        <a href="<?= esc_url( $item['url'] ) ?>"
+                           class="lang-<?= esc_attr( $lang_slug ) ?>"
+                           target="_blank">
+                          <span class="icone">
+                            <?= toroag_get_flag_html( $lang_slug ) ?>
+                            <i class="bi <?= esc_attr( toroag_get_icon_class( $item['url'] ) ) ?>"></i>
+                          </span>
+                          <span class="testo-link">
+                            <?= esc_html( $item['title'] ) ?>
+                          </span>
+                        </a>
+                      <?php endforeach; ?>
+                    </div>
+                  <?php endforeach; ?>
+                
+              <?php endif; ?>
+
+              <?php // DOCUMENTI
+              if (! empty( $prod['docs'] ) ) : ?>
+                <div class="documenti card-subtitle text-body-secondary mt-2">
+                  <?= esc_html__( 'Documenti', 'toro-ag' ) ?>:
+                </div>
+                  <?php
+                  // raggruppa per lingua
+                  $docs_by_lang = [];
+                  foreach ( $prod['docs'] as $item ) {
+                      $docs_by_lang[ $item['lang'] ][] = $item;
+                  }
+                  foreach ( $docs_by_lang as $lang_slug => $items ) : ?>
+                    <div class="gruppo-lingua gruppo-lingua-<?= esc_attr( $lang_slug ) ?>">
+                      <?php foreach ( $items as $item ) : ?>
+                        <a href="<?= esc_url( $item['url'] ) ?>"
+                           class="lang-<?= esc_attr( $lang_slug ) ?>"
+                           target="_blank">
+                          <span class="icone">
+                            <?= toroag_get_flag_html( $lang_slug ) ?>
+                            <i class="bi <?= esc_attr( toroag_get_icon_class( $item['url'] ) ) ?>"></i>
+                          </span>
+                          <span class="testo-link">
+                            <?= esc_html( $item['title'] ) ?>
+                          </span>
+                        </a>
+                      <?php endforeach; ?>
+                    </div>
+                  <?php endforeach; ?>
+                
+              <?php endif; ?>
             </div>
           </div>
         </div>
