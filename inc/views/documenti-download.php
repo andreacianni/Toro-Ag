@@ -44,7 +44,7 @@
               </p>
             </div>
             <div class="card-body small">
-              <?php // SCHEDE & DOCUMENTI per lingua as in precedenza ?>
+              <?php // SCHEDE & DOCUMENTI per lingua come prima ?>
             </div>
           </div>
         </div>
@@ -72,22 +72,25 @@
           foreach ( $prod['docs'] as $d ) {
             $groups[ $d['lang'] ]['docs'][] = $d;
           }
+          $total = count( $groups );
+          $index = 0;
         ?>
         <li class="list-group-item d-flex">
           <!-- Prima colonna prodotto -->
-          <div class="col-3 ps-0 d-flex align-items-center">
+          <div class="col-3 ps-0 d-flex align-items-center justify-content-center">
             <a href="<?= esc_url( get_permalink( $prod['ID'] ) ) ?>" class="prod-link text-center"><?= esc_html( $prod['title'] ) ?></a>
           </div>
           <!-- Seconda colonna: lingua, schede, documenti -->
           <div class="col-9 ps-0">
             <?php foreach ( $groups as $lang => $data ): ?>
-              <div class="row mb-3 pb-2 border-bottom gruppo-lingua-<?= esc_attr( $lang ) ?>">
-                <div class="col-1 d-flex align-items-center">
+              <?php $index++; ?>
+              <div class="row<?php if ( $index < $total ) echo ' border-bottom'; ?> mb-0 pb-0 grupo-lingua-<?= esc_attr( $lang ) ?> align-items-center">
+                <div class="col-1 d-flex align-items-center justify-content-center">
                   <?= toroag_get_flag_html( $lang ) ?>
                 </div>
-                <div class="col-5 small d-flex align-items-start">
+                <div class="col-5 small d-flex align-items-center">
                   <?php if ( ! empty( $data['schede'] ) ): ?>
-                    <ul class="list-unstyled mb-0">
+                    <ul class="list-unstyled mb-0 ps-2">
                       <?php foreach ( $data['schede'] as $s_item ): ?>
                         <li class="d-flex align-items-center mb-1">
                           <i class="bi <?= esc_attr( toroag_get_icon_class( $s_item['url'] ) ) ?> me-2"></i>
@@ -97,9 +100,9 @@
                     </ul>
                   <?php endif; ?>
                 </div>
-                <div class="col-5 small">
+                <div class="col-5 small d-flex align-items-center">
                   <?php if ( ! empty( $data['docs'] ) ): ?>
-                    <ul class="list-unstyled mb-0">
+                    <ul class="list-unstyled mb-0 ps-2">
                       <?php foreach ( $data['docs'] as $d_item ): ?>
                         <li class="d-flex align-items-center mb-1">
                           <i class="bi <?= esc_attr( toroag_get_icon_class( $d_item['url'] ) ) ?> me-2"></i>
@@ -117,3 +120,4 @@
     </ul>
   <?php endif; ?>
 <?php endforeach; ?>
+
