@@ -11,22 +11,23 @@ add_action( 'init', function() {
 if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
     function toroag_elenco_prodotti_con_dettagli( $atts ) {
 
-        // 1) Enqueue del filtro JS
-        wp_enqueue_script(
-            'toroag-documenti-filter',
-            get_stylesheet_directory_uri() . '/assets/js/documenti-filter.js',
-            [],       // dipendenze (vuoto perché usi vanilla JS)
-            '1.0',    // versione
-            true      // caricalo in footer
-        );
-        // Passiamo a JS la lingua corrente
-        wp_localize_script(
-            'toroag-documenti-filter',
-            'toroagFilterConfig',
-            [
-                'currentLang' => $lang,  // es. 'it' o 'en'
-            ]
-        );
+        // se la lingua NON è italiana, enqueue + localize
+        if ( $lang !== 'it' ) {
+            wp_enqueue_script(
+                'toroag-documenti-filter',
+                get_stylesheet_directory_uri() . '/assets/js/documenti-filter.js',
+                [],
+                '1.0',
+                true
+            );
+            wp_localize_script(
+                'toroag-documenti-filter',
+                'toroagFilterConfig',
+                [
+                    'currentLang' => $lang,
+                ]
+            );
+        }
 
         $atts = shortcode_atts( ['layout'=>'grid'], $atts, 'elenco_prodotti_con_dettagli' );
         $lang = function_exists('icl_object_id')
