@@ -55,7 +55,7 @@
     <!-- CARD: due colonne, prima col prodotto verticalmente centrato, seconda col nested per lingua -->
     <ul class="list-group mb-5 documenti-download-list">
       <li class="list-group-item list-group-item-dark d-flex fw-bold">
-        <div class="col-3 ps-0 text-center"><?= esc_html__( 'Prodotti', 'toro-ag' ) ?></div>
+        <div class="col-3 ps-0"><?= esc_html__( 'Prodotti', 'toro-ag' ) ?></div>
         <div class="col-9 ps-0 d-flex">
           <div class="col-1 ps-0"><?= esc_html__( 'Lingua', 'toro-ag' ) ?></div>
           <div class="col-5"><?= esc_html__( 'Schede', 'toro-ag' ) ?></div>
@@ -90,8 +90,8 @@
                     <ul class="list-unstyled mb-0 pb-0">
                       <?php foreach ( $data['schede'] as $s ): ?>
                         <li class="d-flex align-items-center mb-1">
-                          <i class="bi <?= esc_attr( toroag_get_icon_class( $s['url'] ) ) ?> me-2"></i>
-                          <a href="<?= esc_url( $s['url'] ) ?>" target="_blank"><?= esc_html( $s['title'] ) ?></a>
+                          
+                          <a href="<?= esc_url( $s['url'] ) ?>" target="_blank"><i class="bi <?= esc_attr( toroag_get_icon_class( $s['url'] ) ) ?> me-2"></i><?= esc_html( $s['title'] ) ?></a>
                         </li>
                       <?php endforeach; ?>
                     </ul>
@@ -102,8 +102,8 @@
                     <ul class="list-unstyled mb-0 pb-0">
                       <?php foreach ( $data['docs'] as $d ): ?>
                         <li class="d-flex align-items-center mb-1">
-                          <i class="bi <?= esc_attr( toroag_get_icon_class( $d['url'] ) ) ?> me-2"></i>
-                          <a href="<?= esc_url( $d['url'] ) ?>" target="_blank"><?= esc_html( $d['title'] ) ?></a>
+                          
+                          <a href="<?= esc_url( $d['url'] ) ?>" target="_blank"><i class="bi <?= esc_attr( toroag_get_icon_class( $d['url'] ) ) ?> me-2"></i><?= esc_html( $d['title'] ) ?></a>
                         </li>
                       <?php endforeach; ?>
                     </ul>
