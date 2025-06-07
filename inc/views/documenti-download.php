@@ -15,18 +15,18 @@
 <?php
 // subito prima del foreach( $terms_data as $term )...
 if ( $lang !== 'it' ) : ?>
-  <div id="global-filter" class="documenti-filter mb-3">
+  <div id="global-filter" class="documenti-filter position-sticky fixed-top bg-white d-flex justify-content-end mb-3">
     <?php foreach ( $lang_order as $lang_slug => $prio ): ?>
       <button type="button"
               data-lang="<?php echo esc_attr( $lang_slug ); ?>"
-              class="filter-flag"
+              class="filter-flag border-0 bg-white"
               title="<?php echo esc_attr( ucwords( $lang_slug ) ); ?>">
         <?php echo toroag_get_flag_html( $lang_slug ); ?>
       </button>
     <?php endforeach; ?>
     <button type="button"
             data-lang=""
-            class="filter-flag"
+            class="filter-flag border-0 bg-white"
             title="<?php esc_attr_e( 'Mostra tutte le lingue', 'toro-ag' ); ?>">
       <i class="bi bi-globe2"></i>
     </button>
