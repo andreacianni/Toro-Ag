@@ -15,11 +15,11 @@
 <?php foreach ( $terms_data as $term ): ?>
   <?php
     // Header termine
-    $slug = sanitize_title( $term['term_name'] );
-    $t_obj = get_term_by( 'slug', $slug, 'tipo_di_prodotto' );
+    $slug   = sanitize_title( $term['term_name'] );
+    $t_obj  = get_term_by( 'slug', $slug, 'tipo_di_prodotto' );
     $t_link = $t_obj ? get_term_link( $t_obj ) : '';
   ?>
-  <h5 class="text-bg-dark text-center py-2 my-4 rounded-2">
+  <h5 class="text-bg-dark text-start py-2 my-4 rounded-2">
     <?php if ( $t_link ): ?>
       <a href="<?= esc_url( $t_link ) ?>" class="term-link"><?= esc_html( $term['term_name'] ) ?></a>
     <?php else: ?>
@@ -39,7 +39,7 @@
         <div class="col-md-3">
           <div class="card h-100 shadow-sm">
             <div class="card-header">
-              <p class="card-title mb-0 fw-bold">
+              <p class="card-title mb-0 fw-bold text-start">
                 <a href="<?= esc_url( get_permalink( $prod['ID'] ) ) ?>" class="prod-link"><?= esc_html( $prod['title'] ) ?></a>
               </p>
             </div>
@@ -55,7 +55,7 @@
     <!-- CARD: due colonne, prima col prodotto verticalmente centrato, seconda col nested per lingua -->
     <ul class="list-group mb-5 documenti-download-list">
       <li class="list-group-item list-group-item-dark d-flex fw-bold">
-        <div class="col-3 ps-0 text-center"><?= esc_html__( 'Prodotti', 'toro-ag' ) ?></div>
+        <div class="col-3 ps-0 text-start"><?= esc_html__( 'Prodotti', 'toro-ag' ) ?></div>
         <div class="col-9 ps-0 d-flex">
           <div class="col-1 ps-0"><?= esc_html__( 'Lingua', 'toro-ag' ) ?></div>
           <div class="col-5"><?= esc_html__( 'Schede', 'toro-ag' ) ?></div>
@@ -78,7 +78,7 @@
         <li class="list-group-item d-flex">
           <!-- Prima colonna prodotto -->
           <div class="col-3 ps-0 d-flex align-items-center justify-content-center">
-            <a href="<?= esc_url( get_permalink( $prod['ID'] ) ) ?>" class="prod-link text-center"><?= esc_html( $prod['title'] ) ?></a>
+            <a href="<?= esc_url( get_permalink( $prod['ID'] ) ) ?>" class="prod-link text-start"><?= esc_html( $prod['title'] ) ?></a>
           </div>
           <!-- Seconda colonna: lingua, schede, documenti -->
           <div class="col-9 ps-0">
@@ -92,7 +92,7 @@
                   <?php if ( ! empty( $data['schede'] ) ): ?>
                     <ul class="list-unstyled mb-0 ps-2 pb-0">
                       <?php foreach ( $data['schede'] as $s_item ): ?>
-                        <li class="d-flex align-items-center mb-1">
+                        <li class="d-flex align-items-center mb-0">
                           <a href="<?= esc_url( $s_item['url'] ) ?>" target="_blank" class="d-flex align-items-center">
                             <i class="bi <?= esc_attr( toroag_get_icon_class( $s_item['url'] ) ) ?> me-2"></i>
                             <span><?= esc_html( $s_item['title'] ) ?></span>
@@ -106,7 +106,7 @@
                   <?php if ( ! empty( $data['docs'] ) ): ?>
                     <ul class="list-unstyled mb-0 ps-2 pb-0">
                       <?php foreach ( $data['docs'] as $d_item ): ?>
-                        <li class="d-flex align-items-center mb-1">
+                        <li class="d-flex align-items-center mb-0">
                           <a href="<?= esc_url( $d_item['url'] ) ?>" target="_blank" class="d-flex align-items-center">
                             <i class="bi <?= esc_attr( toroag_get_icon_class( $d_item['url'] ) ) ?> me-2"></i>
                             <span><?= esc_html( $d_item['title'] ) ?></span>
