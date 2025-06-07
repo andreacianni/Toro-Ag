@@ -57,8 +57,8 @@
       <li class="list-group-item list-group-item-dark d-flex fw-bold">
         <div class="col-3 ps-0 text-center"><?= esc_html__( 'Prodotti', 'toro-ag' ) ?></div>
         <div class="col-9 ps-0 d-flex">
-          <div class="col-2 ps-0"><?= esc_html__( 'Lingua', 'toro-ag' ) ?></div>
-          <div class="col-4"><?= esc_html__( 'Schede', 'toro-ag' ) ?></div>
+          <div class="col-1 ps-0"><?= esc_html__( 'Lingua', 'toro-ag' ) ?></div>
+          <div class="col-5"><?= esc_html__( 'Schede', 'toro-ag' ) ?></div>
           <div class="col-5 pe-0"><?= esc_html__( 'Documenti', 'toro-ag' ) ?></div>
         </div>
       </li>
@@ -75,17 +75,17 @@
         ?>
         <li class="list-group-item d-flex">
           <!-- Prima colonna prodotto -->
-          <div class="col-3 ps-0 d-flex align-items-center justify-content-center">
+          <div class="col-3 ps-0 d-flex align-items-center">
             <a href="<?= esc_url( get_permalink( $prod['ID'] ) ) ?>" class="prod-link text-center"><?= esc_html( $prod['title'] ) ?></a>
           </div>
           <!-- Seconda colonna: lingua, schede, documenti -->
           <div class="col-9 ps-0">
             <?php foreach ( $groups as $lang => $data ): ?>
               <div class="row mb-3 gruppo-lingua-<?= esc_attr( $lang ) ?>">
-                <div class="col-2 d-flex align-items-center">
+                <div class="col-1 d-flex align-items-center">
                   <?= toroag_get_flag_html( $lang ) ?>
                 </div>
-                <div class="col-4">
+                <div class="col-5">
                   <?php if ( ! empty( $data['schede'] ) ): ?>
                     <ul class="list-unstyled mb-0">
                       <?php foreach ( $data['schede'] as $s ): ?>
