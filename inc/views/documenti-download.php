@@ -4,8 +4,6 @@
  * Riceve in input:
  *   - $terms_data: array di [ 'term_name', 'products' => [ ['ID','title','schede','docs'], … ] ]
  *   - $layout: 'grid' o 'card'
- *   - $lang: lingua corrente (passata dallo shortcode)
- *   - $lang_order: array slug=>priorità delle lingue
  */
 ?>
 
@@ -15,71 +13,40 @@
 <?php endif; ?>
 
 <?php
-  // **MOBILE: filtro globale sticky, mostrato una sola volta**
-  if ( $lang !== 'it' ) : ?>
-    <div id="global-filter"
-         class="documenti-filter d-flex d-md-none align-items-center mb-3"
-         style="position:sticky; top:0; z-index:100; background:#fff; padding:.5rem 0;">
+// subito prima del foreach( $terms_data as $term )...
+if ( $lang !== 'it' ) : ?>
+  <div id="global-filter" class="documenti-filter mb-3">
+    <?php foreach ( $lang_order as $lang_slug => $prio ): ?>
       <button type="button"
-              data-lang=""
-              class="filter-flag btn btn-sm btn-outline-secondary active"
-              title="<?php esc_attr_e( 'Mostra tutte le lingue', 'toro-ag' ); ?>">
-        <i class="bi bi-globe2"></i>
+              data-lang="<?php echo esc_attr( $lang_slug ); ?>"
+              class="filter-flag"
+              title="<?php echo esc_attr( ucwords( $lang_slug ) ); ?>">
+        <?php echo toroag_get_flag_html( $lang_slug ); ?>
       </button>
-      <?php foreach ( $lang_order as $lang_slug => $prio ): ?>
-        <button type="button"
-                data-lang="<?php echo esc_attr( $lang_slug ); ?>"
-                class="filter-flag btn btn-sm btn-outline-secondary ms-1"
-                title="<?php echo esc_attr( ucwords( $lang_slug ) ); ?>">
-          <?php echo toroag_get_flag_html( $lang_slug ); ?>
-        </button>
-      <?php endforeach; ?>
-    </div>
+    <?php endforeach; ?>
+    <button type="button"
+            data-lang=""
+            class="filter-flag"
+            title="<?php esc_attr_e( 'Mostra tutte le lingue', 'toro-ag' ); ?>">
+      <i class="bi bi-globe2"></i>
+    </button>
+  </div>
 <?php endif; ?>
 
 <?php foreach ( $terms_data as $term ): ?>
   <?php
-    // preparazione header termine
+    // Header termine
     $slug   = sanitize_title( $term['term_name'] );
     $t_obj  = get_term_by( 'slug', $slug, 'tipo_di_prodotto' );
     $t_link = $t_obj ? get_term_link( $t_obj ) : '';
   ?>
-
-  <div class="term-header position-relative mb-5">
-    <?php if ( $lang !== 'it' ): ?>
-      <!-- DESKTOP: filtro ripetuto prima di ogni titolo -->
-      <div class="documenti-filter term-filter d-none d-md-flex align-items-center">
-        <button type="button"
-                data-lang=""
-                class="filter-flag btn btn-sm btn-outline-secondary active"
-                title="<?php esc_attr_e( 'Mostra tutte le lingue', 'toro-ag' ); ?>">
-          <i class="bi bi-globe2"></i>
-        </button>
-        <?php foreach ( $lang_order as $lang_slug => $prio ): ?>
-          <?php if ( $lang_slug === 'portoghese' ): ?>
-            <!-- Debug lingua aggiuntiva: <?php echo esc_html( $lang_slug ); ?> -->
-          <?php endif; ?>
-          <button type="button"
-                  data-lang="<?php echo esc_attr( $lang_slug ); ?>"
-                  class="filter-flag btn btn-sm btn-outline-secondary ms-1"
-                  title="<?php echo esc_attr( ucwords( $lang_slug ) ); ?>">
-            <?php echo toroag_get_flag_html( $lang_slug ); ?>
-          </button>
-        <?php endforeach; ?>
-      </div>
+  <h5 class="text-bg-dark text-center py-2 my-4 rounded-2">
+    <?php if ( $t_link ): ?>
+      <a href="<?= esc_url( $t_link ) ?>" class="term-link"><?= esc_html( $term['term_name'] ) ?></a>
+    <?php else: ?>
+      <?= esc_html( $term['term_name'] ) ?>
     <?php endif; ?>
-
-    <!-- Titolo term -->
-    <h5 class="text-bg-dark text-center py-2 rounded-2">
-      <?php if ( $t_link ): ?>
-        <a href="<?= esc_url( $t_link ) ?>" class="term-link">
-          <?= esc_html( $term['term_name'] ) ?>
-        </a>
-      <?php else: ?>
-        <?= esc_html( $term['term_name'] ) ?>
-      <?php endif; ?>
-    </h5>
-  </div>
+  </h5>
 
   <?php if ( empty( $term['products'] ) ): ?>
     <p class="text-center"><?= esc_html__( 'Non ci sono prodotti con Schede o Documenti da visualizzare', 'toro-ag' ) ?></p>
