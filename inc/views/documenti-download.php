@@ -122,79 +122,85 @@ $terms_data = array_slice( $terms_data, 0, 2 );
       <?php endforeach; ?>
     </div>
 
-  <?php else: /* table layout */ ?>
-
-    <table class="table mb-5 documenti-download-table small">
-      <thead>
-        <tr>
-          <th class="prodotti align-middle"><?= esc_html__('Prodotti','toro-ag') ?></th>
-          <th class="lingua align-middle"><?= esc_html__('Lingua','toro-ag') ?></th>
-          <th class="schede align-middle"><?= esc_html__('Schede','toro-ag') ?></th>
-          <th class="documenti align-middle"><?= esc_html__('Documenti','toro-ag') ?></th>
-        </tr>
-      </thead>
-      <tbody>
-      <?php foreach ($term['products'] as $prod): ?>
-        <?php
-        // Raccogli items per lingua
+<?php elseif ( $layout === 'card' ): ?>
+<ul class="list-group mb-5 documenti-download-list">
+  <li class="list-group-item list-group-item-dark d-flex fw-bold">
+    <div class="flex-fill"><?= esc_html__( 'Prodotti', 'toro-ag' ) ?></div>
+    <div class="flex-fill"><?= esc_html__( 'Lingua', 'toro-ag' ) ?></div>
+    <div class="flex-fill"><?= esc_html__( 'Schede', 'toro-ag' ) ?></div>
+    <div class="flex-fill"><?= esc_html__( 'Documenti', 'toro-ag' ) ?></div>
+  </li>
+  <?php foreach ( $term['products'] as $prod ): ?>
+    <?php
+      $groups = [];
+      foreach ( $prod['schede'] as $item ) {
+        $groups[ $item['lang'] ]['schede'][] = $item;
+      }
+      foreach ( $prod['docs'] as $item ) {
+        $groups[ $item['lang'] ]['docs'][] = $item;
+      }
+    ?>
+    <?php foreach ( $groups as $lang_slug => $data ): ?>
+      <li class="list-group-item d-flex align-items-start gruppo-lingua-<?= esc_attr( $lang_slug ) ?>">
+        <div class="flex-fill">
+          <a href="<?= esc_url( get_permalink( $prod['ID'] ) ) ?>" class="prod-link"><?php echo esc_html( $prod['title'] ); ?></a>
+        </div>
+        <div class="flex-fill">
+          <?= toroag_get_flag_html( $lang_slug ) ?>
+        </div>
+        <div class="flex-fill">
+          <?php foreach ( $data['schede'] ?? [] as $sc ): ?>
+            <div><a href="<?= esc_url( $sc['url'] ) ?>" target="_blank"><?= esc_html( $sc['title'] ) ?></a></div>
+          <?php endforeach; ?>
+        </div>
+        <div class="flex-fill">
+          <?php foreach ( $data['docs'] ?? [] as $doc ): ?>
+            <div><a href="<?= esc_url( $doc['url'] ) ?>" target="_blank"><?= esc_html( $doc['title'] ) ?></a></div>
+          <?php endforeach; ?>
+        </div>
+      </li>
+    <?php endforeach; ?>
+  <?php endforeach; ?>
+</ul>
+<?php else: /* table layout */ ?>
+<div class="table-responsive mb-5 documenti-download-table">
+  <div class="row fw-bold border-bottom py-2 gx-2">
+    <div class="col-4"><?= esc_html__( 'Prodotti', 'toro-ag' ) ?></div>
+    <div class="col-2"><?= esc_html__( 'Lingua', 'toro-ag' ) ?></div>
+    <div class="col-3"><?= esc_html__( 'Schede', 'toro-ag' ) ?></div>
+    <div class="col-3"><?= esc_html__( 'Documenti', 'toro-ag' ) ?></div>
+  </div>
+  <div id="items-container">
+    <?php foreach ( $term['products'] as $prod ): ?>
+      <?php
         $groups = [];
-        foreach ($prod['schede'] as $item) {
-            $groups[$item['lang']]['schede'][] = $item;
+        foreach ( $prod['schede'] as $item ) {
+          $groups[ $item['lang'] ]['schede'][] = $item;
         }
-        foreach ($prod['docs'] as $item) {
-            $groups[$item['lang']]['docs'][] = $item;
+        foreach ( $prod['docs'] as $item ) {
+          $groups[ $item['lang'] ]['docs'][] = $item;
         }
-        // Calcolo totale righe per il prodotto
-        $totalRows = 0;
-        foreach ($groups as $lang_slug => $data) {
-            $docsCount = count($data['docs'] ?? []);
-            $totalRows += max(1, $docsCount);
-        }
-        $rowIndex = 0;
-        // Rendering per ciascun gruppo linguistico
-        foreach ($groups as $lang_slug => $data) {
-            $schede = $data['schede'] ?? [];
-            $docs   = $data['docs'] ?? [];
-            $rowCount = max(1, count($docs));
-            // Preparo HTML schede
-            ob_start();
-            foreach ($schede as $sc) {
-                ?><div><a href="<?= esc_url($sc['url']) ?>" target="_blank"><i class="bi <?= esc_attr( toroag_get_icon_class( $item['url'] ) ) ?> me-1"></i><?= esc_html($sc['title']) ?></a></div><?php
-            }
-            $schede_html = ob_get_clean();
-            for ($i = 0; $i < $rowCount; $i++):
-        ?>
-          <tr>
-            <?php if ($rowIndex === 0): ?>
-              <td rowspan="<?= $totalRows ?>" class="prodotti align-middle">
-                <a href="<?= esc_url( get_permalink( $prod['ID'] ) ); ?>" class="prod-link">
-                  <?= esc_html($prod['title']) ?>
-                </a>
-              </td>
-            <?php endif; ?>
-            <?php if ($i === 0): ?>
-              <td rowspan="<?= $rowCount ?>" class="lingua align-middle lingua-<?= esc_attr($lang_slug) ?>">
-                <?= toroag_get_flag_html($lang_slug) ?>
-              </td>
-              <td rowspan="<?= $rowCount ?>" class="schede align-middle">
-                <?= $schede_html ?>
-              </td>
-            <?php endif; ?>
-            <td class="documenti align-middle">
-              <?php if (! empty($docs[$i])): ?>
-                <a href="<?= esc_url($docs[$i]['url']) ?>" target="_blank"><i class="bi <?= esc_attr( toroag_get_icon_class( $item['url'] ) ) ?> me-1"></i><?= esc_html($docs[$i]['title']) ?></a>
-              <?php endif; ?>
-            </td>
-          </tr>
-        <?php
-            $rowIndex++;
-            endfor;
-        }
-        ?>
+      ?>
+      <?php foreach ( $groups as $lang_slug => $data ): ?>
+        <div class="row align-items-start py-2 gx-2 gruppo-lingua-<?= esc_attr( $lang_slug ) ?>">
+          <div class="col-4">
+            <a href="<?= esc_url( get_permalink( $prod['ID'] ) ) ?>"><?= esc_html( $prod['title'] ) ?></a>
+          </div>
+          <div class="col-2"><?= toroag_get_flag_html( $lang_slug ) ?></div>
+          <div class="col-3">
+            <?php foreach ( $data['schede'] ?? [] as $sc ): ?>
+              <div><a href="<?= esc_url( $sc['url'] ) ?>" target="_blank"><?= esc_html( $sc['title'] ) ?></a></div>
+            <?php endforeach; ?>
+          </div>
+          <div class="col-3">
+            <?php foreach ( $data['docs'] ?? [] as $doc ): ?>
+              <div><a href="<?= esc_url( $doc['url'] ) ?>" target="_blank"><?= esc_html( $doc['title'] ) ?></a></div>
+            <?php endforeach; ?>
+          </div>
+        </div>
       <?php endforeach; ?>
-      </tbody>
-    </table>
-
-  <?php endif; ?>
-
+    <?php endforeach; ?>
+  </div>
+</div>
+<?php endif; ?>
 <?php endforeach; ?>
