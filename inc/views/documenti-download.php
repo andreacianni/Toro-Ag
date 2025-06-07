@@ -85,7 +85,7 @@
                 <div class="col-1 d-flex align-items-center">
                   <?= toroag_get_flag_html( $lang ) ?>
                 </div>
-                <div class="col-5">
+                <div class="col-5 d-flex align-items-center">
                   <?php if ( ! empty( $data['schede'] ) ): ?>
                     <ul class="list-unstyled mb-0 pb-0">
                       <?php foreach ( $data['schede'] as $s ): ?>
@@ -97,9 +97,9 @@
                     </ul>
                   <?php endif; ?>
                 </div>
-                <div class="col-5">
+                <div class="col-5 ">
                   <?php if ( ! empty( $data['docs'] ) ): ?>
-                    <ul class="list-unstyled mb-0">
+                    <ul class="list-unstyled mb-0 pb-0">
                       <?php foreach ( $data['docs'] as $d ): ?>
                         <li class="d-flex align-items-center mb-1">
                           <i class="bi <?= esc_attr( toroag_get_icon_class( $d['url'] ) ) ?> me-2"></i>
