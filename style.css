@@ -25,6 +25,21 @@ Template: Divi
   gap: 1rem;
 }
 @media (min-width: 576px) {
+  .toro-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 768px) {
+  .toro-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 992px) {
+  .toro-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (min-width: 576px) {
   .toro-grid.toro-grid--tipi-prod {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
