@@ -90,11 +90,13 @@
                 </div>
                 <div class="col-5 small d-flex align-items-center">
                   <?php if ( ! empty( $data['schede'] ) ): ?>
-                    <ul class="list-unstyled mb-0 ps-2">
+                    <ul class="list-unstyled mb-0 ps-2 pb-0">
                       <?php foreach ( $data['schede'] as $s_item ): ?>
                         <li class="d-flex align-items-center mb-1">
-                          <i class="bi <?= esc_attr( toroag_get_icon_class( $s_item['url'] ) ) ?> me-2"></i>
-                          <a href="<?= esc_url( $s_item['url'] ) ?>" target="_blank"><?= esc_html( $s_item['title'] ) ?></a>
+                          <a href="<?= esc_url( $s_item['url'] ) ?>" target="_blank" class="d-flex align-items-center">
+                            <i class="bi <?= esc_attr( toroag_get_icon_class( $s_item['url'] ) ) ?> me-2"></i>
+                            <span><?= esc_html( $s_item['title'] ) ?></span>
+                          </a>
                         </li>
                       <?php endforeach; ?>
                     </ul>
@@ -102,11 +104,13 @@
                 </div>
                 <div class="col-5 small d-flex align-items-center">
                   <?php if ( ! empty( $data['docs'] ) ): ?>
-                    <ul class="list-unstyled mb-0 ps-2">
+                    <ul class="list-unstyled mb-0 ps-2 pb-0">
                       <?php foreach ( $data['docs'] as $d_item ): ?>
                         <li class="d-flex align-items-center mb-1">
-                          <i class="bi <?= esc_attr( toroag_get_icon_class( $d_item['url'] ) ) ?> me-2"></i>
-                          <a href="<?= esc_url( $d_item['url'] ) ?>" target="_blank"><?= esc_html( $d_item['title'] ) ?></a>
+                          <a href="<?= esc_url( $d_item['url'] ) ?>" target="_blank" class="d-flex align-items-center">
+                            <i class="bi <?= esc_attr( toroag_get_icon_class( $d_item['url'] ) ) ?> me-2"></i>
+                            <span><?= esc_html( $d_item['title'] ) ?></span>
+                          </a>
                         </li>
                       <?php endforeach; ?>
                     </ul>
@@ -120,4 +124,3 @@
     </ul>
   <?php endif; ?>
 <?php endforeach; ?>
-
