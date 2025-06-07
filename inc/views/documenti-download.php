@@ -32,7 +32,7 @@
     <?php continue; ?>
   <?php endif; ?>
 
-  <?php if ( $layout === 'grid' ): ?>
+  <?php if ( $layout === 'card' ): ?>
     <!-- GRID invariato -->
     <div class="row g-3 mb-5 documenti-download-grid">
       <?php foreach ( $term['products'] as $prod ): ?>
@@ -111,7 +111,7 @@
       <?php endforeach; ?>
     </div>
 
-  <?php elseif ( $layout === 'card' ): ?>
+  <?php elseif ( $layout === 'grid' ): ?>
     <!-- CARD: due colonne, prima col prodotto verticalmente centrato, seconda col nested per lingua -->
     <ul class="list-group mb-5 documenti-download-list ps-0">
       <li class="list-group-item list-group-item-dark d-flex fw-bold">
