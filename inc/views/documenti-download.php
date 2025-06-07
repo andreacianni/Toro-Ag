@@ -38,12 +38,12 @@ $terms_data = array_slice( $terms_data, 0, 2 );
   <?php endif; ?>
 
   <?php if ($layout==='grid'): ?>
-    <div class="row g-3 mb-5">
+    <div class="row g-3 mb-5 documenti-download-grid">
       <?php foreach($term['products'] as $prod): ?>
         <div class="col-md-3">
           <div class="card h-100 shadow-sm">
             <div class="card-header">
-              <p class="card-title mb-0">
+              <p class="card-title mb-0 fw-bold">
                 <a href="<?= esc_url( get_permalink( $prod['ID'] ) ); ?>" class="prod-link">
                   <?php
                   // echo "\n<!-- DEBUG view: permalink via ID {$prod['ID']} = " . esc_url( get_permalink( $prod['ID'] ) ) . " -->\n";

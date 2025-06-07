@@ -165,7 +165,16 @@ Template: Divi
   }
 }
 // documenti download
-
+.documenti-download-grid{
+  .card-title {
+    a {
+      color: #1e1e1e;
+      &:hover {
+        color: #cd2027; // hover link color
+      }
+    }
+  }
+}
 // Nasconde la bandierina solo per il gruppo italiano
 .gruppo-lingua-italiano {
   .lang-flag {
