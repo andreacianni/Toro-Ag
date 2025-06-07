@@ -37,15 +37,43 @@ document.addEventListener('DOMContentLoaded', function() {
       var hasVisible = item.querySelector('.gruppo-lingua:not([style*="display: none"])');
       item.style.display = hasVisible ? '' : 'none';
     });
+
+    // 5) Nascondi titoli di "tipo di prodotto" senza prodotti visibili
+    document.querySelectorAll('h5.text-bg-dark').forEach(function(header) {
+      // individua il container subito dopo l'H5
+      var next = header.nextElementSibling;
+      while (next && next.nodeType !== 1) {
+        next = next.nextSibling;
+      }
+      if (!next) return;
+
+      var hasVisibleItem = false;
+      // CARD layout?
+      if (next.matches('.documenti-download-grid')) {
+        hasVisibleItem = !!next.querySelector('.col-12:not([style*="display: none"]), [class*="col-"]:not([style*="display: none"])');
+      }
+      // GRID layout?
+      else if (next.matches('.documenti-download-list')) {
+        hasVisibleItem = !!next.querySelector('li:not([style*="display: none"])');
+      }
+
+      if (!hasVisibleItem) {
+        header.style.display = 'none';
+        next.style.display   = 'none';
+      } else {
+        header.style.display = '';
+        next.style.display   = '';
+      }
+    });
   }
 
-  // 5) Bind dei click sui bottoni
+  // 6) Bind dei click sui bottoni
   buttons.forEach(function(btn) {
     btn.addEventListener('click', function() {
       applyFilter(this.getAttribute('data-lang'));
     });
   });
 
-  // 6) All’avvio, filtro su “inglese”
+  // 7) All’avvio, filtro su “inglese”
   applyFilter('inglese');
 });
