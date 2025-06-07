@@ -11,6 +11,11 @@ add_action( 'init', function() {
 if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
     function toroag_elenco_prodotti_con_dettagli( $atts ) {
 
+        // 1) Determino subito la lingua corrente
+        $lang = function_exists( 'icl_object_id' )
+        ? apply_filters( 'wpml_current_language', null )
+        : 'it';
+
         // se la lingua NON è italiana, enqueue + localize
         if ( $lang !== 'it' ) {
             wp_enqueue_script(
