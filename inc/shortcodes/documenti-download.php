@@ -19,6 +19,14 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
             '1.0',    // versione
             true      // caricalo in footer
         );
+        // Passiamo a JS la lingua corrente
+        wp_localize_script(
+            'toroag-documenti-filter',
+            'toroagFilterConfig',
+            [
+                'currentLang' => $lang,  // es. 'it' o 'en'
+            ]
+        );
 
         $atts = shortcode_atts( ['layout'=>'grid'], $atts, 'elenco_prodotti_con_dettagli' );
         $lang = function_exists('icl_object_id')
