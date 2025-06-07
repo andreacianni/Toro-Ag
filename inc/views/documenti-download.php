@@ -20,22 +20,22 @@ $lang_order = function_exists( 'toroag_get_language_order' )
     ? toroag_get_language_order()
     : [];
 
-// Calcola lingue effettivamente usate nei documenti/schede
-$used_langs = [];
+// Calcola conteggio linguaggio effettivo per documenti/schede
+$all_langs = [];
 foreach ( $terms_data as $term ) {
     foreach ( $term['products'] as $prod ) {
         foreach ( $prod['schede'] as $item ) {
-            $used_langs[] = $item['lang'];
+            $all_langs[] = $item['lang'];
         }
         foreach ( $prod['docs'] as $item ) {
-            $used_langs[] = $item['lang'];
+            $all_langs[] = $item['lang'];
         }
     }
 }
-$used_langs = array_unique( $used_langs );
-
-// Filtra e ordina secondo lang_order
-$filter_langs = array_intersect_key( $lang_order, array_flip( $used_langs ) );
+// Conteggio per lingua
+$lang_counts = array_count_values( $all_langs );
+// Filtra e ordina secondo lang_order, solo lingue con conteggi
+$filter_langs = array_intersect_key( $lang_order, $lang_counts );
 asort( $filter_langs );
 ?>
 
@@ -45,7 +45,7 @@ asort( $filter_langs );
       <button type="button"
               data-lang="<?php echo esc_attr( $lang_slug ); ?>"
               class="filter-flag border-0 bg-white"
-              title="<?php echo esc_attr( toroag_get_language_label( $lang_slug ) ); ?>">
+              title="<?php echo esc_attr( toroag_get_language_label( $lang_slug ) . ' (' . ( $lang_counts[ $lang_slug ] ?? 0 ) . ')' ); ?>">
         <?php echo toroag_get_flag_html( $lang_slug ); ?>
       </button>
     <?php endforeach; ?>
