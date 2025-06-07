@@ -60,7 +60,7 @@
                     <?php endforeach; ?>
                   </div>
                 <?php endforeach;
-              endif;
+              endif;?>
 
               <?php // documenti
               if ( ! empty( $prod['docs'] ) ):
