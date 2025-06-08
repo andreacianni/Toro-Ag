@@ -60,7 +60,7 @@ foreach ( $doc_plus_data as $doc ):
                target="_blank"
                class="btn btn-primary">
               <?php echo esc_html( $att['title'] ); ?>
-              <?php echo $att['flag']; ?>
+              <?php if ( $current_lang !== 'it' ) : echo ' ' . $att['flag']; endif; ?>
             </a>
           </div>
       <?php else : ?>
@@ -71,7 +71,7 @@ foreach ( $doc_plus_data as $doc ):
                  target="_blank"
                  class="d-block border p-3 h-100 text-center">
                 <strong><?php echo esc_html( $att['title'] ); ?></strong><br/>
-                <?php echo $att['flag']; ?>
+                <?php if ( $current_lang !== 'it' ) : echo $att['flag']; endif; ?>
               </a>
             </li>
           <?php endforeach; ?>
