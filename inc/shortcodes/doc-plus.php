@@ -64,4 +64,27 @@ function doc_plus_debug_shortcode() {
 
         foreach ( $allegati as $att ) {
             $pdf_id  = (int) $att['ID'];
-            $pod_pdf = pods_
+            $pod_pdf = pods( 'documenti_prodotto', $pdf_id );
+
+            // File PDF
+            $file_id  = $pod_pdf->field( 'documento-prodotto.ID' );
+            $file_url = $file_id ? wp_get_attachment_url( $file_id ) : '';
+
+            // Titolo PDF e lingua aggiuntiva
+            $pdf_title = get_the_title( $pdf_id );
+            $lingue    = $pod_pdf->field( 'lingua_aggiuntiva' );
+            if ( ! empty( $lingue ) ) {
+                $term = $lingue[0];
+                $slug = $term['slug'];
+                $name = $term['name'];
+            } else {
+                $slug = $name = 'n.d.';
+            }
+
+            echo "<!-- doc_plus_debug:   ALLEGATO PDF_ID={$pdf_id} file_id={$file_id} "
+               . "file_url=\"{$file_url}\" titolo_pdf=\"{$pdf_title}\" "
+               . "lingua_aggiuntiva={$slug}:{$name} -->\n";
+        }
+    }
+}
+add_shortcode( 'doc_plus', 'doc_plus_debug_shortcode' );
