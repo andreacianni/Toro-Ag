@@ -1,42 +1,29 @@
 <?php
 /**
- * [doc_plus]
- * Recupera tutti i doc_plus collegati alla pagina corrente tramite meta key "pagine"
+ * Shortcode [doc_plus]
+ * Mostra tutti i doc_plus collegati tramite il campo 'doc_plus_inpage' della pagina corrente.
  */
 function doc_plus_shortcode() {
-    $page_id = get_the_ID();
-
-    // Sostituisci 'pagine' con lo slug esatto del tuo field Pods di relazione verso le pagine
-    $relation_meta_key = 'pagine';
-
-    $args = array(
-        'post_type'      => 'doc_plus',
-        'posts_per_page' => -1,
-        'orderby'        => 'date',
-        'order'          => 'DESC',
-        'meta_query'     => array(
-            array(
-                'key'     => $relation_meta_key,
-                'value'   => sprintf( '"%d"', $page_id ),  // se Pods serializza in JSON; altrimenti usa "%{$page_id}%"
-                'compare' => 'LIKE',
-            ),
-        ),
-    );
-
-    $q = new WP_Query( $args );
-    if ( ! $q->have_posts() ) {
-        wp_reset_postdata();
+    $page_id  = get_the_ID();
+    // Carico il Pod 'page' della pagina corrente
+    $page_pod = pods( 'page', $page_id );
+    if ( ! $page_pod->exists() ) {
         return '';
+    }
+
+    // Leggo il campo relazione verso doc_plus (multi-pick)
+    $related_docs = $page_pod->field( 'doc_plus_inpage' );
+    if ( empty( $related_docs ) ) {
+        return ''; // nessun doc_plus collegato
     }
 
     ob_start();
     echo '<div class="doc-plus-list">';
-    while ( $q->have_posts() ) {
-        $q->the_post();
-        $doc_id = get_the_ID();
-        $pod    = pods( 'doc_plus', $doc_id );
+    foreach ( $related_docs as $item ) {
+        $doc_id  = $item['ID'];
+        $pod     = pods( 'doc_plus', $doc_id );
 
-        // Titolo (WPML restituisce la traduzione giusta)
+        // Titolo (WPML fornisce già la traduzione)
         $title = get_the_title( $doc_id );
 
         // Cover
@@ -46,34 +33,35 @@ function doc_plus_shortcode() {
         ?>
         <div class="doc-plus-item">
           <h3><?php echo esc_html( $title ); ?></h3>
+
           <?php if ( $cover_url ) : ?>
             <img src="<?php echo esc_url( $cover_url ); ?>"
                  alt="<?php echo esc_attr( $title ); ?>"
                  class="doc-plus-cover" />
           <?php endif; ?>
 
-          <?php 
-          // Allegati
+          <?php
+          // Allegati: relazione verso documenti_prodotto
           $allegati = $pod->field( 'doc_plus_allegati' );
           if ( ! empty( $allegati ) ) : ?>
             <ul class="doc-plus-allegati">
-              <?php foreach ( $allegati as $item ) :
-                $pdf_id  = $item['ID'];
+              <?php foreach ( $allegati as $rel ) :
+                $pdf_id  = $rel['ID'];
                 $pod_pdf = pods( 'documenti_prodotto', $pdf_id );
 
                 // URL del PDF
                 $file_id  = $pod_pdf->field( 'documento-prodotto.ID' );
                 $file_url = $file_id ? wp_get_attachment_url( $file_id ) : '';
 
-                // Titolo del PDF
+                // Titolo del PDF (tradotto da WPML)
                 $pdf_title = get_the_title( $pdf_id );
 
-                // Lingua aggiuntiva
+                // Lingua aggiuntiva per la bandierina
                 $lingue = $pod_pdf->field( 'lingua_aggiuntiva' );
                 if ( ! empty( $lingue ) ) {
-                    $term     = $lingue[0];
-                    $slug     = $term['slug'];
-                    $name     = $term['name'];
+                    $term      = $lingue[0];
+                    $slug      = $term['slug'];
+                    $name      = $term['name'];
                     $flag_html = "<span class='flag flag-{$slug}'>"
                                . esc_html( $name )
                                . "</span> ";
@@ -99,7 +87,6 @@ function doc_plus_shortcode() {
         <?php
     }
     echo '</div>';
-    wp_reset_postdata();
 
     return ob_get_clean();
 }
