@@ -1,34 +1,46 @@
 <?php
 /**
- * Shortcode [doc_plus]
- * Recupera tutti i doc_plus collegati alla pagina corrente e ne stampa titolo, cover e allegati.
+ * [doc_plus]
+ * Recupera tutti i doc_plus collegati alla pagina corrente tramite meta key "pagine"
  */
 function doc_plus_shortcode() {
     $page_id = get_the_ID();
 
-    // Slug del campo Pods che hai usato per collegare doc_plus alle pagine
-    $relation_field = 'pagine'; 
+    // Sostituisci 'pagine' con lo slug esatto del tuo field Pods di relazione verso le pagine
+    $relation_meta_key = 'pagine';
 
-    // Parametri Pods per recuperare tutti i doc_plus collegati alla pagina
-    $params = array(
-        'limit' => -1,
-        'where' => "{$relation_field}.ID = {$page_id}",
-        'orderby' => 'post_date DESC',
+    $args = array(
+        'post_type'      => 'doc_plus',
+        'posts_per_page' => -1,
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+        'meta_query'     => array(
+            array(
+                'key'     => $relation_meta_key,
+                'value'   => sprintf( '"%d"', $page_id ),  // se Pods serializza in JSON; altrimenti usa "%{$page_id}%"
+                'compare' => 'LIKE',
+            ),
+        ),
     );
 
-    $docs = pods( 'doc_plus', $params );
-    if ( ! $docs->total() ) {
-        return ''; // nessun doc_plus collegato
+    $q = new WP_Query( $args );
+    if ( ! $q->have_posts() ) {
+        wp_reset_postdata();
+        return '';
     }
 
     ob_start();
     echo '<div class="doc-plus-list">';
-    while ( $docs->fetch() ) {
-        $doc_id = $docs->id();
-        $title  = $docs->display( 'post_title' );
+    while ( $q->have_posts() ) {
+        $q->the_post();
+        $doc_id = get_the_ID();
+        $pod    = pods( 'doc_plus', $doc_id );
+
+        // Titolo (WPML restituisce la traduzione giusta)
+        $title = get_the_title( $doc_id );
 
         // Cover
-        $cover_id  = $docs->field( 'doc_plus_cover.ID' );
+        $cover_id  = $pod->field( 'doc_plus_cover.ID' );
         $cover_url = $cover_id ? wp_get_attachment_url( $cover_id ) : '';
 
         ?>
@@ -41,8 +53,8 @@ function doc_plus_shortcode() {
           <?php endif; ?>
 
           <?php 
-          // Allegati: relazione verso documenti_prodotto
-          $allegati = $docs->field( 'doc_plus_allegati' );
+          // Allegati
+          $allegati = $pod->field( 'doc_plus_allegati' );
           if ( ! empty( $allegati ) ) : ?>
             <ul class="doc-plus-allegati">
               <?php foreach ( $allegati as $item ) :
@@ -54,16 +66,17 @@ function doc_plus_shortcode() {
                 $file_url = $file_id ? wp_get_attachment_url( $file_id ) : '';
 
                 // Titolo del PDF
-                $pdf_title = $pod_pdf->display( 'post_title' );
+                $pdf_title = get_the_title( $pdf_id );
 
-                // Lingua aggiuntiva (tassonomia)
+                // Lingua aggiuntiva
                 $lingue = $pod_pdf->field( 'lingua_aggiuntiva' );
                 if ( ! empty( $lingue ) ) {
-                    $term      = $lingue[0];
-                    $slug      = $term['slug'];
-                    $name      = $term['name'];
-                    // Qui il markup della bandierina (puoi sostituire con il tuo SVG)
-                    $flag_html = "<span class='flag flag-{$slug}'>{$name}</span> ";
+                    $term     = $lingue[0];
+                    $slug     = $term['slug'];
+                    $name     = $term['name'];
+                    $flag_html = "<span class='flag flag-{$slug}'>"
+                               . esc_html( $name )
+                               . "</span> ";
                 } else {
                     $flag_html = '';
                 }
@@ -86,8 +99,10 @@ function doc_plus_shortcode() {
         <?php
     }
     echo '</div>';
+    wp_reset_postdata();
 
     return ob_get_clean();
 }
 add_shortcode( 'doc_plus', 'doc_plus_shortcode' );
+
 
