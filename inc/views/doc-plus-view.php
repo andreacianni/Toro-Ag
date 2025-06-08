@@ -2,16 +2,16 @@
 /**
  * View: doc-plus-view.php
  * Riceve in $doc_plus_data l’array completo di doc_plus + attachments + flag,
- * e il parametro 'layout' passato dallo shortcode.
+ * e il parametro 'layout' estratto dal loader.
  */
 
 if ( empty( $doc_plus_data ) || ! is_array( $doc_plus_data ) ) {
     return;
 }
 
-// Recuperiamo il layout passato
-global $atts;
-$layout = $atts['layout'] ?? 'single'; // default 'single'
+// Assicuriamoci che $layout sia definito e valido
+$allowed_layouts = [ 'single', 'multiple', 'modern' ];
+$layout = isset( $layout ) && in_array( $layout, $allowed_layouts, true ) ? $layout : 'single';
 
 // Debug: mostriamo il layout scelto
 echo '<!-- Debug: layout passato = ' . esc_html( $layout ) . ' -->';
@@ -40,10 +40,12 @@ foreach ( $doc_plus_data as $index => $doc ):
     }
 
     // Debug: in quale case entriamo
+    echo '<!-- Debug: entering case = ' . esc_html( $layout ) . ' -->';
+
     switch ( $layout ) {
         case 'multiple':
-            echo '<!-- Debug: case = multiple -->';
             // Multiple attachments con immagine a destra e testi a sinistra
+            echo '<!-- Debug: case = multiple -->';
             echo '<div class="col-12 mb-4">';
             echo '<div class="card h-100"><div class="row g-0 align-items-stretch">';
             // Testi a sinistra
@@ -61,20 +63,20 @@ foreach ( $doc_plus_data as $index => $doc ):
             echo '<div class="col-md-4">';
             if ( ! empty( $doc['cover_url'] ) ) {
                 echo '<img src="' . esc_url( $doc['cover_url'] ) . '" '
-                   . 'class="img-fluid h-100" style="object-fit:cover;" alt="" >';
+                   . 'class="img-fluid h-100" style="object-fit:cover;" alt="Cover">';
             }
             echo '</div>';
             echo '</div></div></div>';
             break;
 
         case 'modern':
-            echo '<!-- Debug: case = modern -->';
             // Nuovo layout moderno: card overlay con cover e titoli
+            echo '<!-- Debug: case = modern -->';
             echo '<div class="col-lg-4 col-12 mb-4">';
             echo '<div class="card h-100 modern-layout position-relative overflow-hidden">';
             if ( ! empty( $doc['cover_url'] ) ) {
                 echo '<img src="' . esc_url( $doc['cover_url'] ) . '" '
-                   . 'class="card-img h-100" style="object-fit:cover;" alt="" >';
+                   . 'class="card-img h-100" style="object-fit:cover;" alt="Cover">';
             }
             echo '<div class="card-img-overlay d-flex flex-column justify-content-end bg-gradient-to-t from-black/50 to-transparent p-3">';
             foreach ( $filtered as $att ) {
@@ -88,12 +90,12 @@ foreach ( $doc_plus_data as $index => $doc ):
 
         case 'single':
         default:
-            echo '<!-- Debug: case = single (default) -->';
             // Single-style: una card per documento con tutti i link in h4 grassetti
+            echo '<!-- Debug: case = single -->';
             echo '<div class="col-lg-4 col-12 mb-4">';
             echo '<div class="card h-100">';
             if ( ! empty( $doc['cover_url'] ) ) {
-                echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top" alt="" >';
+                echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top" alt="Cover">';
             }
             echo '<div class="card-body text-center">';
             foreach ( $filtered as $att ) {
@@ -110,4 +112,3 @@ foreach ( $doc_plus_data as $index => $doc ):
 endforeach;
 
 echo '</div>';
-?>
