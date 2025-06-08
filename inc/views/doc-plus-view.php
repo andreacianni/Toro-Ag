@@ -35,46 +35,64 @@ foreach ( $doc_plus_data as $index => $doc ):
         continue;
     }
 
-    // Render in base al layout selezionato
     switch ( $layout ) {
         case 'multiple':
-            // Multiple attachments card: ciclo già presente
+            // Multiple attachments con immagine a destra e testi a sinistra
             echo '<div class="col-12 mb-4">';
-            echo '<div class="card"><div class="row g-0">';
-            echo '<div class="col-md-4">';
-            if ( ! empty( $doc['cover_url'] ) ) {
-                echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="img-fluid" alt="" >';
-            }
-            echo '</div>'; // col-md-4
+            echo '<div class="card h-100"><div class="row g-0 align-items-stretch">';
+            // Testi a sinistra
             echo '<div class="col-md-8"><div class="card-body">';
             foreach ( $filtered as $att ) {
-                echo '<p class="mb-2">';
-                echo '<a href="' . esc_url( $att['url'] ) . '" target="_blank">' . esc_html( $att['title'] ) . '</a>';
+                echo '<h4><strong><a href="' . esc_url( $att['url'] ) . '" target="_blank">'
+                    . esc_html( $att['title'] )
+                    . '</a></strong></h4>';
                 if ( $current_lang !== 'it' && ! empty( $att['flag'] ) ) {
-                    echo ' ' . $att['flag'];
+                    echo '<p>' . $att['flag'] . '</p>';
                 }
-                echo '</p>';
             }
-            echo '</div></div></div></div></div>';
+            echo '</div></div>';
+            // Immagine a destra full height
+            echo '<div class="col-md-4">';
+            if ( ! empty( $doc['cover_url'] ) ) {
+                echo '<img src="' . esc_url( $doc['cover_url'] ) . '" '
+                   . 'class="img-fluid h-100" style="object-fit:cover;" alt="" >';
+            }
+            echo '</div>';
+            echo '</div></div></div>';
+            break;
+
+        case 'modern':
+            // Nuovo layout moderno: card overlay con cover e titoli
+            echo '<div class="col-lg-4 col-12 mb-4">';
+            echo '<div class="card h-100 modern-layout position-relative overflow-hidden">';
+            if ( ! empty( $doc['cover_url'] ) ) {
+                echo '<img src="' . esc_url( $doc['cover_url'] ) . '" '
+                   . 'class="card-img h-100" style="object-fit:cover;" alt="" >';
+            }
+            echo '<div class="card-img-overlay d-flex flex-column justify-content-end bg-gradient-to-t from-black/50 to-transparent p-3">';
+            foreach ( $filtered as $att ) {
+                echo '<h4 class="mb-2"><strong><a href="' . esc_url( $att['url'] ) . '" '
+                   . 'target="_blank" class="text-white text-decoration-none">'
+                   . esc_html( $att['title'] )
+                   . '</a></strong></h4>';
+            }
+            echo '</div></div></div>';
             break;
 
         case 'single':
         default:
-            // Single-style: una card per documento con tutti i link in body
+            // Single-style: una card per documento con tutti i link in h4 grassetti
             echo '<div class="col-lg-4 col-12 mb-4">';
             echo '<div class="card h-100">';
             if ( ! empty( $doc['cover_url'] ) ) {
                 echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top" alt="" >';
             }
             echo '<div class="card-body text-center">';
-            // Mostriamo tutti gli allegati come pulsanti
             foreach ( $filtered as $att ) {
-                echo '<a href="' . esc_url( $att['url'] ) . '" target="_blank" class="btn btn-primary me-2 mb-2">';
-                echo esc_html( $att['title'] );
-                if ( $current_lang !== 'it' && ! empty( $att['flag'] ) ) {
-                    echo ' ' . $att['flag'];
-                }
-                echo '</a>';
+                echo '<h4><strong><a href="' . esc_url( $att['url'] ) . '" '
+                   . 'target="_blank" class="text-decoration-none">'
+                   . esc_html( $att['title'] )
+                   . '</a></strong></h4>';
             }
             echo '</div></div></div>';
             break;
