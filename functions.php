@@ -86,7 +86,7 @@ require_once get_stylesheet_directory() . '/inc/shortcodes/scheda-prodotto-detta
 require_once get_stylesheet_directory() . '/inc/helpers/sup.php';
 require_once get_stylesheet_directory() . '/inc/helpers/breadcrumbs.php';
 require_once get_stylesheet_directory() . '/inc/shortcodes/doc-plus.php';
-require_once get_stylesheet_directory() . '/inc/views/doc-plus-view.php';
+// require_once get_stylesheet_directory() . '/inc/views/doc-plus-view.php';
 
 /*
 $shortcode_file = get_stylesheet_directory() . '/inc/shortcodes/doc-plus.php';
