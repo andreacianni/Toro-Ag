@@ -10,9 +10,11 @@ if ( empty( $doc_plus_data ) || ! is_array( $doc_plus_data ) ) {
 }
 
 // Recuperiamo il layout passato
-// Recuperiamo il layout passato
+global $atts;
 $layout = $atts['layout'] ?? 'single'; // default 'single'
-$layout = ! empty( $layout ) ? $layout : 'single'; // default 'single'
+
+// Debug: mostriamo il layout scelto
+echo '<!-- Debug: layout passato = ' . esc_html( $layout ) . ' -->';
 
 // Apriamo la griglia delle card
 echo '<div class="row x">';
@@ -33,11 +35,14 @@ foreach ( $doc_plus_data as $index => $doc ):
     } );
 
     if ( empty( $filtered ) ) {
+        echo '<!-- Debug: nessun attachment filtrato, skip document -->';
         continue;
     }
 
+    // Debug: in quale case entriamo
     switch ( $layout ) {
         case 'multiple':
+            echo '<!-- Debug: case = multiple -->';
             // Multiple attachments con immagine a destra e testi a sinistra
             echo '<div class="col-12 mb-4">';
             echo '<div class="card h-100"><div class="row g-0 align-items-stretch">';
@@ -63,6 +68,7 @@ foreach ( $doc_plus_data as $index => $doc ):
             break;
 
         case 'modern':
+            echo '<!-- Debug: case = modern -->';
             // Nuovo layout moderno: card overlay con cover e titoli
             echo '<div class="col-lg-4 col-12 mb-4">';
             echo '<div class="card h-100 modern-layout position-relative overflow-hidden">';
@@ -82,6 +88,7 @@ foreach ( $doc_plus_data as $index => $doc ):
 
         case 'single':
         default:
+            echo '<!-- Debug: case = single (default) -->';
             // Single-style: una card per documento con tutti i link in h4 grassetti
             echo '<div class="col-lg-4 col-12 mb-4">';
             echo '<div class="card h-100">';
