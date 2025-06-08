@@ -1,41 +1,91 @@
 <?php
 /**
- * Template: doc-plus-view.php
- * Riceve i dati in $doc_plus_data e genera l'HTML frontend con Bootstrap
+ * View: doc-plus-view.php
+ * Expects $doc_plus_data passed from the shortcode:
+ *   array of [
+ *     'id'         => post ID,
+ *     'title'      => string,
+ *     'cover_url'  => string,
+ *     'attachments'=> [
+ *       [
+ *         'id'   => int,
+ *         'title'=> string,
+ *         'url'  => string,
+ *         'lang' => ['slug'=>string,'name'=>string],
+ *         'flag' => '<img … />'
+ *       ],
+ *       …
+ *     ]
+ *   ]
  */
-$docs = get_query_var('doc_plus_data');
-if ( empty( $docs ) || ! is_array( $docs ) ) {
-    return;
+
+// Get current language (WPML)
+$current_lang = defined('ICL_LANGUAGE_CODE')
+    ? ICL_LANGUAGE_CODE
+    : apply_filters('wpml_current_language', null);
+
+if ( empty($doc_plus_data) || ! is_array($doc_plus_data) ) {
+    return; // nothing to render
 }
-?>
-<div class="row doc-plus-list">
-    <?php foreach ( $docs as $doc ) : ?>
-        <div class="col-md-6 mb-4">
-            <div class="card h-100 shadow-sm">
-                <?php if ( ! empty( $doc['cover_url'] ) ) : ?>
-                    <img src="<?php echo esc_url( $doc['cover_url'] ); ?>"
-                         class="card-img-top"
-                         alt="<?php echo esc_attr( $doc['title'] ); ?>">
-                <?php endif; ?>
-                <div class="card-body">
-                    <h5 class="card-title"><?php echo esc_html( $doc['title'] ); ?></h5>
-                    <?php if ( ! empty( $doc['attachments'] ) ) : ?>
-                        <ul class="list-group list-group-flush">
-                            <?php foreach ( $doc['attachments'] as $att ) : ?>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <a href="<?php echo esc_url( $att['url'] ); ?>"
-                                       target="_blank" rel="noopener">
-                                        <?php echo esc_html( $att['title'] ); ?>
-                                    </a>
-                                    <span class="ml-auto">
-                                        <?php echo $att['flag']; ?>
-                                    </span>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    <?php endif; ?>
-                </div>
-            </div>
+
+// Loop all doc_plus items
+foreach ( $doc_plus_data as $doc ) :
+
+    // Filter attachments by language
+    $filtered = array_filter( $doc['attachments'], function( $att ) use ( $current_lang ) {
+        $slug = isset($att['lang']['slug']) ? $att['lang']['slug'] : '';
+        if ( $current_lang === 'it' ) {
+            // In Italian front-end: only show Italian attachments
+            return $slug === 'italiano';
+        }
+        // In non-Italian front-end: show everything except Italian
+        return $slug !== 'italiano';
+    } );
+
+    $count = count( $filtered );
+    if ( 0 === $count ) {
+        // Skip this doc entirely if no attachments pass the filter
+        continue;
+    }
+    ?>
+    <div class="doc-plus-item mb-5">
+      <h3 class="doc-plus-title"><?php echo esc_html( $doc['title'] ); ?></h3>
+      <?php if ( ! empty( $doc['cover_url'] ) ) : ?>
+        <div class="doc-plus-cover mb-3 text-center">
+          <img src="<?php echo esc_url( $doc['cover_url'] ); ?>"
+               alt="<?php echo esc_attr( $doc['title'] ); ?>"
+               class="img-fluid" />
         </div>
-    <?php endforeach; ?>
-</div>
+      <?php endif; ?>
+
+      <?php if ( 1 === $count ) : 
+          // Single attachment
+          $att = array_shift( $filtered ); ?>
+          <div class="doc-plus-single-attachment text-center">
+            <a href="<?php echo esc_url( $att['url'] ); ?>"
+               target="_blank"
+               class="btn btn-primary">
+              <?php echo esc_html( $att['title'] ); ?>
+              <?php echo $att['flag']; ?>
+            </a>
+          </div>
+      <?php else : 
+          // Multiple attachments
+      ?>
+        <ul class="doc-plus-attachments list-unstyled row">
+          <?php foreach ( $filtered as $att ) : ?>
+            <li class="col-md-6 mb-3">
+              <a href="<?php echo esc_url( $att['url'] ); ?>"
+                 target="_blank"
+                 class="d-block border p-3 h-100 text-center">
+                <strong><?php echo esc_html( $att['title'] ); ?></strong><br/>
+                <?php echo $att['flag']; ?>
+              </a>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      <?php endif; ?>
+
+    </div>
+<?php
+endforeach;
