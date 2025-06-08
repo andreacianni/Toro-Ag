@@ -3,6 +3,7 @@
  * View: doc-plus-view.php
  * Riceve in $doc_plus_data l’array completo di doc_plus + attachments + flag,
  * e il parametro 'layout' estratto dal loader.
+ * Ordina gli allegati secondo toroag_get_language_order e mostra le bandiere per lingue aggiuntive.
  */
 
 if ( empty( $doc_plus_data ) || ! is_array( $doc_plus_data ) ) {
@@ -13,9 +14,11 @@ if ( empty( $doc_plus_data ) || ! is_array( $doc_plus_data ) ) {
 $allowed_layouts = [ 'single', 'multiple', 'modern' ];
 $layout = isset( $layout ) && in_array( $layout, $allowed_layouts, true ) ? $layout : 'single';
 
-// Debug: mostriamo il layout scelto
-echo '<!-- Debug: layout passato = ' . esc_html( $layout ) . ' -->';
+// Recuperiamo l'ordine delle lingue aggiuntive
+action_exists('toroag_get_language_order') && $order_map = toroag_get_language_order();
 
+// Debug: layout scelto
+echo '<!-- Debug: layout passato = ' . esc_html( $layout ) . ' -->';
 // Apriamo la griglia delle card
 echo '<div class="row x">';
 
@@ -23,11 +26,26 @@ foreach ( $doc_plus_data as $index => $doc ):
     echo '<!-- Inizio ciclo document #: ' . ( $index + 1 ) . ' -->';
 
     // Filtro degli allegati secondo la lingua
-    $current_lang = defined('ICL_LANGUAGE_CODE')
-        ? ICL_LANGUAGE_CODE
-        : apply_filters('wpml_current_language', null);
+    $current_lang = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : apply_filters('wpml_current_language', null);
 
-    $filtered = array_filter( $doc['attachments'], function( $att ) use ( $current_lang ) {
+    // Filtra: lingua corrente come primo criterio, poi tutte le altre lingue aggiuntive
+    $attachments = $doc['attachments'];
+    // Ordiniamo secondo la mappa e manteniamo italiano in testa se corrente
+    usort( $attachments, function( $a, $b ) use ( $order_map, $current_lang ) {
+        $slug_a = $a['lang']['slug'] ?? '';
+        $slug_b = $b['lang']['slug'] ?? '';
+        // Se la lingua attuale è italiano, mantieni only italiano -> poi le altre ordinate
+        if ( 'it' === $current_lang ) {
+            if ( $slug_a === 'italiano' && $slug_b !== 'italiano' ) return -1;
+            if ( $slug_b === 'italiano' && $slug_a !== 'italiano' ) return 1;
+        }
+        $pr_a = $order_map[ $slug_a ] ?? 999;
+        $pr_b = $order_map[ $slug_b ] ?? 999;
+        return $pr_a <=> $pr_b;
+    } );
+
+    // Applichiamo nuovamente il filtro di WPML per sicurezza
+    $filtered = array_filter( $attachments, function( $att ) use ( $current_lang ) {
         $slug = $att['lang']['slug'] ?? '';
         return $current_lang === 'it'
             ? ( $slug === 'italiano' )
@@ -40,23 +58,24 @@ foreach ( $doc_plus_data as $index => $doc ):
     }
 
     // Debug: in quale case entriamo
-    echo '<!-- Debug: entering case = ' . esc_html( $layout ) . ' -->';
+echo '<!-- Debug: entering case = ' . esc_html( $layout ) . ' -->';
 
     switch ( $layout ) {
         case 'multiple':
-            // Multiple attachments con immagine a destra e testi a sinistra
             echo '<!-- Debug: case = multiple -->';
             echo '<div class="col-12 mb-4">';
             echo '<div class="card h-100"><div class="row g-0 align-items-stretch">';
             // Testi a sinistra
             echo '<div class="col-md-8"><div class="card-body">';
             foreach ( $filtered as $att ) {
-                echo '<h4><strong><a href="' . esc_url( $att['url'] ) . '" target="_blank">'
-                    . esc_html( $att['title'] )
-                    . '</a></strong></h4>';
-                if ( $current_lang !== 'it' && ! empty( $att['flag'] ) ) {
-                    echo '<p>' . $att['flag'] . '</p>';
+                $title = esc_html( $att['title'] );
+                $url   = esc_url( $att['url'] );
+                $slug  = $att['lang']['slug'] ?? '';
+                echo "<h4><strong><a href=\"{$url}\" target=\"_blank\">{$title}</a></strong>";
+                if ( 'italiano' !== $slug ) {
+                    echo " " . toroag_get_flag_html( $slug );
                 }
+                echo "</h4>";
             }
             echo '</div></div>';
             // Immagine a destra full height
@@ -70,7 +89,6 @@ foreach ( $doc_plus_data as $index => $doc ):
             break;
 
         case 'modern':
-            // Nuovo layout moderno: card overlay con cover e titoli
             echo '<!-- Debug: case = modern -->';
             echo '<div class="col-lg-4 col-12 mb-4">';
             echo '<div class="card h-100 modern-layout position-relative overflow-hidden">';
@@ -80,17 +98,20 @@ foreach ( $doc_plus_data as $index => $doc ):
             }
             echo '<div class="card-img-overlay d-flex flex-column justify-content-end bg-gradient-to-t from-black/50 to-transparent p-3">';
             foreach ( $filtered as $att ) {
-                echo '<h4 class="mb-2"><strong><a href="' . esc_url( $att['url'] ) . '" '
-                   . 'target="_blank" class="text-white text-decoration-none">'
-                   . esc_html( $att['title'] )
-                   . '</a></strong></h4>';
+                $title = esc_html( $att['title'] );
+                $url   = esc_url( $att['url'] );
+                $slug  = $att['lang']['slug'] ?? '';
+                echo "<h4 class=\"mb-2\"><strong><a href=\"{$url}\" target=\"_blank\" class=\"text-white text-decoration-none\">{$title}</a></strong>";
+                if ( 'italiano' !== $slug ) {
+                    echo " " . toroag_get_flag_html( $slug );
+                }
+                echo "</h4>";
             }
             echo '</div></div></div>';
             break;
 
         case 'single':
         default:
-            // Single-style: una card per documento con tutti i link in h4 grassetti
             echo '<!-- Debug: case = single -->';
             echo '<div class="col-lg-4 col-12 mb-4">';
             echo '<div class="card h-100">';
@@ -99,10 +120,14 @@ foreach ( $doc_plus_data as $index => $doc ):
             }
             echo '<div class="card-body text-center">';
             foreach ( $filtered as $att ) {
-                echo '<h4><strong><a href="' . esc_url( $att['url'] ) . '" '
-                   . 'target="_blank" class="text-decoration-none">'
-                   . esc_html( $att['title'] )
-                   . '</a></strong></h4>';
+                $title = esc_html( $att['title'] );
+                $url   = esc_url( $att['url'] );
+                $slug  = $att['lang']['slug'] ?? '';
+                echo "<h4><strong><a href=\"{$url}\" target=\"_blank\" class=\"text-decoration-none\">{$title}</a></strong>";
+                if ( 'italiano' !== $slug ) {
+                    echo " " . toroag_get_flag_html( $slug );
+                }
+                echo "</h4>";
             }
             echo '</div></div></div>';
             break;
