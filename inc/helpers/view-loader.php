@@ -22,6 +22,7 @@ if ( ! function_exists( 'toroag_load_view' ) ) {
         extract( $data, EXTR_SKIP );
         ob_start();
         include $view_file;
+        var_dump($data);
         return ob_get_clean();
     }
 }
