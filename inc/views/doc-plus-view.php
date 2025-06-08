@@ -10,13 +10,13 @@ if ( empty( $doc_plus_data ) || ! is_array( $doc_plus_data ) ) {
 }
 
 // Recuperiamo il layout passato
+global $layout;
 $layout = ! empty( $layout ) ? $layout : 'single'; // default 'single'
 
 // Apriamo la griglia delle card
 echo '<div class="row x">';
 
 foreach ( $doc_plus_data as $index => $doc ):
-    // HTML comment per identificare il ciclo corrente
     echo '<!-- Inizio ciclo document #: ' . ( $index + 1 ) . ' -->';
 
     // Filtro degli allegati secondo la lingua
@@ -31,67 +31,54 @@ foreach ( $doc_plus_data as $index => $doc ):
             : ( $slug !== 'italiano' );
     } );
 
-    // Se non ci sono allegati, saltiamo
-    if ( count( $filtered ) === 0 ) {
+    if ( empty( $filtered ) ) {
         continue;
     }
 
     // Render in base al layout selezionato
-    if ( 'single' === $layout ) :
-        // Single attachment card (default)
-        $att = reset( $filtered );
-        echo '<div class="col-lg-4 col-12 mb-4">';
-        echo '<div class="card h-100">';
-        if ( ! empty( $doc['cover_url'] ) ) {
-            echo '<img src="' . esc_url( $doc['cover_url'] ) . '" '
-               . 'class="card-img-top" alt="" >';
-        }
-        echo '<div class="card-body text-center">';
-        echo '<a href="' . esc_url( $att['url'] ) . '" target="_blank" class="btn btn-primary">';
-        echo esc_html( $att['title'] );
-        if ( $current_lang !== 'it' && ! empty( $att['flag'] ) ) {
-            echo ' ' . $att['flag'];
-        }
-        echo '</a></div></div></div>';
-
-    elseif ( 'multiple' === $layout ) :
-        // Multiple attachments card
-        echo '<div class="col-12 mb-4">';
-        echo '<div class="card"><div class="row g-0">';
-        // Cover image
-        echo '<div class="col-md-4">';
-        if ( ! empty( $doc['cover_url'] ) ) {
-            echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="img-fluid" alt="" >';
-        }
-        echo '</div>';
-        // Links list
-        echo '<div class="col-md-8"><div class="card-body">';
-        foreach ( $filtered as $att ) {
-            echo '<p class="mb-2">';
-            echo '<a href="' . esc_url( $att['url'] ) . '" target="_blank">' . esc_html( $att['title'] ) . '</a>';
-            if ( $current_lang !== 'it' && ! empty( $att['flag'] ) ) {
-                echo ' ' . $att['flag'];
+    switch ( $layout ) {
+        case 'multiple':
+            // Multiple attachments card: ciclo già presente
+            echo '<div class="col-12 mb-4">';
+            echo '<div class="card"><div class="row g-0">';
+            echo '<div class="col-md-4">';
+            if ( ! empty( $doc['cover_url'] ) ) {
+                echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="img-fluid" alt="" >';
             }
-            echo '</p>';
-        }
-        echo '</div></div></div></div></div>';
+            echo '</div>'; // col-md-4
+            echo '<div class="col-md-8"><div class="card-body">';
+            foreach ( $filtered as $att ) {
+                echo '<p class="mb-2">';
+                echo '<a href="' . esc_url( $att['url'] ) . '" target="_blank">' . esc_html( $att['title'] ) . '</a>';
+                if ( $current_lang !== 'it' && ! empty( $att['flag'] ) ) {
+                    echo ' ' . $att['flag'];
+                }
+                echo '</p>';
+            }
+            echo '</div></div></div></div></div>';
+            break;
 
-    else:
-        // Fallback al single
-        $att = reset( $filtered );
-        echo '<div class="col-lg-4 col-12 mb-4">';
-        echo '<div class="card h-100">';
-        if ( ! empty( $doc['cover_url'] ) ) {
-            echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top" alt="" >';
-        }
-        echo '<div class="card-body text-center">';
-        echo '<a href="' . esc_url( $att['url'] ) . '" target="_blank" class="btn btn-primary">';
-        echo esc_html( $att['title'] );
-        if ( $current_lang !== 'it' && ! empty( $att['flag'] ) ) {
-            echo ' ' . $att['flag'];
-        }
-        echo '</a></div></div></div>';
-    endif;
+        case 'single':
+        default:
+            // Single-style: una card per documento con tutti i link in body
+            echo '<div class="col-lg-4 col-12 mb-4">';
+            echo '<div class="card h-100">';
+            if ( ! empty( $doc['cover_url'] ) ) {
+                echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top" alt="" >';
+            }
+            echo '<div class="card-body text-center">';
+            // Mostriamo tutti gli allegati come pulsanti
+            foreach ( $filtered as $att ) {
+                echo '<a href="' . esc_url( $att['url'] ) . '" target="_blank" class="btn btn-primary me-2 mb-2">';
+                echo esc_html( $att['title'] );
+                if ( $current_lang !== 'it' && ! empty( $att['flag'] ) ) {
+                    echo ' ' . $att['flag'];
+                }
+                echo '</a>';
+            }
+            echo '</div></div></div>';
+            break;
+    }
 
     echo '<!-- Fine ciclo document #: ' . ( $index + 1 ) . ' -->';
 endforeach;
