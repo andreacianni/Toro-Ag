@@ -36,7 +36,7 @@ function doc_plus_debug_shortcode( $atts ) {
       echo '<div class="card shadow-sm" style="max-width:600px; width:100%;">';
         echo '<div class="card-header text-center">';
           if ( $using_provided ) {
-              echo esc_html("doc_plus_debug: eseguito lang={$current_lang}, metodo=Param IDs");
+              echo esc_html("doc_plus_debug: eseguito lang={$current_lang}, metodo=Param IDs 4");
           } else {
               echo esc_html("doc_plus_debug: eseguito lang={$current_lang}, metodo=Pods pag-relazione");
           }
