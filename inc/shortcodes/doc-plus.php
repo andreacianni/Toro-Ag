@@ -1,6 +1,7 @@
 <?php
 /**
- * Shortcode [doc_plus] – debug Bootstrap card con fallback in stile video_prodotto_v2, esteso per fallback allegati
+ * Shortcode [doc_plus] – debug Bootstrap card con fallback completo
+ * Fallback per pagina, doc_plus e allegati, emette debug in card.
  */
 function doc_plus_debug_shortcode() {
     // 1) Setup lingue
@@ -16,22 +17,24 @@ function doc_plus_debug_shortcode() {
 
     // Inizio card Bootstrap
     echo '<div class="d-flex justify-content-center my-4">';
-      echo '<div class="card shadow-sm" style="max-width:600px; width:100%;">';
-        echo '<div class="card-header text-center">';
-          echo esc_html("doc_plus_debug: eseguito lang={$current_lang}, metodo=Pods pag-relazione");
-        echo '</div>';
-        echo '<div class="card-body p-3">';
+    echo '<div class="card shadow-sm" style="max-width:600px; width:100%;">';
+    echo '<div class="card-header text-center">';
+    echo esc_html("doc_plus_debug: eseguito lang={$current_lang}, metodo=Pods pag-relazione");
+    echo '</div>';
+    echo '<div class="card-body p-3">';
 
-    // 4) Fallback relazione se Vuoto
+    // 4) Fallback relazione se vuoto
     if (empty($related)) {
-        $fallback_id = apply_filters('wpml_object_id', $orig_page_id, 'page', true, $default_lang) ?: $orig_page_id;
-        $all_meta = get_post_meta($fallback_id, 'doc_plus_inpage', false);
+        $fallback_page_id = apply_filters('wpml_object_id', $orig_page_id, 'page', true, $default_lang) ?: $orig_page_id;
+        // leggo raw postmeta
+        $all_meta = get_post_meta($fallback_page_id, 'doc_plus_inpage', false);
         $related = [];
         foreach ($all_meta as $entry) {
+            // unserialize se necessario
             if (!is_array($entry)) {
-                $maybe = @unserialize($entry);
-                if ($maybe !== false && is_array($maybe)) {
-                    foreach ($maybe as $id_val) {
+                $un = @unserialize($entry);
+                if ($un !== false && is_array($un)) {
+                    foreach ($un as $id_val) {
                         $related[] = ['ID' => intval($id_val)];
                     }
                     continue;
@@ -46,7 +49,7 @@ function doc_plus_debug_shortcode() {
             }
         }
         echo '<small class="d-block text-center text-muted mb-2">';
-        echo esc_html("doc_plus_debug: fallback raw pag-relazione da pagina {$fallback_id}, elementi=" . count($related));
+        echo esc_html("doc_plus_debug: fallback raw pag-relazione da pagina {$fallback_page_id}, elementi=" . count($related));
         echo '</small>';
     }
 
@@ -66,13 +69,21 @@ function doc_plus_debug_shortcode() {
     // 6) Loop doc_plus
     foreach ($related as $rel) {
         $doc_id = intval($rel['ID']);
-        // Carico Pod doc_plus in current lang
+        // Provo Pods doc_plus in current lang
         $pod = pods('doc_plus', $doc_id, ['lang' => $current_lang]);
+        // Fallback doc_plus se non esiste in current lang
+        if (!$pod->exists()) {
+            $fallback_doc_id = apply_filters('wpml_object_id', $doc_id, 'doc_plus', true, $default_lang) ?: $doc_id;
+            echo '<small class="d-block text-center text-muted">';
+            echo esc_html("doc_plus_debug: fallback doc_plus da {$doc_id} a {$fallback_doc_id}");
+            echo '</small>';
+            $pod = pods('doc_plus', $fallback_doc_id, ['lang' => $default_lang]);
+        }
 
         // Titolo
-        $title = get_the_title($doc_id);
+        $title = get_the_title($pod->ID());
         echo '<small class="d-block">';
-        echo esc_html("DOC ID={$doc_id} lang={$current_lang} titolo=\"{$title}\"");
+        echo esc_html("DOC ID={$pod->ID()} lang={$current_lang} titolo=\"{$title}\"");
         echo '</small>';
 
         // Cover ID
@@ -81,22 +92,24 @@ function doc_plus_debug_shortcode() {
         echo esc_html("cover_id={$cover_id}");
         echo '</small>';
 
-        // 7) Allegati Pods
+        // Allegati Pods
         $allegati = $pod->field('doc_plus_allegati');
         echo '<small class="d-block text-center text-muted mb-1">';
-        echo esc_html("metodo allegati: Pods, count=" . count($allegati));
+        echo esc_html("metodo allegati: Pods, count=" . count((array)$allegati));
         echo '</small>';
 
         // Fallback allegati se vuoto
         if (empty($allegati)) {
-            $fallback_doc_id = apply_filters('wpml_object_id', $doc_id, 'doc_plus', true, $default_lang) ?: $doc_id;
+            $fallback_doc_id = $pod->ID();
+            // fallback base doc id in default lang
+            $fallback_doc_id = apply_filters('wpml_object_id', $fallback_doc_id, 'doc_plus', true, $default_lang) ?: $fallback_doc_id;
             $all_att = get_post_meta($fallback_doc_id, 'doc_plus_allegati', false);
             $allegati = [];
             foreach ($all_att as $entry2) {
                 if (!is_array($entry2)) {
-                    $maybe2 = @unserialize($entry2);
-                    if ($maybe2 !== false && is_array($maybe2)) {
-                        foreach ($maybe2 as $id_val2) {
+                    $un2 = @unserialize($entry2);
+                    if ($un2 !== false && is_array($un2)) {
+                        foreach ($un2 as $id_val2) {
                             $allegati[] = ['ID' => intval($id_val2)];
                         }
                         continue;
@@ -117,16 +130,21 @@ function doc_plus_debug_shortcode() {
 
         if (empty($allegati)) {
             echo '<small class="d-block text-muted">';
-            echo esc_html("nessun allegato per doc_plus {$doc_id}");
+            echo esc_html("nessun allegato per doc_plus {$pod->ID()}");
             echo '</small>';
             continue;
         }
 
-        // 8) Loop allegati
+        // 7) Loop allegati
         foreach ($allegati as $att) {
             $pdf_id = intval($att['ID']);
-            $pdf_title = get_the_title($pdf_id);
             $pod_pdf = pods('documenti_prodotto', $pdf_id, ['lang' => $current_lang]);
+            // fallback PDF item if not exists
+            if (!$pod_pdf->exists()) {
+                $pdf_fallback = apply_filters('wpml_object_id', $pdf_id, 'documenti_prodotto', true, $default_lang) ?: $pdf_id;
+                $pod_pdf = pods('documenti_prodotto', $pdf_fallback, ['lang' => $default_lang]);
+            }
+            $pdf_title = get_the_title($pod_pdf->ID());
             $langs = $pod_pdf->field('lingua_aggiuntiva');
             if (!empty($langs)) {
                 $t = $langs[0];
@@ -136,12 +154,12 @@ function doc_plus_debug_shortcode() {
                 $slug = $name = 'n.d.';
             }
             echo '<small class="d-block">';
-            echo esc_html("ALLEGATO PDF_ID={$pdf_id} titolo_pdf=\"{$pdf_title}\" lingua_aggiuntiva={$slug}:{$name}");
+            echo esc_html("ALLEGATO PDF_ID={$pod_pdf->ID()} titolo_pdf=\"{$pdf_title}\" lingua_aggiuntiva={$slug}:{$name}");
             echo '</small>';
         }
     }
 
-    // 9) Chiusura card
+    // 8) Chiusura card
     echo '</div></div></div>';
 }
 add_shortcode('doc_plus', 'doc_plus_debug_shortcode');
