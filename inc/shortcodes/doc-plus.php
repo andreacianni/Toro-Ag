@@ -108,17 +108,15 @@ function doc_plus_debug_shortcode( $atts ) {
         ];
     }
 
-    // 6) Include view template
-    $template = locate_template( 'inc/views/doc-plus-view.php' );
-    if ( $template ) {
-        // make $data available
-        set_query_var( 'doc_plus_data', $data );
-        ob_start();
-        include $template;
-        return ob_get_clean();
+    // 6) Include view template – solo se ho dati
+    if ( ! empty( $data ) ) {
+        // usa il nostro helper per caricare la view e passarle i dati
+        return toroag_load_view( 'doc-plus-view', [
+            'doc_plus_data' => $data,
+        ] );
     }
 
     // 7) Fallback: simple var_export
-    return '<pre>' . esc_html( var_export( $data, true ) ) . '</pre>';
+    return '' ;
 }
 add_shortcode( 'doc_plus', 'doc_plus_debug_shortcode' );
