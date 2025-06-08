@@ -1,7 +1,7 @@
 <?php
 /**
  * Shortcode [doc_plus] – debug Bootstrap card con parametri ID e fallback completo
- * Se passi `ids="1,2,3"` mostra solo quei doc_plus senza fallback relazioni, altrimenti recupera tutti con fallback.
+ * Se passi `ids="1,2,3"` mostra solo quei doc_plus, altrimenti recupera tutti con fallback.
  */
 function doc_plus_debug_shortcode( $atts ) {
     // Shortcode attributes
@@ -36,7 +36,7 @@ function doc_plus_debug_shortcode( $atts ) {
       echo '<div class="card shadow-sm" style="max-width:600px; width:100%;">';
         echo '<div class="card-header text-center">';
           if ( $using_provided ) {
-              echo esc_html("doc_plus_debug: eseguito lang={$current_lang}, metodo=Param IDs 4");
+              echo esc_html("doc_plus_debug: eseguito lang={$current_lang}, metodo=Param IDs, count=" . count($provided));
           } else {
               echo esc_html("doc_plus_debug: eseguito lang={$current_lang}, metodo=Pods pag-relazione");
           }
@@ -105,8 +105,8 @@ function doc_plus_debug_shortcode( $atts ) {
         $doc_id = intval( $rel['ID'] );
         // Load pod for doc_plus
         $pod = pods('doc_plus', $doc_id, ['lang' => $current_lang]);
-        // Fallback doc_plus only if not using provided IDs
-        if ( ! $using_provided && ! $pod->exists() ) {
+        // Always fallback doc_plus if not exists
+        if ( ! $pod->exists() ) {
             $fallback_doc_id = apply_filters('wpml_object_id', $doc_id, 'doc_plus', true, $default_lang)
                                 ?: $doc_id;
             echo '<small class="d-block text-center text-muted">'
@@ -129,11 +129,9 @@ function doc_plus_debug_shortcode( $atts ) {
            . '</small>';
         // Fallback attachments if empty
         if ( empty( $allegati ) ) {
-            $fb_doc_id = $pod->ID();
-            if ( ! $using_provided ) {
-                $fb_doc_id = apply_filters('wpml_object_id', $fb_doc_id, 'doc_plus', true, $default_lang)
-                             ?: $fb_doc_id;
-            }
+            $fb_doc_id = $doc_id;
+            $fb_doc_id = apply_filters('wpml_object_id', $fb_doc_id, 'doc_plus', true, $default_lang)
+                         ?: $fb_doc_id;
             $all_att = get_post_meta($fb_doc_id, 'doc_plus_allegati', false);
             $allegati = [];
             foreach ( $all_att as $entry2 ) {
@@ -167,7 +165,7 @@ function doc_plus_debug_shortcode( $atts ) {
         foreach ( $allegati as $att ) {
             $pdf_id = intval($att['ID']);
             $pod_pdf = pods('documenti_prodotto', $pdf_id, ['lang' => $current_lang]);
-            if ( ! $pod_pdf->exists() && ! $using_provided ) {
+            if ( ! $pod_pdf->exists() ) {
                 $pdf_fallback = apply_filters('wpml_object_id', $pdf_id, 'documenti_prodotto', true, $default_lang)
                                 ?: $pdf_id;
                 $pod_pdf = pods('documenti_prodotto', $pdf_fallback, ['lang' => $default_lang]);
