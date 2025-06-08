@@ -10,111 +10,99 @@ if ( empty( $doc_plus_data ) || ! is_array( $doc_plus_data ) ) {
     return;
 }
 
-// Assicuriamoci che $layout sia definito e valido
+// Validiamo e definiamo il layout
 $allowed_layouts = [ 'single', 'multiple', 'modern' ];
 $layout = isset( $layout ) && in_array( $layout, $allowed_layouts, true ) ? $layout : 'single';
 
-// Recuperiamo l'ordine delle lingue aggiuntive
-action_exists('toroag_get_language_order') && $order_map = toroag_get_language_order();
+// Recuperiamo la mappa di priorità lingue
+$order_map = function_exists('toroag_get_language_order') ? toroag_get_language_order() : [];
 
-// Debug: layout scelto
-echo '<!-- Debug: layout passato = ' . esc_html( $layout ) . ' -->';
 // Apriamo la griglia delle card
 echo '<div class="row x">';
 
 foreach ( $doc_plus_data as $index => $doc ):
-    echo '<!-- Inizio ciclo document #: ' . ( $index + 1 ) . ' -->';
+    // Inizio ciclo per ogni documento con layout corrente
+    echo '<!-- Inizio ciclo document #: ' . ( $index + 1 ) . ' con layout ' . esc_html( $layout ) . ' -->';
 
-    // Filtro degli allegati secondo la lingua
+    // Lingua corrente
     $current_lang = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : apply_filters('wpml_current_language', null);
 
-    // Filtra: lingua corrente come primo criterio, poi tutte le altre lingue aggiuntive
+    // Ordiniamo allegati secondo la priorità linguistica
     $attachments = $doc['attachments'];
-    // Ordiniamo secondo la mappa e manteniamo italiano in testa se corrente
-    usort( $attachments, function( $a, $b ) use ( $order_map, $current_lang ) {
-        $slug_a = $a['lang']['slug'] ?? '';
-        $slug_b = $b['lang']['slug'] ?? '';
-        // Se la lingua attuale è italiano, mantieni only italiano -> poi le altre ordinate
-        if ( 'it' === $current_lang ) {
-            if ( $slug_a === 'italiano' && $slug_b !== 'italiano' ) return -1;
-            if ( $slug_b === 'italiano' && $slug_a !== 'italiano' ) return 1;
-        }
-        $pr_a = $order_map[ $slug_a ] ?? 999;
-        $pr_b = $order_map[ $slug_b ] ?? 999;
+    usort( $attachments, function( $a, $b ) use ( $order_map ) {
+        $pr_a = $order_map[ $a['lang']['slug'] ] ?? 999;
+        $pr_b = $order_map[ $b['lang']['slug'] ] ?? 999;
         return $pr_a <=> $pr_b;
     } );
 
-    // Applichiamo nuovamente il filtro di WPML per sicurezza
+    // Debug: numero totale prima del filtro
+    echo '<!-- Debug: before filter - total attachments ' . count( $attachments ) . ' -->';
+
+    // Filtriamo per lingua corrente
     $filtered = array_filter( $attachments, function( $att ) use ( $current_lang ) {
-        $slug = $att['lang']['slug'] ?? '';
         return $current_lang === 'it'
-            ? ( $slug === 'italiano' )
-            : ( $slug !== 'italiano' );
+            ? ( $att['lang']['slug'] === 'italiano' )
+            : ( $att['lang']['slug'] !== 'italiano' );
     } );
 
+    // Debug: numero dopo il filtro
+    echo '<!-- Debug: after filter - filtered attachments ' . count( $filtered ) . ' -->';
+
     if ( empty( $filtered ) ) {
-        echo '<!-- Debug: nessun attachment filtrato, skip document -->';
+        echo '<!-- Skip: no attachments -->';
         continue;
     }
 
-    // Debug: in quale case entriamo
-echo '<!-- Debug: entering case = ' . esc_html( $layout ) . ' -->';
-
+    // Rendering in base al layout selezionato
     switch ( $layout ) {
         case 'multiple':
-            echo '<!-- Debug: case = multiple -->';
-            echo '<div class="col-12 mb-4">';
-            echo '<div class="card h-100"><div class="row g-0 align-items-stretch">';
-            // Testi a sinistra
+            echo '<!-- Layout multiple -->';
+            echo '<div class="col-12 mb-4"><div class="card h-100"><div class="row g-0 align-items-stretch">';
+            // Colonna testo a sinistra
             echo '<div class="col-md-8"><div class="card-body">';
             foreach ( $filtered as $att ) {
                 $title = esc_html( $att['title'] );
                 $url   = esc_url( $att['url'] );
-                $slug  = $att['lang']['slug'] ?? '';
+                $slug  = $att['lang']['slug'];
                 echo "<h4><strong><a href=\"{$url}\" target=\"_blank\">{$title}</a></strong>";
-                if ( 'italiano' !== $slug ) {
-                    echo " " . toroag_get_flag_html( $slug );
+                if ( $slug !== 'italiano' ) {
+                    echo ' ' . toroag_get_flag_html( $slug );
                 }
-                echo "</h4>";
+                echo '</h4>';
             }
             echo '</div></div>';
-            // Immagine a destra full height
+            // Colonna immagine a destra
             echo '<div class="col-md-4">';
             if ( ! empty( $doc['cover_url'] ) ) {
-                echo '<img src="' . esc_url( $doc['cover_url'] ) . '" '
-                   . 'class="img-fluid h-100" style="object-fit:cover;" alt="Cover">';
+                echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="img-fluid h-100" style="object-fit:cover;" alt="Cover">';
             }
-            echo '</div>';
-            echo '</div></div></div>';
+            echo '</div></div></div></div>';
             break;
 
         case 'modern':
-            echo '<!-- Debug: case = modern -->';
-            echo '<div class="col-lg-4 col-12 mb-4">';
-            echo '<div class="card h-100 modern-layout position-relative overflow-hidden">';
+            echo '<!-- Layout modern -->';
+            echo '<div class="col-lg-4 col-12 mb-4"><div class="card h-100 modern-layout position-relative overflow-hidden">';
             if ( ! empty( $doc['cover_url'] ) ) {
-                echo '<img src="' . esc_url( $doc['cover_url'] ) . '" '
-                   . 'class="card-img h-100" style="object-fit:cover;" alt="Cover">';
+                echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img h-100" style="object-fit:cover;" alt="Cover">';
             }
             echo '<div class="card-img-overlay d-flex flex-column justify-content-end bg-gradient-to-t from-black/50 to-transparent p-3">';
             foreach ( $filtered as $att ) {
                 $title = esc_html( $att['title'] );
                 $url   = esc_url( $att['url'] );
-                $slug  = $att['lang']['slug'] ?? '';
+                $slug  = $att['lang']['slug'];
                 echo "<h4 class=\"mb-2\"><strong><a href=\"{$url}\" target=\"_blank\" class=\"text-white text-decoration-none\">{$title}</a></strong>";
-                if ( 'italiano' !== $slug ) {
-                    echo " " . toroag_get_flag_html( $slug );
+                if ( $slug !== 'italiano' ) {
+                    echo ' ' . toroag_get_flag_html( $slug );
                 }
-                echo "</h4>";
+                echo '</h4>';
             }
             echo '</div></div></div>';
             break;
 
         case 'single':
         default:
-            echo '<!-- Debug: case = single -->';
-            echo '<div class="col-lg-4 col-12 mb-4">';
-            echo '<div class="card h-100">';
+            echo '<!-- Layout single -->';
+            echo '<div class="col-lg-4 col-12 mb-4"><div class="card h-100">';
             if ( ! empty( $doc['cover_url'] ) ) {
                 echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top" alt="Cover">';
             }
@@ -122,17 +110,18 @@ echo '<!-- Debug: entering case = ' . esc_html( $layout ) . ' -->';
             foreach ( $filtered as $att ) {
                 $title = esc_html( $att['title'] );
                 $url   = esc_url( $att['url'] );
-                $slug  = $att['lang']['slug'] ?? '';
+                $slug  = $att['lang']['slug'];
                 echo "<h4><strong><a href=\"{$url}\" target=\"_blank\" class=\"text-decoration-none\">{$title}</a></strong>";
-                if ( 'italiano' !== $slug ) {
-                    echo " " . toroag_get_flag_html( $slug );
+                if ( $slug !== 'italiano' ) {
+                    echo ' ' . toroag_get_flag_html( $slug );
                 }
-                echo "</h4>";
+                echo '</h4>';
             }
             echo '</div></div></div>';
             break;
     }
 
+    // Fine ciclo documento
     echo '<!-- Fine ciclo document #: ' . ( $index + 1 ) . ' -->';
 endforeach;
 
