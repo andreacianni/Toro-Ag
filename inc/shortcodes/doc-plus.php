@@ -119,7 +119,7 @@ function doc_plus_debug_shortcode( $atts ) {
         $attachments = array_map( function( $id ) { return array( 'ID' => $id ); }, $raw_ids );
         echo '<small class="d-block text-primary">doc_plus_debug: parsed allegati count=' . esc_html(count($attachments)) . '</small>';
 
-        // Show attachments
+                // Show attachments
         foreach ( $attachments as $att ) {
             $pdf_id = intval( $att['ID'] );
             echo '<small class="d-block text-info">doc_plus_debug: processing attachment ID=' . esc_html($pdf_id) . '</small>';
@@ -135,15 +135,19 @@ function doc_plus_debug_shortcode( $atts ) {
             $langs     = $pp->field( 'lingua_aggiuntiva' );
             $lang_term = ! empty( $langs ) ? $langs[0] : array( 'slug' => 'n.d.', 'name' => 'n.d.' );
 
+            // Recupera e mostra bandierina
+            $flag_html = function_exists( 'toroag_get_flag_html' ) ? toroag_get_flag_html( $lang_term['slug'] ) : '';
+
             echo '<small class="d-block">PDF ID=' . esc_html($pp->ID())
                . ' tit=' . esc_html($pdf_title)
                . ' url=' . esc_html($file_url)
                . ' lingua=' . esc_html($lang_term['slug'] . ':' . $lang_term['name'])
+               . ' ' . $flag_html
                . '</small>';
         }
     }
 
-    // 10) Close
+    // 10) Close// 10) Close
     echo '</div></div></div>';
     return ob_get_clean();
 }
