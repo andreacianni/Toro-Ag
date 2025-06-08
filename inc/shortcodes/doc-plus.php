@@ -1,11 +1,22 @@
 <?php
 /**
  * Shortcode [doc_plus] – debug Bootstrap card with external view template
+ *
+ * Esempi d'uso:
+ * [doc_plus ids="123,456" layout="grid"]  // Layout a griglia
+ * [doc_plus ids="789" layout="carousel"] // Layout carosello
+ * [doc_plus layout="list"]               // Tutti i documenti, con layout list
+ *
  * Recupera tutti i doc_plus collegati e passa i dati al template doc-plus-view.php
+ * Esteso con parametro "layout" per indicare quale layout usare nella view
  */
 function doc_plus_debug_shortcode( $atts ) {
-    // 1) Parsing attributi
-    $atts = shortcode_atts( array( 'ids' => '' ), $atts, 'doc_plus' );
+    // 1) Parsing attributi (con nuovo parametro "layout")
+    $atts = shortcode_atts( array(
+        'ids'    => '',
+        'layout' => 'default',
+    ), $atts, 'doc_plus' );
+
     $filter_ids = [];
     if ( ! empty( $atts['ids'] ) ) {
         foreach ( preg_split('/\s*,\s*/', $atts['ids'] ) as $v ) {
@@ -110,13 +121,14 @@ function doc_plus_debug_shortcode( $atts ) {
 
     // 6) Include view template – solo se ho dati
     if ( ! empty( $data ) ) {
-        // usa il nostro helper per caricare la view e passarle i dati
+        // usa il nostro helper per caricare la view, passarle i dati e layout
         return toroag_load_view( 'doc-plus-view', [
             'doc_plus_data' => $data,
+            'layout'        => $atts['layout'],
         ] );
     }
 
     // 7) Fallback: simple var_export
-    return '' ;
+    return '';
 }
 add_shortcode( 'doc_plus', 'doc_plus_debug_shortcode' );
