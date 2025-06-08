@@ -24,30 +24,25 @@ function doc_plus_debug_shortcode() {
         echo '<div class="card-body p-3">';
 
     // 2) Se Pods non restituisce nulla, fallback a raw post meta della pagina default
-    if (empty($related)) {
-        // Trovo ID pagina nella lingua default
-        $fallback_id = apply_filters('wpml_object_id', $orig_page_id, 'page', true, $default_lang) ?: $orig_page_id;
-        // Carico raw meta dal DB
-        $raw = get_post_meta($fallback_id, 'doc_plus_inpage', true);
-        if (is_string($raw)) {
-            $decoded = json_decode($raw, true);
-            if (json_last_error() === JSON_ERROR_NONE) {
-                $raw = $decoded;
-            }
+    if ( empty( $related ) ) {
+    $fallback_id = apply_filters('wpml_object_id', $orig_page_id, 'page', true, $default_lang) ?: $orig_page_id;
+
+    // Prendo _tutti_ i valori del meta in un array
+    $all = get_post_meta( $fallback_id, 'doc_plus_inpage', false );
+
+    $related = [];
+    foreach ( $all as $entry ) {
+        // entry può essere array o stringa serializzata
+        $row = is_array($entry) ? $entry : maybe_unserialize($entry);
+        if ( is_array($row) && ! empty( $row['ID'] ) ) {
+            $related[] = [ 'ID' => intval( $row['ID'] ) ];
         }
-        // Ricostruisco array di relazioni
-        $related = [];
-        if (is_array($raw)) {
-            foreach ($raw as $item) {
-                if (!empty($item['ID'])) {
-                    $related[] = ['ID' => intval($item['ID'])];
-                }
-            }
-        }
-        echo '<small class="d-block text-center text-muted mb-2">';
-        echo esc_html("doc_plus_debug: fallback raw meta da pagina {$fallback_id}, elementi=" . count($related));
-        echo '</small>';
     }
+
+    echo '<small class="d-block text-center text-muted mb-2">';
+    echo esc_html( "doc_plus_debug: fallback raw meta da pagina {$fallback_id}, elementi=" . count($related) );
+    echo '</small>';
+}
 
     // 3) Se ancora vuoto, esco
     if (empty($related)) {
