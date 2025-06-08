@@ -1,95 +1,65 @@
 <?php
 /**
- * Shortcode [doc_plus]
- * Mostra tutti i doc_plus collegati tramite il campo 'doc_plus_inpage' della pagina corrente.
+ * Shortcode [doc_plus] – debug HTML comments
+ * Stampa solo commenti HTML con tutte le info (ID, titolo, cover, allegati, lingua).
  */
-function doc_plus_shortcode() {
+function doc_plus_debug_shortcode() {
     $page_id  = get_the_ID();
-    // Carico il Pod 'page' della pagina corrente
     $page_pod = pods( 'page', $page_id );
     if ( ! $page_pod->exists() ) {
-        return '';
+        return '<!-- doc_plus_debug: pagina non trovata -->';
     }
 
-    // Leggo il campo relazione verso doc_plus (multi-pick)
     $related_docs = $page_pod->field( 'doc_plus_inpage' );
     if ( empty( $related_docs ) ) {
-        return ''; // nessun doc_plus collegato
+        return '<!-- doc_plus_debug: nessun doc_plus collegato a pagina ' . $page_id . ' -->';
     }
 
-    ob_start();
-    echo '<div class="doc-plus-list">';
+    $out = "\n<!-- doc_plus_debug: trovati " . count( $related_docs ) . " doc_plus per pagina {$page_id} -->\n";
     foreach ( $related_docs as $item ) {
-        $doc_id  = $item['ID'];
+        $doc_id  = (int) $item['ID'];
         $pod     = pods( 'doc_plus', $doc_id );
 
-        // Titolo (WPML fornisce già la traduzione)
+        // Titolo e lingua WPML
         $title = get_the_title( $doc_id );
+        $lang  = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : 'n.d.';
 
         // Cover
         $cover_id  = $pod->field( 'doc_plus_cover.ID' );
         $cover_url = $cover_id ? wp_get_attachment_url( $cover_id ) : '';
 
-        ?>
-        <div class="doc-plus-item">
-          <h3><?php echo esc_html( $title ); ?></h3>
+        $out .= "<!-- doc_plus_debug: DOC ID={$doc_id} lingua={$lang} titolo=\"{$title}\" cover_id={$cover_id} cover_url=\"{$cover_url}\" -->\n";
 
-          <?php if ( $cover_url ) : ?>
-            <img src="<?php echo esc_url( $cover_url ); ?>"
-                 alt="<?php echo esc_attr( $title ); ?>"
-                 class="doc-plus-cover" />
-          <?php endif; ?>
+        // Allegati
+        $allegati = $pod->field( 'doc_plus_allegati' );
+        if ( empty( $allegati ) ) {
+            $out .= "<!-- doc_plus_debug: nessun allegato per doc_plus {$doc_id} -->\n";
+            continue;
+        }
 
-          <?php
-          // Allegati: relazione verso documenti_prodotto
-          $allegati = $pod->field( 'doc_plus_allegati' );
-          if ( ! empty( $allegati ) ) : ?>
-            <ul class="doc-plus-allegati">
-              <?php foreach ( $allegati as $rel ) :
-                $pdf_id  = $rel['ID'];
-                $pod_pdf = pods( 'documenti_prodotto', $pdf_id );
+        foreach ( $allegati as $att ) {
+            $pdf_id  = (int) $att['ID'];
+            $pod_pdf = pods( 'documenti_prodotto', $pdf_id );
 
-                // URL del PDF
-                $file_id  = $pod_pdf->field( 'documento-prodotto.ID' );
-                $file_url = $file_id ? wp_get_attachment_url( $file_id ) : '';
+            // File PDF
+            $file_id  = $pod_pdf->field( 'documento-prodotto.ID' );
+            $file_url = $file_id ? wp_get_attachment_url( $file_id ) : '';
 
-                // Titolo del PDF (tradotto da WPML)
-                $pdf_title = get_the_title( $pdf_id );
+            // Titolo PDF e lingua aggiuntiva
+            $pdf_title = get_the_title( $pdf_id );
+            $lingue    = $pod_pdf->field( 'lingua_aggiuntiva' );
+            if ( ! empty( $lingue ) ) {
+                $term      = $lingue[0];
+                $slug      = $term['slug'];
+                $name      = $term['name'];
+            } else {
+                $slug = $name = 'n.d.';
+            }
 
-                // Lingua aggiuntiva per la bandierina
-                $lingue = $pod_pdf->field( 'lingua_aggiuntiva' );
-                if ( ! empty( $lingue ) ) {
-                    $term      = $lingue[0];
-                    $slug      = $term['slug'];
-                    $name      = $term['name'];
-                    $flag_html = "<span class='flag flag-{$slug}'>"
-                               . esc_html( $name )
-                               . "</span> ";
-                } else {
-                    $flag_html = '';
-                }
-                ?>
-                <li>
-                  <?php echo $flag_html; ?>
-                  <?php if ( $file_url ) : ?>
-                    <a href="<?php echo esc_url( $file_url ); ?>"
-                       target="_blank">
-                      <?php echo esc_html( $pdf_title ); ?>
-                    </a>
-                  <?php else : ?>
-                    <?php echo esc_html( $pdf_title ); ?>
-                  <?php endif; ?>
-                </li>
-              <?php endforeach; ?>
-            </ul>
-          <?php endif; ?>
-        </div>
-        <?php
+            $out .= "<!-- doc_plus_debug:   ALLEGATO PDF_ID={$pdf_id} file_id={$file_id} file_url=\"{$file_url}\" titolo_pdf=\"{$pdf_title}\" lingua_aggiuntiva={$slug}:{$name} -->\n";
+        }
     }
-    echo '</div>';
 
-    return ob_get_clean();
+    return $out;
 }
-add_shortcode( 'doc_plus', 'doc_plus_shortcode' );
-
-
+add_shortcode( 'doc_plus', 'doc_plus_debug_shortcode' );
