@@ -85,6 +85,7 @@ require_once get_stylesheet_directory() . '/inc/shortcodes/tipo-prodotto-video.p
 require_once get_stylesheet_directory() . '/inc/shortcodes/scheda-prodotto-dettaglio.php';
 require_once get_stylesheet_directory() . '/inc/helpers/sup.php';
 require_once get_stylesheet_directory() . '/inc/helpers/breadcrumbs.php';
+require_once get_stylesheet_directory() . '/inc/shortcodes/doc-plus.php';
 
 /**
  * Ora registro tutti i filtri che usano toro_ag_trademarks_to_superscript()
