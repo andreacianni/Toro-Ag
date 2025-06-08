@@ -5,7 +5,7 @@
  */
 function doc_plus_debug_shortcode() {
     // COMMENTO DI CONTROLLO: serve a verificare se lo shortcode viene eseguito
-    $out = "\n<!-- doc_plus_debug: shortcode eseguito V2 -->\n";
+    $out = "\n<!-- doc_plus_debug: shortcode eseguito V3 -->\n";
 
     $page_id    = get_the_ID();
     $page_pod   = pods( 'page', $page_id );
