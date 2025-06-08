@@ -9,7 +9,7 @@ if ( empty( $doc_plus_data ) || ! is_array( $doc_plus_data ) ) {
 }
 
 // Apriamo la griglia delle card
-echo '<div class="row">';
+echo '<div class="row x">';
 
 foreach ( $doc_plus_data as $index => $doc ):
     // Commento HTML per identificare il ciclo (doc) corrente
