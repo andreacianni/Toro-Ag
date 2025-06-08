@@ -3,148 +3,122 @@
  * Shortcode [doc_plus] – debug Bootstrap card con filtro ID opzionale
  * Recupera sempre tutti i doc_plus collegati dalla pagina corrente,
  * poi se 'ids' è passato filtra quali elementi mostrare.
- * Aggiunti debug visibili per tracciare il flusso tra i vari if/else.
+ * In Italiano mostra solo allegati con lingua aggiuntiva 'italiano',
+ * in Inglese mostra solo allegati con lingua diversa da 'italiano'.
  */
 function doc_plus_debug_shortcode( $atts ) {
     // 1) Parsing attributi
-    $atts = shortcode_atts( array( 'ids' => '' ), $atts, 'doc_plus' );
-    $filter_ids = array();
+    $atts = shortcode_atts( [ 'ids' => '' ], $atts, 'doc_plus' );
+    $filter_ids = [];
     if ( ! empty( $atts['ids'] ) ) {
         foreach ( preg_split('/\s*,\s*/', $atts['ids'] ) as $v ) {
             $i = intval( $v );
-            if ( $i > 0 ) {
-                $filter_ids[] = $i;
-            }
+            if ( $i > 0 ) $filter_ids[] = $i;
         }
     }
-
-    // 2) Avvio buffering
     ob_start();
 
-    // 3) Lingua corrente e default
+    // 2) Lingua corrente
     $current_lang = defined('ICL_LANGUAGE_CODE')
         ? ICL_LANGUAGE_CODE
         : apply_filters('wpml_current_language', null);
     $default_lang = apply_filters('wpml_default_language', null);
 
-    // 4) Recupero raw meta doc_plus_inpage direttamente dalla pagina corrente
+    // 3) Recupero IDs doc_plus dal raw meta
     $page_id  = get_the_ID();
-    echo '<small class="d-block text-center text-warning">doc_plus_debug: STEP relation raw meta from page_id=' . esc_html($page_id) . '</small>';
-    $raw_list = get_post_meta( $page_id, 'doc_plus_inpage', false );
-    $related = array();
-    foreach ( $raw_list as $entry ) {
-        if ( is_array( $entry ) && isset( $entry['ID'] ) ) {
-            $related[] = array( 'ID' => intval( $entry['ID'] ) );
-        } elseif ( is_string( $entry ) ) {
-            $un = @unserialize( $entry );
-            if ( is_array( $un ) ) {
-                foreach ( $un as $val ) {
-                    $related[] = array( 'ID' => intval( $val ) );
-                }
-            } elseif ( is_numeric( $entry ) ) {
-                $related[] = array( 'ID' => intval( $entry ) );
+    $raw = get_post_meta( $page_id, 'doc_plus_inpage', false );
+    $related = [];
+    foreach ( $raw as $e ) {
+        if ( is_array($e) && isset($e['ID']) ) {
+            $related[] = ['ID'=>intval($e['ID'])];
+        } elseif ( is_string($e) ) {
+            $u = @unserialize($e);
+            if ( is_array($u) ) {
+                foreach ( $u as $id ) if ( is_numeric($id) ) $related[] = ['ID'=>intval($id)];
+            } elseif ( is_numeric($e) ) {
+                $related[] = ['ID'=>intval($e)];
             }
         }
     }
-    echo '<small class="d-block text-center text-warning">doc_plus_debug: related IDs=' . esc_html( implode( ',', wp_list_pluck( $related, 'ID' ) ) ) . '</small>';
+    echo '<small class="d-block text-center text-info">doc_plus_debug: lang=' . esc_html($current_lang) . '</small>';
 
-    // 5) Se vuoto, nessun doc_plus
-    if ( empty( $related ) ) {
-        echo '<small class="d-block text-center text-danger">doc_plus_debug: no doc_plus linked</small>';
+    if ( empty($related) ) {
+        echo '<small class="d-block text-danger">doc_plus_debug: nessun doc_plus collegato</small>';
         return ob_get_clean();
     }
+    // filtro ID pagina
+    echo '<small class="d-block text-center text-muted">trovati ' . count($related) . ' doc_plus' .
+         ( empty($filter_ids) ? '' : ', filtro IDs=' . implode(',', $filter_ids) ) . '</small>';
 
-    // 6) Header
-    echo '<small class="d-block text-center text-info">doc_plus_debug: lang=' . esc_html($current_lang)
-       . ( empty( $filter_ids ) ? '' : ', filter IDs=' . esc_html( implode( ',', $filter_ids ) ) )
-       . '</small>';
+    echo '<div class="d-flex justify-content-center my-4">'
+       . '<div class="card w-75 shadow-sm"><div class="card-body">';
 
-    // 7) Count
-    $total = count( $related );
-    $shown = 0;
+    // Loop doc_plus
     foreach ( $related as $r ) {
-        if ( empty( $filter_ids ) || in_array( intval( $r['ID'] ), $filter_ids, true ) ) {
-            $shown++;
-        }
-    }
-    echo '<small class="d-block text-center text-muted">trovati ' . esc_html($total)
-       . ( empty( $filter_ids ) ? '' : ', mostrati ' . esc_html($shown) )
-       . '</small>';
-
-    // 8) Loop doc_plus
-    foreach ( $related as $rel ) {
-        $doc_id = intval( $rel['ID'] );
-        if ( ! empty( $filter_ids ) && ! in_array( $doc_id, $filter_ids, true ) ) {
-            echo '<small class="d-block text-center text-secondary">doc_plus_debug: skip doc_id=' . esc_html($doc_id) . ' (filtered)</small>';
+        $doc_id = intval($r['ID']);
+        if ( ! empty($filter_ids) && ! in_array($doc_id, $filter_ids, true) ) {
             continue;
         }
         echo '<small class="d-block text-success">doc_plus_debug: processing doc_id=' . esc_html($doc_id) . '</small>';
 
-                        // Load Pod for doc_plus in the current language
-        $pod = pods('doc_plus', $doc_id, ['lang' => $current_lang]);
-        if (!$pod->exists()) {
-            echo '<small class="d-block text-warning">doc_plus_debug: pod not found in ' . esc_html($current_lang) . ' for doc_id=' . esc_html($doc_id) . '</small>';
-            // Fallback to default language
-            $fallback_id = apply_filters('wpml_object_id', $doc_id, 'doc_plus', true, $default_lang) ?: $doc_id;
-            $pod = pods('doc_plus', $fallback_id, ['lang' => $default_lang]);
-            echo '<small class="d-block text-warning">doc_plus_debug: using fallback pod lang=' . esc_html($default_lang) . ' for doc_id=' . esc_html($fallback_id) . '</small>';
+        // Carica pod current lang con fallback
+        $pod = pods('doc_plus', $doc_id, ['lang'=>$current_lang]);
+        if ( ! $pod->exists() ) {
+            $fb = apply_filters('wpml_object_id', $doc_id, 'doc_plus', true, $default_lang) ?: $doc_id;
+            $pod = pods('doc_plus', $fb, ['lang'=>$default_lang]);
         }
-
-        // Title & Cover
-        $title = get_the_title( $pod->ID() );
-        echo '<small class="d-block">DOC ID=' . esc_html($pod->ID()) . ' titolo="' . esc_html($title) . '"</small>';
-        $cover_id = $pod->field( 'doc_plus_cover.ID' );
+        // Titolo & Cover
+        echo '<small class="d-block">DOC ID=' . $pod->ID() . ' titolo="' . esc_html( get_the_title($pod->ID()) ) . '"</small>';
+        $cover_id = $pod->field('doc_plus_cover.ID');
+        $cover_url = $cover_id ? wp_get_attachment_url($cover_id) : '';
         echo '<small class="d-block">cover_id=' . esc_html($cover_id) . '</small>';
+        echo '<small class="d-block text-muted">cover_url=' . esc_html($cover_url) . '</small>';
 
-        // 9) ALLEGATI debug – raw post_meta
-        $raw_meta_att = get_post_meta( $pod->ID(), 'doc_plus_allegati', false );
-        $raw_ids = array();
-        foreach ( $raw_meta_att as $e2 ) {
-            if ( is_array( $e2 ) && isset( $e2['ID'] ) ) {
-                $raw_ids[] = intval( $e2['ID'] );
-            } elseif ( is_string( $e2 ) && is_numeric( $e2 ) ) {
-                $raw_ids[] = intval( $e2 );
-            } elseif ( is_string( $e2 ) ) {
-                $u2 = @unserialize( $e2 );
-                if ( is_array( $u2 ) ) {
-                    foreach ( $u2 as $val2 ) {
-                        if ( is_numeric( $val2 ) ) { $raw_ids[] = intval( $val2 ); }
-                    }
-                }
+        // Allegati raw meta
+        $raw_att = get_post_meta($pod->ID(), 'doc_plus_allegati', false);
+        $ids = [];
+        foreach($raw_att as $e) {
+            if(is_array($e)&&isset($e['ID'])) $ids[] = intval($e['ID']);
+            elseif(is_string($e)){
+                $u = @unserialize($e);
+                if(is_array($u)) foreach($u as $v) if(is_numeric($v)) $ids[] = intval($v);
+                elseif(is_numeric($e)) $ids[] = intval($e);
             }
         }
-        echo '<small class="d-block text-primary">doc_plus_debug: raw meta attachment IDs=' . esc_html( implode( ',', $raw_ids ) ) . '</small>';
+        echo '<small class="d-block text-primary">doc_plus_debug: raw allegati IDs=' . implode(',', $ids) . '</small>';
 
-        // Parsed attachments for display
-        $attachments = array_map( function( $id ) { return array( 'ID' => $id ); }, $raw_ids );
-        echo '<small class="d-block text-primary">doc_plus_debug: parsed allegati count=' . esc_html(count($attachments)) . '</small>';
-
-        // Show attachments
-        foreach ( $attachments as $att ) {
-            $pdf_id = intval( $att['ID'] );
-            echo '<small class="d-block text-info">doc_plus_debug: processing attachment ID=' . esc_html($pdf_id) . '</small>';
-            $pp = pods( 'documenti_prodotto', $pdf_id, array( 'lang' => $current_lang ) );
-            if ( ! $pp->exists() ) {
-                echo '<small class="d-block text-warning">doc_plus_debug: fallback pp for pdf_id=' . esc_html($pdf_id) . '</small>';
-                $fbp = apply_filters( 'wpml_object_id', $pdf_id, 'documenti_prodotto', true, $default_lang ) ?: $pdf_id;
-                $pp = pods( 'documenti_prodotto', $fbp, array( 'lang' => $default_lang ) );
+        // Elaborazione allegati con filtro lingua aggiuntiva
+        foreach($ids as $pdf_id) {
+            // Carica CPT documento
+            $pp = pods('documenti_prodotto', $pdf_id, ['lang'=>$current_lang]);
+            if(! $pp->exists()){
+                $fbp = apply_filters('wpml_object_id',$pdf_id,'documenti_prodotto',true,$default_lang)?:$pdf_id;
+                $pp = pods('documenti_prodotto',$fbp,['lang'=>$default_lang]);
             }
-            $pdf_title = get_the_title( $pp->ID() );
-            $file_id   = $pp->field( 'documento-prodotto.ID' );
-            $file_url  = $file_id ? wp_get_attachment_url( $file_id ) : '';
-            $langs     = $pp->field( 'lingua_aggiuntiva' );
-            $lang_term = ! empty( $langs ) ? $langs[0] : array( 'slug' => 'n.d.', 'name' => 'n.d.' );
-
+            // Recupera lingua aggiuntiva
+            $langs = $pp->field('lingua_aggiuntiva');
+            $slug = !empty($langs)? $langs[0]['slug'] : '';
+            // Filtro by lingua
+            if( $current_lang === 'it' ) {
+                if( $slug !== 'italiano' ) continue;
+            } else {
+                if( $slug === 'italiano' ) continue;
+            }
+            // Mostra dati allegato
+            $title = get_the_title($pp->ID());
+            $file_id = $pp->field('documento-prodotto.ID');
+            $url = $file_id ? wp_get_attachment_url($file_id) : '';
             echo '<small class="d-block">PDF ID=' . esc_html($pp->ID())
-               . ' tit=' . esc_html($pdf_title)
-               . ' url=' . esc_html($file_url)
-               . ' lingua=' . esc_html($lang_term['slug'] . ':' . $lang_term['name'])
+               . ' tit=' . esc_html($title)
+               . ' url=' . esc_html($url)
+               . ' lingua=' . esc_html($slug . ':' . $langs[0]['name'])
                . '</small>';
         }
+
+        echo '<hr/>';
     }
 
-    // 10) Close
     echo '</div></div></div>';
     return ob_get_clean();
 }
-add_shortcode( 'doc_plus', 'doc_plus_debug_shortcode' );
+add_shortcode('doc_plus','doc_plus_debug_shortcode');
