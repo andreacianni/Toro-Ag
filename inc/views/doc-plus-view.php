@@ -46,8 +46,12 @@ foreach ( $doc_plus_data as $doc ):
         echo '<a href="' . esc_url( $att['url'] ) . '" '
            . 'target="_blank" '
            . 'class="btn btn-primary">'
-           . esc_html( $att['title'] )
-           . '</a>';
+           . esc_html( $att['title'] );
+        // Flag solo se non Italiano
+        if ( $current_lang !== 'it' && ! empty( $att['flag'] ) ) {
+            echo ' ' . $att['flag'];
+        }
+        echo '</a>';
         echo '</div></div></div>';
     else:
         // Card multipla: full width
@@ -69,7 +73,12 @@ foreach ( $doc_plus_data as $doc ):
             echo '<p class="mb-2">'
                . '<a href="' . esc_url( $att['url'] ) . '" target="_blank">'
                . esc_html( $att['title'] )
-               . '</a></p>';
+               . '</a>';
+            // Flag solo se non Italiano
+            if ( $current_lang !== 'it' && ! empty( $att['flag'] ) ) {
+                echo ' ' . $att['flag'];
+            }
+            echo '</p>';
         }
         echo '</div></div></div></div></div>';
     endif;
