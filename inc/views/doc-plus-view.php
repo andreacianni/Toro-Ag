@@ -10,7 +10,8 @@ if ( empty( $doc_plus_data ) || ! is_array( $doc_plus_data ) ) {
 }
 
 // Recuperiamo il layout passato
-global $layout;
+// Recuperiamo il layout passato
+$layout = $atts['layout'] ?? 'single'; // default 'single'
 $layout = ! empty( $layout ) ? $layout : 'single'; // default 'single'
 
 // Apriamo la griglia delle card
