@@ -4,6 +4,7 @@
  * Recupera sempre tutti i doc_plus collegati dalla pagina corrente,
  * poi se 'ids' è passato filtra quali elementi mostrare.
  * Per ogni doc_plus mostra cover unica e per ogni allegato titolo, URL PDF e lingua aggiuntiva.
+ * Aggiunto debug per visualizzare gli ID degli allegati prima del processamento.
  */
 function doc_plus_debug_shortcode( $atts ) {
     // 1) Gestione attributi e parsing filtro IDs
@@ -91,17 +92,15 @@ function doc_plus_debug_shortcode( $atts ) {
             $fb = apply_filters('wpml_object_id', $doc_id, 'doc_plus', true, $default_lang) ?: $doc_id;
             $pod = pods('doc_plus', $fb, ['lang' => $default_lang]);
         }
-        // TITOLO
+        // TITOLO e COVER
         echo '<small class="d-block">DOC ID=' . $pod->ID() . ' titolo="' . esc_html(get_the_title($pod->ID())) . '"</small>';
-        // COVER
         $cover_id = $pod->field('doc_plus_cover.ID');
         $cover_url = $cover_id ? wp_get_attachment_url($cover_id) : '';
         echo '<small class="d-block">cover_id=' . esc_html($cover_id) . '</small>';
         echo '<small class="d-block text-muted">cover_url=' . esc_html($cover_url) . '</small>';
 
-        // 9) ALLEGATI
+        // 9) ALLEGATI – debug ID
         $attachments = (array) $pod->field('doc_plus_allegati');
-        // fallback raw meta allegati
         if (empty($attachments)) {
             foreach (get_post_meta($pod->ID(), 'doc_plus_allegati', false) as $e2) {
                 if (is_array($e2) && isset($e2['ID'])) {
@@ -118,6 +117,9 @@ function doc_plus_debug_shortcode( $atts ) {
                 }
             }
         }
+        // Debug: stampa tutti gli ID di allegato trovati
+        $att_ids = array_map(function($a){ return intval($a['ID']); }, $attachments);
+        echo '<!-- doc_plus_debug: doc_id=' . $doc_id . ' attachments IDs=' . implode(',', $att_ids) . ' -->';
         echo '<small class="d-block mb-1 text-center text-muted">allegati count=' . count($attachments) . '</small>';
         foreach ($attachments as $att) {
             $pdf_id = intval($att['ID']);
@@ -126,7 +128,6 @@ function doc_plus_debug_shortcode( $atts ) {
                 $fbp = apply_filters('wpml_object_id', $pdf_id, 'documenti_prodotto', true, $default_lang) ?: $pdf_id;
                 $pp = pods('documenti_prodotto', $fbp, ['lang' => $default_lang]);
             }
-            // titolo, url, lingua aggiuntiva
             $pdf_title = get_the_title($pp->ID());
             $file_id = $pp->field('documento-prodotto.ID');
             $file_url = $file_id ? wp_get_attachment_url($file_id) : '';
