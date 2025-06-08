@@ -1,7 +1,7 @@
 <?php
 /**
  * Shortcode [doc_plus] – debug Bootstrap card con filtro ID opzionale
- * Recupera sempre tutti i doc_plus collegati (fallback pagina e raw meta),
+ * Recupera sempre tutti i doc_plus collegati dalla pagina corrente,
  * poi se 'ids' è passato filtra quali elementi mostrare.
  */
 function doc_plus_debug_shortcode( $atts ) {
@@ -10,7 +10,10 @@ function doc_plus_debug_shortcode( $atts ) {
     $filter_ids = array();
     if ( ! empty( $atts['ids'] ) ) {
         foreach ( preg_split('/\s*,\s*/', $atts['ids']) as $v ) {
-            $i = intval( $v ); if ( $i > 0 ) $filter_ids[] = $i;
+            $i = intval( $v );
+            if ( $i > 0 ) {
+                $filter_ids[] = $i;
+            }
         }
     }
 
@@ -23,14 +26,9 @@ function doc_plus_debug_shortcode( $atts ) {
         : apply_filters('wpml_current_language', null);
     $default_lang = apply_filters('wpml_default_language', null);
 
-    // 4) ID pagina e fallback a default per raw meta
-    $page_id = get_the_ID();
-    $fallback_page_id = ( $current_lang && $current_lang !== $default_lang )
-        ? apply_filters('wpml_object_id', $page_id, 'page', true, $default_lang )
-        : $page_id;
-
-    // 5) Recupero raw meta doc_plus_inpage
-    $raw_list = get_post_meta( $fallback_page_id, 'doc_plus_inpage', false );
+    // 4) Recupero raw meta doc_plus_inpage direttamente dalla pagina corrente
+    $page_id  = get_the_ID();
+    $raw_list = get_post_meta( $page_id, 'doc_plus_inpage', false );
     $related = array();
     foreach ( $raw_list as $entry ) {
         if ( is_array( $entry ) && isset( $entry['ID'] ) ) {
@@ -47,7 +45,7 @@ function doc_plus_debug_shortcode( $atts ) {
         }
     }
 
-    // 6) Se vuoto, nessun doc_plus
+    // 5) Se vuoto, nessun doc_plus
     if ( empty( $related ) ) {
         echo '<div class="d-flex justify-content-center my-4">'
            . '<div class="card w-75 shadow-sm">'
@@ -57,7 +55,7 @@ function doc_plus_debug_shortcode( $atts ) {
         return ob_get_clean();
     }
 
-    // 7) Card header con filtro opzionale
+    // 6) Card header con filtro opzionale
     echo '<div class="d-flex justify-content-center my-4">'
        . '<div class="card w-75 shadow-sm">'
        . '<div class="card-header text-center">'
@@ -67,20 +65,31 @@ function doc_plus_debug_shortcode( $atts ) {
          )
        . '</div><div class="card-body">';
 
-    // 8) Loop e filtro
-    foreach ( $related as $rel ) {
-        $doc_id = intval( $rel['ID'] );
+    // 7) Conteggio totali e mostrati
+    $total = count( $related );
+    $shown = 0;
+    foreach ( $related as $r ) {
+        if ( ! empty( $filter_ids ) && ! in_array( intval($r['ID']), $filter_ids, true ) ) {
+            continue;
+        }
+        $shown++;
+    }
+    echo '<small class="d-block mb-2 text-center text-muted">'
+       . esc_html("trovati {$total} doc_plus" . (!empty($filter_ids) ? ", mostrati {$shown}" : ''))
+       . '</small>';
+
+    // 8) Ciclo su ogni doc_plus applicando filtro
+    foreach ( $related as $entry ) {
+        $doc_id = intval( $entry['ID'] );
         if ( ! empty( $filter_ids ) && ! in_array( $doc_id, $filter_ids, true ) ) {
             continue;
         }
-
-        // 9) Caricamento Pod doc_plus con fallback lingua
+        // Carico Pod doc_plus con fallback sulla lingua se non esiste in current
         $pod = pods('doc_plus', $doc_id, array( 'lang' => $current_lang ) );
         if ( ! $pod->exists() ) {
             $fb = apply_filters('wpml_object_id', $doc_id, 'doc_plus', true, $default_lang ) ?: $doc_id;
             $pod = pods('doc_plus', $fb, array( 'lang' => $default_lang ) );
         }
-
         // Titolo e cover
         echo '<small class="d-block">' . esc_html(
             'DOC ID=' . $pod->ID()
@@ -90,7 +99,7 @@ function doc_plus_debug_shortcode( $atts ) {
             'cover_id=' . $pod->field('doc_plus_cover.ID')
         ) . '</small>';
 
-        // 10) Allegati con fallback raw meta
+        // 9) Allegati con fallback raw meta
         $atts_list = (array) $pod->field('doc_plus_allegati');
         if ( empty( $atts_list ) ) {
             foreach ( get_post_meta( $pod->ID(), 'doc_plus_allegati', false ) as $e2 ) {
@@ -122,7 +131,7 @@ function doc_plus_debug_shortcode( $atts ) {
         }
     }
 
-    // 11) Chiusura card
+    // 10) Chiusura card
     echo '</div></div></div>';
     return ob_get_clean();
 }
