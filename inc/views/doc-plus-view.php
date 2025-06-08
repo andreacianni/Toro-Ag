@@ -1,50 +1,45 @@
 <?php
 /**
  * View: doc-plus-view.php
- * Expects $doc_plus_data passed from the shortcode:
- *   array of [
- *     'id'         => post ID,
- *     'title'      => string,
- *     'cover_url'  => string,
- *     'attachments'=> [
- *       [
- *         'id'   => int,
- *         'title'=> string,
- *         'url'  => string,
- *         'lang' => ['slug'=>string,'name'=>string],
- *         'flag' => '<img … />'
- *       ],
- *       …
- *     ]
- *   ]
+ * Riceve in $doc_plus_data l’array completo di doc_plus + attachments + flag.
  */
 
-// Get current language (WPML)
+// 0) Debug lingua
 $current_lang = defined('ICL_LANGUAGE_CODE')
     ? ICL_LANGUAGE_CODE
     : apply_filters('wpml_current_language', null);
+echo "<!-- DEBUG VIEW: current_lang = {$current_lang} -->\n";
 
-if ( empty($doc_plus_data) || ! is_array($doc_plus_data) ) {
-    return; // nothing to render
+if ( empty( $doc_plus_data ) || ! is_array( $doc_plus_data ) ) {
+    echo "<!-- DEBUG VIEW: no data -->\n";
+    return;
 }
 
-// Loop all doc_plus items
-foreach ( $doc_plus_data as $doc ) :
+foreach ( $doc_plus_data as $doc ):
 
-    // Filter attachments by language
+    // 1) Debug cover & doc_id
+    echo "<!-- DEBUG VIEW: processing doc_id={$doc['id']} title=\"{$doc['title']}\" -->\n";
+
+    // 2) Raw IDs prima del filtro
+    $raw_ids = wp_list_pluck( $doc['attachments'], 'id' );
+    echo "<!-- DEBUG VIEW: raw attachment IDs = " . implode( ',', $raw_ids ) . " -->\n";
+
+    // 3) Applichiamo il filtro secondo la lingua
     $filtered = array_filter( $doc['attachments'], function( $att ) use ( $current_lang ) {
-        $slug = isset($att['lang']['slug']) ? $att['lang']['slug'] : '';
-        if ( $current_lang === 'it' ) {
-            // In Italian front-end: only show Italian attachments
-            return $slug === 'italiano';
-        }
-        // In non-Italian front-end: show everything except Italian
-        return $slug !== 'italiano';
+        // in italiano solo 'italiano', altrimenti tutti tranne 'italiano'
+        $slug = $att['lang']['slug'] ?? '';
+        return $current_lang === 'it'
+            ? ( $slug === 'italiano' )
+            : ( $slug !== 'italiano' );
     } );
 
+    // 4) Debug IDs dopo filtro
+    $filtered_ids = wp_list_pluck( $filtered, 'id' );
+    echo "<!-- DEBUG VIEW: filtered attachment IDs = " . implode( ',', $filtered_ids ) . " -->\n";
+
     $count = count( $filtered );
-    if ( 0 === $count ) {
-        // Skip this doc entirely if no attachments pass the filter
+    if ( $count === 0 ) {
+        echo "<!-- DEBUG VIEW: no attachments to show for doc_id={$doc['id']} -->\n";
         continue;
     }
     ?>
@@ -58,8 +53,7 @@ foreach ( $doc_plus_data as $doc ) :
         </div>
       <?php endif; ?>
 
-      <?php if ( 1 === $count ) : 
-          // Single attachment
+      <?php if ( 1 === $count ) :
           $att = array_shift( $filtered ); ?>
           <div class="doc-plus-single-attachment text-center">
             <a href="<?php echo esc_url( $att['url'] ); ?>"
@@ -69,9 +63,7 @@ foreach ( $doc_plus_data as $doc ) :
               <?php echo $att['flag']; ?>
             </a>
           </div>
-      <?php else : 
-          // Multiple attachments
-      ?>
+      <?php else : ?>
         <ul class="doc-plus-attachments list-unstyled row">
           <?php foreach ( $filtered as $att ) : ?>
             <li class="col-md-6 mb-3">
