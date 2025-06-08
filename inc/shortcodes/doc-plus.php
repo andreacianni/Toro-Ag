@@ -87,34 +87,44 @@ function doc_plus_debug_shortcode( $atts ) {
         }
         echo '<small class="d-block text-primary">doc_plus_debug: raw allegati IDs=' . implode(',', $ids) . '</small>';
 
-        // Elaborazione allegati con filtro lingua aggiuntiva
-        foreach($ids as $pdf_id) {
+        // Elaborazione allegati con filtro lingua aggiuntiva e recupero bandierina
+        foreach ( $ids as $pdf_id ) {
             // Carica CPT documento
-            $pp = pods('documenti_prodotto', $pdf_id, ['lang'=>$current_lang]);
-            if(! $pp->exists()){
-                $fbp = apply_filters('wpml_object_id',$pdf_id,'documenti_prodotto',true,$default_lang)?:$pdf_id;
-                $pp = pods('documenti_prodotto',$fbp,['lang'=>$default_lang]);
+            $pp = pods( 'documenti_prodotto', $pdf_id, ['lang' => $current_lang] );
+            if ( ! $pp->exists() ) {
+                $fbp = apply_filters( 'wpml_object_id', $pdf_id, 'documenti_prodotto', true, $default_lang ) ?: $pdf_id;
+                $pp = pods( 'documenti_prodotto', $fbp, ['lang' => $default_lang] );
             }
             // Recupera lingua aggiuntiva
-            $langs = $pp->field('lingua_aggiuntiva');
-            $slug = !empty($langs)? $langs[0]['slug'] : '';
-            // Filtro by lingua
-            if( $current_lang === 'it' ) {
-                if( $slug !== 'italiano' ) continue;
+            $langs = $pp->field( 'lingua_aggiuntiva' );
+            $slug  = ! empty( $langs ) ? $langs[0]['slug'] : '';
+            $name  = ! empty( $langs ) ? $langs[0]['name'] : '';
+
+            // Filtro per lingua: IT mostra solo 'italiano', EN mostra tutti tranne 'italiano'
+            if ( 'it' === $current_lang ) {
+                if ( 'italiano' !== $slug ) {
+                    continue;
+                }
             } else {
-                if( $slug === 'italiano' ) continue;
+                if ( 'italiano' === $slug ) {
+                    continue;
+                }
             }
+
+            // Recupera HTML bandiera
+            $flag_html = function_exists('toroag_get_flag_html') ? toroag_get_flag_html( $slug ) : '';
+
             // Mostra dati allegato
-            $title = get_the_title($pp->ID());
-            $file_id = $pp->field('documento-prodotto.ID');
-            $url = $file_id ? wp_get_attachment_url($file_id) : '';
-            echo '<small class="d-block">PDF ID=' . esc_html($pp->ID())
-               . ' tit=' . esc_html($title)
-               . ' url=' . esc_html($url)
-               . ' lingua=' . esc_html($slug . ':' . $langs[0]['name'])
+            $title   = get_the_title( $pp->ID() );
+            $file_id = $pp->field( 'documento-prodotto.ID' );
+            $url     = $file_id ? wp_get_attachment_url( $file_id ) : '';
+            echo '<small class="d-block">PDF ID=' . esc_html( $pp->ID() )
+               . ' tit=' . esc_html( $title )
+               . ' url=' . esc_html( $url )
+               . ' lingua=' . esc_html( $slug . ':' . $name )
+               . ' ' . $flag_html
                . '</small>';
         }
-
         echo '<hr/>';
     }
 
