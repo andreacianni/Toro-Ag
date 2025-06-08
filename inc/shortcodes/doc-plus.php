@@ -4,6 +4,9 @@
  * Stampa solo commenti HTML con tutte le info (ID, titolo, cover, allegati, lingua).
  */
 function doc_plus_debug_shortcode() {
+    // COMMENTO DI CONTROLLO: serve a verificare se lo shortcode viene eseguito
+    $out = "\n<!-- doc_plus_debug: shortcode eseguito -->\n";
+
     $page_id    = get_the_ID();
     $page_pod   = pods( 'page', $page_id );
     if ( ! $page_pod->exists() ) {
