@@ -100,19 +100,11 @@ function doc_plus_debug_shortcode( $atts ) {
             $slug  = ! empty( $langs ) ? $langs[0]['slug'] : '';
             $name  = ! empty( $langs ) ? $langs[0]['name'] : '';
 
-            // Filtro per lingua: IT mostra solo 'italiano', EN mostra tutti tranne 'italiano'
-            if ( 'it' === $current_lang ) {
-                if ( 'italiano' !== $slug ) {
-                    continue;
-                }
-            } else {
-                if ( 'italiano' === $slug ) {
-                    continue;
-                }
-            }
+                        // Nessun filtro: mostriamo tutti gli allegati indipendentemente dalla lingua aggiuntiva
 
             // Recupera HTML bandiera
             $flag_html = function_exists('toroag_get_flag_html') ? toroag_get_flag_html( $slug ) : '';
+('toroag_get_flag_html') ? toroag_get_flag_html( $slug ) : '';
 
             // Mostra dati allegato
             $title   = get_the_title( $pp->ID() );
