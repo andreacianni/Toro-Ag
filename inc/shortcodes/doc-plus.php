@@ -80,12 +80,14 @@ function doc_plus_debug_shortcode( $atts ) {
         }
         echo '<small class="d-block text-success">doc_plus_debug: processing doc_id=' . esc_html($doc_id) . '</small>';
 
-        // Load Pod
-        $pod = pods( 'doc_plus', $doc_id, array( 'lang' => $current_lang ) );
-        if ( ! $pod->exists() ) {
-            echo '<small class="d-block text-warning">doc_plus_debug: fallback pod for doc_id=' . esc_html($doc_id) . '</small>';
-            $fb = apply_filters( 'wpml_object_id', $doc_id, 'doc_plus', true, $default_lang ) ?: $doc_id;
-            $pod = pods( 'doc_plus', $fb, array( 'lang' => $default_lang ) );
+                        // Load Pod for doc_plus in the current language
+        $pod = pods('doc_plus', $doc_id, ['lang' => $current_lang]);
+        if (!$pod->exists()) {
+            echo '<small class="d-block text-warning">doc_plus_debug: pod not found in ' . esc_html($current_lang) . ' for doc_id=' . esc_html($doc_id) . '</small>';
+            // Fallback to default language
+            $fallback_id = apply_filters('wpml_object_id', $doc_id, 'doc_plus', true, $default_lang) ?: $doc_id;
+            $pod = pods('doc_plus', $fallback_id, ['lang' => $default_lang]);
+            echo '<small class="d-block text-warning">doc_plus_debug: using fallback pod lang=' . esc_html($default_lang) . ' for doc_id=' . esc_html($fallback_id) . '</small>';
         }
 
         // Title & Cover
