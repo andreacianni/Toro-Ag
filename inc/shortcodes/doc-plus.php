@@ -1,22 +1,29 @@
 <?php
 /**
  * Shortcode [doc_plus] – debug Bootstrap card migliorata
- * Visualizza le info di debug in una card centrata e compatta.
+ * Visualizza in una card centrata e compatta tutte le info di debug.
  */
 function doc_plus_debug_shortcode() {
-    // Identifico lingua corrente e default
+    // 1) Lingua corrente e default
     $current_lang = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : '';
     $default_lang = apply_filters('wpml_default_language', null);
 
-    // ID della pagina corrente
+    // 2) ID pagina corrente e fallback
     $orig_page_id = get_the_ID();
-    // Se non siamo nella lingua default, uso fallback
     $load_page_id = ($current_lang && $current_lang !== $default_lang)
         ? apply_filters('wpml_object_id', $orig_page_id, 'page', false, $default_lang)
         : $orig_page_id;
 
-    // Leggo direttamente il meta per bypassare WPML filters
+    // 3) Leggi raw meta e decodifica JSON se necessario
     $raw_meta = get_post_meta($load_page_id, 'doc_plus_inpage', true);
+    if (is_string($raw_meta)) {
+        $decoded = json_decode($raw_meta, true);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            $raw_meta = $decoded;
+        }
+    }
+
+    // 4) Costruisci array di relazioni con solo gli ID
     $related = [];
     if (is_array($raw_meta)) {
         foreach ($raw_meta as $r) {
@@ -26,31 +33,32 @@ function doc_plus_debug_shortcode() {
         }
     }
 
-    // Inizio output: card centrata
-    echo '<div class="d-flex justify-content-center mb-4">';
-      echo '<div class="card w-100" style="max-width:600px;">';
-        // Header
+    // 5) Inizio card centrata e compatta
+    echo '<div class="d-flex justify-content-center my-4">';
+      echo '<div class="card shadow-sm" style="max-width:600px; width:100%;">';
         echo '<div class="card-header text-center">';
           echo esc_html("doc_plus_debug: eseguito lang={$current_lang} pagina={$load_page_id}");
         echo '</div>';
-        // Body
-        echo '<div class="card-body">';
+        echo '<div class="card-body p-3">';
 
+          // Nessun doc_plus collegato
           if (empty($related)) {
-              echo '<small class="d-block text-muted text-center">';
+              echo '<small class="d-block text-center text-muted">';
               echo esc_html("doc_plus_debug: nessun doc_plus per pagina {$load_page_id}");
-              echo '</small>';  
+              echo '</small>';
               echo '</div></div></div>';
               return;
           }
 
-          echo '<small class="d-block mb-2 text-muted">';
+          // Header conteggio
+          echo '<small class="d-block mb-2 text-center text-muted">';
           echo esc_html("trovati " . count($related) . " doc_plus per pagina {$load_page_id}");
           echo '</small>';
 
+          // Loop documenti
           foreach ($related as $item) {
               $doc_id = intval($item['ID']);
-              $pod = pods('doc_plus', $doc_id);
+              $pod    = pods('doc_plus', $doc_id);
 
               // Titolo
               $title = get_the_title($doc_id);
@@ -73,12 +81,12 @@ function doc_plus_debug_shortcode() {
                   continue;
               }
               foreach ($allegati as $att) {
-                  $pdf_id = intval($att['ID']);
+                  $pdf_id    = intval($att['ID']);
                   $pdf_title = get_the_title($pdf_id);
-                  $pod_pdf = pods('documenti_prodotto', $pdf_id);
-                  $langs = $pod_pdf->field('lingua_aggiuntiva');
+                  $pod_pdf   = pods('documenti_prodotto', $pdf_id);
+                  $langs     = $pod_pdf->field('lingua_aggiuntiva');
                   if (!empty($langs)) {
-                      $t = $langs[0];
+                      $t    = $langs[0];
                       $slug = $t['slug'];
                       $name = $t['name'];
                   } else {
@@ -90,8 +98,8 @@ function doc_plus_debug_shortcode() {
               }
           }
 
-        echo '</div>'; // card-body
-      echo '</div>';   // card
-    echo '</div>';     // container
+        echo '</div>';   // card-body
+      echo '</div>';     // card
+    echo '</div>';       // container
 }
 add_shortcode('doc_plus', 'doc_plus_debug_shortcode');
