@@ -66,6 +66,7 @@ function doc_plus_debug_shortcode( $atts ) {
         }
         $cover_id  = $pod->field('doc_plus_cover.ID');
         $cover_url = $cover_id ? wp_get_attachment_url( $cover_id ) : '';
+        echo '<!-- Debug: Processing doc_plus ID ' . $pod->ID() . ' with cover ID ' . $cover_id . ' -->';
 
         // attachments raw meta
         $raw_meta = get_post_meta( $pod->ID(), 'doc_plus_allegati', false );
