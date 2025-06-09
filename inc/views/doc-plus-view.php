@@ -147,12 +147,12 @@ foreach ( $doc_plus_data as $index => $doc ):
             if ( ! empty( $doc['cover_url'] ) ) {
                 echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img h-100" style="object-fit:cover;" alt="Cover">';
             }
-            echo '<div class="card-img-overlay d-flex flex-column justify-content-end bg-gradient-to-t from-black/50 to-transparent p-3">';
+            echo '<div class="card-img-overlay d-flex flex-column justify-content-end p-0">';
             foreach ( $filtered as $att ) {
                 $title = esc_html( $att['title'] );
                 $url   = esc_url( $att['url'] );
                 $slug  = $att['lang']['slug'];
-                echo "<h4 class=\"mb-2\"><strong><a href=\"{$url}\" target=\"_blank\" class=\"text-white text-decoration-none\">{$title}</a></strong>";
+                echo "<h4 class=\"mb-0 pt-2 text-center bg-dark\" style=\"--bs-bg-opacity: .7;\"><strong><a href=\"{$url}\" target=\"_blank\" class=\"text-white text-decoration-none\">{$title}</a></strong>";
                 if ( $slug !== 'italiano' ) {
                     echo ' ' . toroag_get_flag_html( $slug );
                 }
