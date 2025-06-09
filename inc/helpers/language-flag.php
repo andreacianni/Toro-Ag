@@ -33,20 +33,18 @@ if ( ! function_exists( 'toroag_get_flag_html' ) ) {
         ];
 
         if ( empty( $map[ $lang_slug ] ) ) {
-            echo '<!-- FLAG DEBUG: slug “' . esc_html( $lang_slug ) . '” non mappato -->';
+            // echo '<!-- FLAG DEBUG: slug “' . esc_html( $lang_slug ) . '” non mappato -->';
             return '';
         }
 
         $code = $map[ $lang_slug ];
         // SitePress::get_flag_url restituisce sempre l'URL corretto
         $url = $sitepress->get_flag_url( $code );
-        echo '<!-- FLAG DEBUG: slug=' . esc_html( $lang_slug )
-             . ' code=' . esc_html( $code )
-             . ' URL WPML=' . esc_url( $url ) . ' -->';
+        // echo '<!-- FLAG DEBUG: slug=' . esc_html( $lang_slug )             . ' code=' . esc_html( $code )             . ' URL WPML=' . esc_url( $url ) . ' -->';
         if ( ! $url ) {
             // Se WPML non restituisce l’URL, usiamo il path diretto al plugin
             $fallback = plugins_url( 'sitepress-multilingual-cms/res/flags/' . $code . '.svg' );
-            echo '<!-- FLAG DEBUG: fallback URL=' . esc_url( $fallback ) . ' -->';
+            //echo '<!-- FLAG DEBUG: fallback URL=' . esc_url( $fallback ) . ' -->';
             $url = $fallback;
         }
 
