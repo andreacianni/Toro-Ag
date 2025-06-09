@@ -60,13 +60,14 @@ function doc_plus_debug_shortcode( $atts ) {
     $data = [];
     foreach ( $related as $doc_id ) {
         $pod = pods( 'doc_plus', $doc_id, array( 'lang' => $current_lang ) );
+        echo '<!-- debug.'.$pod->ID().' -->';
         if ( ! $pod->exists() ) {
             $fb = apply_filters('wpml_object_id', $doc_id, 'doc_plus', true, $default_lang) ?: $doc_id;
             $pod = pods( 'doc_plus', $fb, array( 'lang' => $default_lang ) );
         }
         $cover_id  = $pod->field('doc_plus_cover.ID');
         $cover_url = $cover_id ? wp_get_attachment_url( $cover_id ) : '';
-        echo '<!-- Debug: Processing doc_plus ID ' . $pod->ID() . ' with cover ID ' . $cover_id . ' -->';
+        // echo '<!-- Debug: Processing doc_plus ID ' . $pod->ID() . ' with cover ID ' . $cover_id . ' -->';
 
         // attachments raw meta
         $raw_meta = get_post_meta( $pod->ID(), 'doc_plus_allegati', false );
