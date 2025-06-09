@@ -64,7 +64,7 @@ foreach ( $doc_plus_data as $index => $doc ):
                 // Recupera il primo link di attachment
                 $first_url = esc_url( reset( $filtered )['url'] );
                 echo '<a href="' . $first_url . '" target="_blank">';
-                echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top px-5" alt="Cover">';
+                echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top px-xl-5" alt="Cover">';
                 echo '</a>';
             }
             echo '<div class="card-body pt-4 text-center">';
