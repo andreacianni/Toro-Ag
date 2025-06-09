@@ -11,7 +11,7 @@ if ( empty( $doc_plus_data ) || ! is_array( $doc_plus_data ) ) {
 }
 
 // Validiamo e definiamo il layout
-$allowed_layouts = [ 'single', 'multiple', 'modern', 'grid', 'list', `clean` ];
+$allowed_layouts = [ 'single', 'multiple', 'modern', 'grid', 'list', 'clean' ];
 $layout = isset( $layout ) && in_array( $layout, $allowed_layouts, true ) ? $layout : 'single';
 
 // Recuperiamo la mappa di priorità lingue
