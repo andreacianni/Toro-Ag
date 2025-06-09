@@ -59,12 +59,12 @@ foreach ( $doc_plus_data as $index => $doc ):
             // Layout clean: card pulita con link anche nell'immagine
             echo '<!-- Layout clean -->';
             echo '<div class="col-md-4 col-12 mb-4">';
-            echo '<div class="card border-0 shadow-sm h-100">';
+            echo '<div class="card border-0 h-100">';
             if ( ! empty( $doc['cover_url'] ) ) {
                 // Recupera il primo link di attachment
                 $first_url = esc_url( reset( $filtered )['url'] );
                 echo '<a href="' . $first_url . '" target="_blank">';
-                echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top" alt="Cover">';
+                echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top px-3" alt="Cover">';
                 echo '</a>';
             }
             echo '<div class="card-body pt-4 text-center">';
