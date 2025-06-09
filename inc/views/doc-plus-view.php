@@ -101,17 +101,17 @@ foreach ( $doc_plus_data as $index => $doc ):
         
         case 'list':
             // Layout a lista: thumbs + testo a fianco
-            echo '<div class="col-12 mb-1">';
-            echo '<div class="d-flex align-items-center p-3 border rounded">';
-            if($doc['cover_url']) echo '<img src="'.esc_url($doc['cover_url']).'" class="card-img-left example-card-img-responsive" alt="Cover">';
+            echo '<div class="col-12 mb-3 rounded">';
+            echo '<div class="d-flex align-items-stretch">';
+            if($doc['cover_url']) echo '<img src="'.esc_url($doc['cover_url']).'" class="rounded-start card-img-left example-card-img-responsive" alt="Cover">';
             // echo '<div>';            
             // echo '<h5>'.esc_html($doc['title']).'</h5>';
-            echo '<div class="card-body">';
+            echo '<div class="card-body ps-5 py-4 d-flex flex-column align-items-stretch">';
             // echo '<ul class="list-unstyled">';
             foreach($filtered as $att){
                 $slug=$att['lang']['slug'];
                 // echo '<li class="mb-1">';
-                echo '<h4 class="mb--2 fw-bold"><a href="'.esc_url($att['url']).'">'.esc_html($att['title']).' ';
+                echo '<h4 class="fw-bold"><a href="'.esc_url($att['url']).'">'.esc_html($att['title']).' ';
                 if($slug!=='italiano') echo toroag_get_flag_html($slug);
                 echo '</a></h4>';
             }
