@@ -103,10 +103,10 @@ foreach ( $doc_plus_data as $index => $doc ):
             // Layout a lista: thumbs + testo a fianco
             echo '<div class="col-12 mb-3 rounded">';
             echo '<div class="d-flex align-items-stretch">';
-            if($doc['cover_url']) echo '<img src="'.esc_url($doc['cover_url']).'" class="rounded-start card-img-left example-card-img-responsive" alt="Cover">';
+            if($doc['cover_url']) echo '<img src="'.esc_url($doc['cover_url']).'"class="col-12 col-sm-5 col-lg-4 img-fluid p-0" alt="Cover">';
             // echo '<div>';            
             // echo '<h5>'.esc_html($doc['title']).'</h5>';
-            echo '<div class="card-body ps-5 py-4 d-flex flex-column align-items-stretch">';
+            echo '<div class="col-12 col-sm-7 col-lg-8 px-2 ps-sm-3 ps-xl-5 pe-sm-0 py-4 d-flex flex-column justify-content-evenly">';
             // echo '<ul class="list-unstyled">';
             foreach($filtered as $att){
                 $slug=$att['lang']['slug'];
