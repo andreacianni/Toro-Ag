@@ -11,7 +11,7 @@ if ( empty( $doc_plus_data ) || ! is_array( $doc_plus_data ) ) {
 }
 
 // Validiamo e definiamo il layout
-$allowed_layouts = [ 'single', 'multiple', 'modern', 'grid', 'list' ];
+$allowed_layouts = [ 'single', 'multiple', 'modern', 'grid', 'list', `clean` ];
 $layout = isset( $layout ) && in_array( $layout, $allowed_layouts, true ) ? $layout : 'single';
 
 // Recuperiamo la mappa di priorità lingue
@@ -55,6 +55,33 @@ foreach ( $doc_plus_data as $index => $doc ):
 
     // Rendering in base al layout selezionato
     switch ( $layout ) {
+        case 'clean':
+            // Layout clean: card pulita con link anche nell'immagine
+            echo '<!-- Layout clean -->';
+            echo '<div class="col-md-4 col-12 mb-4">';
+            echo '<div class="card border-0 shadow-sm h-100">';
+            if ( ! empty( $doc['cover_url'] ) ) {
+                // Recupera il primo link di attachment
+                $first_url = esc_url( reset( $filtered )['url'] );
+                echo '<a href="' . $first_url . '" target="_blank">';
+                echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top" alt="Cover">';
+                echo '</a>';
+            }
+            echo '<div class="card-body pt-4 text-center">';
+            foreach ( $filtered as $att ) {
+                $title = esc_html( $att['title'] );
+                $url   = esc_url( $att['url'] );
+                $slug  = $att['lang']['slug'];
+                echo '<h4><strong><a href="' . $url . '" target="_blank" class="text-decoration-none">'
+                    . $title . '</a></strong>';
+                if ( $slug !== 'italiano' ) {
+                    echo ' ' . toroag_get_flag_html( $slug );
+                }
+                echo '</h4>';
+            }
+            echo '</div></div></div>';
+            break;
+
         case 'grid':
             // Layout a griglia: cards uniformi
             echo '<div class="col-sm-6 col-md-4">';
