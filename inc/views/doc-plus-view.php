@@ -152,11 +152,11 @@ foreach ( $doc_plus_data as $index => $doc ):
                 $title = esc_html( $att['title'] );
                 $url   = esc_url( $att['url'] );
                 $slug  = $att['lang']['slug'];
-                echo "<h4 class=\"mb-0 pt-2 text-center bg-dark\" style=\"--bs-bg-opacity: .7;\"><strong><a href=\"{$url}\" target=\"_blank\" class=\"text-white text-decoration-none\">{$title}</a></strong>";
+                echo "<h5 class=\"mb-0 pt-2 text-center bg-dark\" style=\"--bs-bg-opacity: .7;\"><strong><a href=\"{$url}\" target=\"_blank\" class=\"text-white text-decoration-none\">{$title}</a></strong>";
                 if ( $slug !== 'italiano' ) {
                     echo ' ' . toroag_get_flag_html( $slug );
                 }
-                echo '</h4>';
+                echo '</h5>';
             }
             echo '</div></div></div>';
             break;
