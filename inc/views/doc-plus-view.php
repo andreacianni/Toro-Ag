@@ -101,8 +101,8 @@ foreach ( $doc_plus_data as $index => $doc ):
         
         case 'list':
             // Layout a lista: thumbs + testo a fianco
-            echo '<div class="col-12 mb-3 rounded">';
-            echo '<div class="d-flex align-items-stretch">';
+            echo '<div class="layout-list col-12 mb-3">';
+            echo '<div class="d-flex flex-column flex-sm-row">';
             if($doc['cover_url']) echo '<img src="'.esc_url($doc['cover_url']).'"class="col-12 col-sm-5 col-lg-4 img-fluid p-0" alt="Cover">';
             // echo '<div>';            
             // echo '<h5>'.esc_html($doc['title']).'</h5>';
@@ -111,7 +111,7 @@ foreach ( $doc_plus_data as $index => $doc ):
             foreach($filtered as $att){
                 $slug=$att['lang']['slug'];
                 // echo '<li class="mb-1">';
-                echo '<h4 class="fw-bold"><a href="'.esc_url($att['url']).'">'.esc_html($att['title']).' ';
+                echo '<h4 class="fw-bold text-center text-sm-start"><a href="'.esc_url($att['url']).'">'.esc_html($att['title']).' ';
                 if($slug!=='italiano') echo toroag_get_flag_html($slug);
                 echo '</a></h4>';
             }
