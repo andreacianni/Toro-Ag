@@ -107,15 +107,15 @@ foreach ( $doc_plus_data as $index => $doc ):
             // echo '<div>';            
             // echo '<h5>'.esc_html($doc['title']).'</h5>';
             echo '<div class="card-body">';
-            echo '<ul class="list-unstyled">';
+            // echo '<ul class="list-unstyled">';
             foreach($filtered as $att){
                 $slug=$att['lang']['slug'];
-                echo '<li class="mb-1">';
-                echo '<h4 class="mb--2"><a href="'.esc_url($att['url']).'">'.esc_html($att['title']).' ';
+                // echo '<li class="mb-1">';
+                echo '<h4 class="mb--2 fw-bold"><a href="'.esc_url($att['url']).'">'.esc_html($att['title']).' ';
                 if($slug!=='italiano') echo toroag_get_flag_html($slug);
-                echo '</a></h4></li>';
+                echo '</a></h4>';
             }
-            echo '</ul></div></div></div>';
+            echo '</div></div></div>';
             break;
 
         case 'multiple':
