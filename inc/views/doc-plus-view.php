@@ -18,7 +18,7 @@ $layout = isset( $layout ) && in_array( $layout, $allowed_layouts, true ) ? $lay
 $order_map = function_exists('toroag_get_language_order') ? toroag_get_language_order() : [];
 
 // Apriamo la griglia delle card
-echo '<div class="row x">';
+echo '<div class="row doc-plus-view-layout-' . esc_attr( $layout ) . '">';
 
 foreach ( $doc_plus_data as $index => $doc ):
     // Inizio ciclo per ogni documento con layout corrente
@@ -58,7 +58,7 @@ foreach ( $doc_plus_data as $index => $doc ):
         case 'clean':
             // Layout clean: card pulita con link anche nell'immagine
             echo '<!-- Layout clean -->';
-            echo '<div class="col-md-4 col-12 mb-4">';
+            echo '<div class="Layout-clean col-md-4 col-12 mb-4">';
             echo '<div class="card border-0 h-100">';
             if ( ! empty( $doc['cover_url'] ) ) {
                 // Recupera il primo link di attachment
@@ -84,7 +84,7 @@ foreach ( $doc_plus_data as $index => $doc ):
 
         case 'grid':
             // Layout a griglia: cards uniformi
-            echo '<div class="col-sm-6 col-md-4">';
+            echo '<div class="Layout-grid col-sm-6 col-md-4">';
             echo '<div class="card h-100">';
             echo '<div class="ratio ratio-4x3">';
             if($doc['cover_url']) echo '<img src="'.esc_url($doc['cover_url']).'" class="card-img-top" alt="Cover">';
@@ -120,7 +120,7 @@ foreach ( $doc_plus_data as $index => $doc ):
 
         case 'multiple':
             echo '<!-- Layout multiple -->';
-            echo '<div class="col-12 mb-4"><div class="card h-100"><div class="row g-0 align-items-stretch">';
+            echo '<div class="Layout-multiple col-12 mb-4"><div class="card h-100"><div class="row g-0 align-items-stretch">';
             // Colonna testo a sinistra
             echo '<div class="col-md-8"><div class="card-body">';
             foreach ( $filtered as $att ) {
