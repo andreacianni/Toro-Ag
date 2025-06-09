@@ -111,9 +111,9 @@ foreach ( $doc_plus_data as $index => $doc ):
             foreach($filtered as $att){
                 $slug=$att['lang']['slug'];
                 echo '<li class="mb-1">';
-                echo '<h6 class="d-inline"><a href="'.esc_url($att['url']).'">'.esc_html($att['title']).'</a></h6> ';
+                echo '<h4 class="mb--2"><a href="'.esc_url($att['url']).'">'.esc_html($att['title']).' ';
                 if($slug!=='italiano') echo toroag_get_flag_html($slug);
-                echo '</li>';
+                echo '</a></h4></li>';
             }
             echo '</ul></div></div></div>';
             break;
