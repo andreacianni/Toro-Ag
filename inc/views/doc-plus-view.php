@@ -72,7 +72,7 @@ foreach ( $doc_plus_data as $index => $doc ):
                 $title = esc_html( $att['title'] );
                 $url   = esc_url( $att['url'] );
                 $slug  = $att['lang']['slug'];
-                echo '<h4><strong><a href="' . $url . '" target="_blank" class="text-decoration-none">'
+                echo '<h4 class="mb-3"><strong><a href="' . $url . '" target="_blank" class="text-decoration-none">'
                     . $title . '</a></strong>';
                 if ( $slug !== 'italiano' ) {
                     echo ' ' . toroag_get_flag_html( $slug );
