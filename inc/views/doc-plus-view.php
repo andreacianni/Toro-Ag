@@ -101,12 +101,13 @@ foreach ( $doc_plus_data as $index => $doc ):
         
         case 'list':
             // Layout a lista: thumbs + testo a fianco
-            echo '<div class="col-12">';
+            echo '<div class="col-12 mb-1">';
             echo '<div class="d-flex align-items-center p-3 border rounded">';
-            if($doc['cover_url']) echo '<img src="'.esc_url($doc['cover_url']).'" class="flex-shrink-0 me-3" style="width:80px; height:80px; object-fit:cover; border-radius:4px;" alt="Cover">';
-            echo '<div>';            
-            echo '<h5>'.esc_html($doc['title']).'</h5>';
-            echo '<ul class="list-unstyled mb-0">';
+            if($doc['cover_url']) echo '<img src="'.esc_url($doc['cover_url']).'" class="card-img-left example-card-img-responsive" alt="Cover">';
+            // echo '<div>';            
+            // echo '<h5>'.esc_html($doc['title']).'</h5>';
+            echo '<div class="card-body">';
+            echo '<ul class="list-unstyled">';
             foreach($filtered as $att){
                 $slug=$att['lang']['slug'];
                 echo '<li class="mb-1">';
