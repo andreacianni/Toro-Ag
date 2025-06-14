@@ -84,16 +84,16 @@ function ac_video_prodotto_shortcode() {
 add_shortcode('video_prodotto', 'ac_video_prodotto_shortcode');
 
 /**
- * Shortcode [video_pagina] – compatibile con WPML e Divi
+ * Shortcode [carosello_video_pagina] – compatibile con WPML e Divi
  * Mostra tutti i video associati a una pagina e filtra in base a 'lingua_aggiuntiva'.
  * Supporta parametro: titolo="Titolo da visualizzare sopra i video"
  */
 
-function ac_video_pagina_shortcode($atts = []) {
+function ac_carosello_video_pagina_shortcode($atts = []) {
     ob_start();
 
     if (! is_page()) {
-        return '<!-- [video_pagina] disponibile solo nelle pagine -->';
+        return '<!-- [carosello_video_pagina] disponibile solo nelle pagine -->';
     }
 
     $atts = shortcode_atts([
@@ -202,7 +202,8 @@ function ac_video_pagina_shortcode($atts = []) {
 
     return ob_get_clean();
 }
-add_shortcode('video_pagina', 'ac_video_pagina_shortcode');
+add_shortcode('carosello_video_pagina', 'ac_carosello_video_pagina_shortcode');
+
 
 
 
