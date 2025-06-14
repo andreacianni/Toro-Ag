@@ -333,7 +333,7 @@ function ajax_video_embed() {
     $embed = wp_oembed_get($src);
     if (! $embed) wp_die();
     echo '<div class="card h-100">'
-       . '<div class="card-video embed-responsive embed-responsive-16by9">' . $embed . '</div>'
+       . '<div class="ratio ratio-16x9">$1</div>'
        . '<div class="card-body">'
        . '<h5 class="card-title text-center py-2 mb-0">'
        . '<a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">'
@@ -341,3 +341,4 @@ function ajax_video_embed() {
        . '</h5></div></div>';
     wp_die();
 }
+
