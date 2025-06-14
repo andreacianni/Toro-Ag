@@ -237,4 +237,21 @@ sup.r {
 // padding-left: 0.05em;
 // padding-right: 0.05em;
 }
-*//*# sourceMappingURL=style.css.map */
+*/
+/* menù social */
+#menu-social .footer-icon a {
+  display: flex;
+}
+#menu-social .footer-icon a:before {
+  font-family: "Font Awesome 6 Brands";
+  font-size: 2em;
+}
+#menu-social .footer-icon.youtube a:before {
+  content: "\f167";
+}
+#menu-social .footer-icon.facebook a:before {
+  content: "\f082";
+}
+#menu-social .footer-icon.linkedin a:before {
+  content: "\f08c";
+}/*# sourceMappingURL=style.css.map */

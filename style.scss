@@ -301,3 +301,24 @@ sup.r {
 // padding-right: 0.05em;
 }
 */
+
+/* menù social */
+#menu-social{
+  .footer-icon a{
+    display: flex;
+    &:before{
+      font-family: "Font Awesome 6 Brands";
+      font-size: 2em;
+    }
+  }
+  .footer-icon.youtube a:before {
+    content: "\f167"; // Facebook icon
+  }
+  .footer-icon.facebook a:before {
+    content: "\f082"; // Facebook icon
+  }
+  .footer-icon.linkedin a:before {
+    content: "\f08c"; // Facebook icon
+  }
+}
+
