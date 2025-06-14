@@ -272,22 +272,7 @@ function ac_video_pagina_shortcode($atts = []) {
     }
 
     echo '<div id="video-pagina-wrapper">
-        <?php
-    echo '<div class="video-card-grid row" id="video-pagina-grid">';
-    foreach ($video_ids as $id) {
-        $src = get_post_meta($id, 'video_link', true);
-        $embed = wp_oembed_get($src);
-        if (! $embed) continue;
-        echo '<div class="col-md-4 mb-4" data-video-id="' . esc_attr($id) . '">'
-           . '<div class="card h-100">'
-           . '<div class="ratio ratio-16x9">' . $embed . '</div>'
-           . '<div class="card-body">'
-           . '<h5 class="card-title text-center py-2 mb-0">'
-           . '<a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">'
-           . esc_html(get_the_title($id)) . '</a>'
-           . '</h5></div></div></div>';
-    }
-    echo '</div>'; ?>
+        <div class="video-card-grid row" id="video-pagina-grid"></div>
         <div class="d-flex justify-content-center gap-2 mt-3">
             <button class="btn btn-secondary" id="video-pagina-prev" disabled>Precedente</button>
             <button class="btn btn-primary" id="video-pagina-next">Successivo</button>
@@ -295,7 +280,7 @@ function ac_video_pagina_shortcode($atts = []) {
     </div>';
 
     echo '<script>
-        const videoPaginaData = Array.from(document.querySelectorAll('[data-video-id]')).map(e => parseInt(e.dataset.videoId));
+        const videoPaginaData = ' . json_encode($video_ids) . ';
         let videoPaginaIndex = 0;
         const maxPerPage = 3;
 
@@ -305,9 +290,14 @@ function ac_video_pagina_shortcode($atts = []) {
             const end = videoPaginaIndex + maxPerPage;
             const slice = videoPaginaData.slice(videoPaginaIndex, end);
             slice.forEach(id => {
-    const el = document.querySelector('[data-video-id="' + id + '"]');
-    if (el) container.appendChild(el.cloneNode(true));
-});
+                fetch("' . admin_url('admin-ajax.php') . '?action=video_embed&id=" + id)
+                    .then(r => r.text())
+                    .then(html => {
+                        const col = document.createElement("div");
+                        col.className = "col-md-4 mb-4";
+                        col.innerHTML = html;
+                        container.appendChild(col);
+                    });
             });
             document.getElementById("video-pagina-prev").disabled = videoPaginaIndex === 0;
             document.getElementById("video-pagina-next").disabled = videoPaginaIndex + maxPerPage >= videoPaginaData.length;
@@ -351,5 +341,4 @@ function ajax_video_embed() {
        . '</h5></div></div>';
     wp_die();
 }
-
 
