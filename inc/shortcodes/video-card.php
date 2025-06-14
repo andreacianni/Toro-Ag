@@ -129,59 +129,59 @@ function ac_video_pagina_shortcode($atts = []) {
         echo '<h5 class="text-bg-dark text-center py-2 my-4 rounded-2">' . esc_html($atts['titolo']) . '</h5>';
     }
 
-    $carousel_id = 'videoCarousel_' . $source_id;
-    $total_videos = count($video_ids);
+    $carousel_id = 'swiper_' . $source_id;
+    echo '<div class="swiper-container" id="' . esc_attr($carousel_id) . '">
+            <div class="swiper-wrapper">';
 
-    if ($total_videos <= 3) {
-        echo '<div class="video-card-grid row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">';
-        foreach ($video_ids as $id) {
-            $src = get_post_meta($id, 'video_link', true);
-            $embed = wp_oembed_get($src);
-            if (! $embed) continue;
+    foreach ($video_ids as $id) {
+        $src = get_post_meta($id, 'video_link', true);
+        $embed = wp_oembed_get($src);
+        if (! $embed) continue;
 
-            echo '<div class="col">'
-               . '<div class="card h-100">'
-               . '<div class="card-video embed-responsive embed-responsive-16by9">' . $embed . '</div>'
-               . '<div class="card-body">'
-               . '<h5 class="card-title text-center py-2 mb-0">'
-               . '<a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">'
-               . esc_html(get_the_title($id)) . '</a>'
-               . '</h5></div></div></div>';
-        }
-        echo '</div>';
-    } else {
-        echo '<div class="overflow-hidden position-relative">';
-        echo '<div class="video-carousel d-flex flex-nowrap gap-4" id="video-carousel-' . esc_attr($source_id) . '">';
-
-        foreach ($video_ids as $id) {
-            $src = get_post_meta($id, 'video_link', true);
-            $embed = wp_oembed_get($src);
-            if (! $embed) continue;
-
-            echo '<div class="flex-shrink-0" style="width: calc(100% / 3)">'
-               . '<div class="card h-100">'
-               . '<div class="card-video embed-responsive embed-responsive-16by9">' . $embed . '</div>'
-               . '<div class="card-body">'
-               . '<h5 class="card-title text-center py-2 mb-0">'
-               . '<a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">'
-               . esc_html(get_the_title($id)) . '</a>'
-               . '</h5></div></div></div>';
-        }
-
-        echo '</div></div>';
-
-        echo '<style>
-        #video-carousel-' . esc_attr($source_id) . ' {
-            animation: scrollVideos-' . esc_attr($source_id) . ' ' . (count($video_ids) * 5) . 's linear infinite;
-        }
-
-        @keyframes scrollVideos-' . esc_attr($source_id) . ' {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(calc(-100% / ' . count($video_ids) . ')); }
-        }
-        </style>';
+        echo '<div class="swiper-slide">'
+           . '<div class="card h-100">'
+           . '<div class="card-video embed-responsive embed-responsive-16by9">' . $embed . '</div>'
+           . '<div class="card-body">'
+           . '<h5 class="card-title text-center py-2 mb-0">'
+           . '<a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">'
+           . esc_html(get_the_title($id)) . '</a>'
+           . '</h5></div></div></div>';
     }
+
+    echo '  </div>
+          <div class="swiper-pagination"></div>
+        </div>';
+
+    echo '<script>
+        document.addEventListener("DOMContentLoaded", function () {
+            new Swiper("#' . esc_js($carousel_id) . '", {
+                slidesPerView: 3,
+                spaceBetween: 30,
+                loop: true,
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true,
+                },
+                breakpoints: {
+                    0: {
+                        slidesPerView: 1,
+                    },
+                    768: {
+                        slidesPerView: 2,
+                    },
+                    992: {
+                        slidesPerView: 3,
+                    }
+                }
+            });
+        });
+    </script>';
 
     return ob_get_clean();
 }
 add_shortcode('video_pagina', 'ac_video_pagina_shortcode');
+

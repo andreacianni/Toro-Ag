@@ -45,7 +45,7 @@ function unregister_et_project_cpt() {
 }
 add_action('init', 'unregister_et_project_cpt', 100);
 
-// aggiungie bootstrap
+// Aggiunge Bootstrap 5.3.3 e Bootstrap Icons
 function aggiungi_bootstrap() {
     // Frontend
     wp_enqueue_style('bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css');
@@ -53,6 +53,13 @@ function aggiungi_bootstrap() {
     wp_enqueue_style('bootstrap-icons', 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css');
 }
 add_action('wp_enqueue_scripts', 'aggiungi_bootstrap');
+
+// Aggiunge SwiperJS per le gallerie
+function enqueue_swiper_assets() {
+    wp_enqueue_style('swiper-css', 'https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css');
+    wp_enqueue_script('swiper-js', 'https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js', [], null, true);
+}
+add_action('wp_enqueue_scripts', 'enqueue_swiper_assets');
 
 // Backend
 function aggiungi_bootstrap_admin() {
