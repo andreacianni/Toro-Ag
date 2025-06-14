@@ -227,7 +227,7 @@ add_shortcode('carosello_video_pagina', 'ac_carosello_video_pagina_shortcode');
 
 /**
  * Shortcode [video_pagina] – compatibile con WPML e Divi
- * Carica subito tutti i video e gestisce paginazione client-side con bottone "Mostra tutti"
+ * Carica subito tutti i video in una griglia statica
  * Supporta parametro: titolo="Titolo da visualizzare sopra i video"
  */
 
@@ -261,48 +261,34 @@ function ac_video_pagina_shortcode($atts = []) {
         return '<!-- Nessun video nella lingua corrente -->';
     }
 
-    // Pre-render all embed HTML server-side:
-    $embeds = [];
+    ob_start();
+
+    if (! empty($atts['titolo'])) {
+        echo '<h5 class="text-bg-dark text-center py-2 my-4 rounded-2">' . esc_html($atts['titolo']) . '</h5>';
+    }
+
+    echo '<div id="video-pagina-wrapper">';
+    echo '<div class="d-flex flex-wrap justify-content-start" id="video-pagina-grid">';
+
     foreach ($video_ids as $id) {
         $src  = get_post_meta($id, 'video_link', true);
         $oemb = wp_oembed_get($src);
         if (! $oemb) {
             continue;
         }
-        // Use Bootstrap 4 embed-responsive classes instead of ratio
-        $card = '<div class="card h-100">'
-              . '<div class="embed-responsive embed-responsive-16by9 w-100">' . $oemb . '</div>'
-              . '<div class="card-body">'
-              . '<h5 class="card-title text-center py-2 mb-0">'
-              . '<a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">'
-              . esc_html(get_the_title($id)) . '</a>'
-              . '</h5></div></div>';
-        $embeds[] = $card;
+        echo '<div class="p-2" style="flex: 0 0 33.333%;">';
+        echo '<div class="card h-100">';
+        echo '<div class="embed-responsive embed-responsive-16by9 w-100">' . $oemb . '</div>';
+        echo '<div class="card-body">';
+        echo '<h5 class="card-title text-center py-2 mb-0">';
+        echo '<a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">';
+        echo esc_html(get_the_title($id));
+        echo '</a></h5></div></div></div>';
     }
 
-    if (empty($embeds)) {
-        return '<!-- Errore nel recupero degli embed -->';
-    }
+    echo '</div>'; // chiude grid
+    echo '</div>'; // chiude wrapper
 
-    ob_start();
-
-    if (! empty($atts['titolo'])) {
-        echo '<h5 class="text-bg-dark text-center py-2 my-4 rounded-2">' . esc_html($atts['titolo']) . '</h5>';
-    }
-    ?>
-    <div id="video-pagina-wrapper">
-        <div class="d-flex flex-wrap justify-content-start" id="video-pagina-grid"></div>
-        <div class="d-flex justify-content-center gap-2 mt-3">
-            <button class="btn btn-secondary" id="video-pagina-prev" disabled>Precedente</button>
-            <button class="btn btn-primary" id="video-pagina-next">Successivo</button>
-            <button class="btn btn-outline-primary" id="video-pagina-show-all">Mostra tutti</button>
-        </div>
-    </div>
-
-    <?php
     return ob_get_clean();
 }
 add_shortcode('video_pagina', 'ac_video_pagina_shortcode');
-
-
-
