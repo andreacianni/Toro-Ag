@@ -298,58 +298,7 @@ function ac_video_pagina_shortcode($atts = []) {
             <button class="btn btn-outline-primary" id="video-pagina-show-all">Mostra tutti</button>
         </div>
     </div>
-    <script>
-    (function() {
-        const embeds     = <?php echo json_encode($embeds); ?>;
-        const maxVisible = 3;
-        let idx          = 0;
-        const container  = document.getElementById('video-pagina-grid');
-        const btnPrev    = document.getElementById('video-pagina-prev');
-        const btnNext    = document.getElementById('video-pagina-next');
-        const btnAll     = document.getElementById('video-pagina-show-all');
 
-        function render(count) {
-            container.innerHTML = '';
-            for (let i = 0; i < count; i++) {
-                const iPos = idx + i;
-                if (iPos >= embeds.length) break;
-                const cardHtml = embeds[iPos];
-                const div      = document.createElement('div');
-                div.className = 'p-2';
-                div.style.flex = '0 0 ' + (100 / maxVisible) + '%';
-                div.innerHTML = cardHtml;
-                container.appendChild(div);
-            }
-            btnPrev.disabled = idx <= 0;
-            btnNext.disabled = (idx + maxVisible) >= embeds.length;
-        }
-
-        btnPrev.addEventListener('click', () => {
-            if (idx > 0) {
-                idx--;
-                render(maxVisible);
-            }
-        });
-        btnNext.addEventListener('click', () => {
-            if ((idx + maxVisible) < embeds.length) {
-                idx++;
-                render(maxVisible);
-            }
-        });
-        btnAll.addEventListener('click', () => {
-            container.innerHTML = '';
-            embeds.forEach(html => {
-                const div = document.createElement('div');
-                div.className = 'p-2 w-100';
-                div.innerHTML = html;
-                container.appendChild(div);
-            });
-            btnPrev.disabled = btnNext.disabled = true;
-        });
-
-        render(maxVisible);
-    })();
-    </script>
     <?php
     return ob_get_clean();
 }
