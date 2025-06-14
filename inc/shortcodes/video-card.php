@@ -224,3 +224,120 @@ function ac_carosello_video_pagina_shortcode($atts = []) {
     return ob_get_clean();
 }
 add_shortcode('carosello_video_pagina', 'ac_carosello_video_pagina_shortcode');
+
+/**
+ * Shortcode [video_pagina] – compatibile con WPML e Divi
+ * Mostra tutti i video associati a una pagina e filtra in base a 'lingua_aggiuntiva'.
+ * Supporta parametro: titolo="Titolo da visualizzare sopra i video"
+ */
+
+function ac_video_pagina_shortcode($atts = []) {
+    ob_start();
+
+    if (! is_page()) {
+        return '<!-- [video_pagina] disponibile solo nelle pagine -->';
+    }
+
+    $atts = shortcode_atts([
+        'titolo' => ''
+    ], $atts);
+
+    $source_id   = get_the_ID();
+    $pod_context = 'page';
+    $field_name  = 'video_pagina';
+
+    $pod = pods($pod_context, $source_id);
+    if (! $pod) {
+        return '<!-- Errore: pod non trovato -->';
+    }
+
+    $raw = $pod->field($field_name);
+    if (empty($raw) || ! is_array($raw)) {
+        return "<!-- Nessun video associato: campo '{$field_name}' vuoto. ID post: {$source_id} -->";
+    }
+
+    $video_ids = array_map(function($v) {
+        return is_array($v) && !empty($v['ID']) ? intval($v['ID']) : intval($v);
+    }, $raw);
+
+    $video_ids = array_values(array_filter($video_ids));
+    $video_ids = toroag_filtra_per_lingua_aggiuntiva($video_ids);
+
+    if (empty($video_ids)) {
+        return '<!-- Nessun video nella lingua corrente -->';
+    }
+
+    if (!empty($atts['titolo'])) {
+        echo '<h5 class="text-bg-dark text-center py-2 my-4 rounded-2">' . esc_html($atts['titolo']) . '</h5>';
+    }
+
+    echo '<div id="video-pagina-wrapper">
+        <div class="video-card-grid row" id="video-pagina-grid"></div>
+        <div class="d-flex justify-content-center gap-2 mt-3">
+            <button class="btn btn-secondary" id="video-pagina-prev" disabled>Precedente</button>
+            <button class="btn btn-primary" id="video-pagina-next">Successivo</button>
+        </div>
+    </div>';
+
+    echo '<script>
+        const videoPaginaData = ' . json_encode($video_ids) . ';
+        let videoPaginaIndex = 0;
+        const maxPerPage = 3;
+
+        function renderVideoPagina() {
+            const container = document.getElementById("video-pagina-grid");
+            container.innerHTML = "";
+            const end = videoPaginaIndex + maxPerPage;
+            const slice = videoPaginaData.slice(videoPaginaIndex, end);
+            slice.forEach(id => {
+                fetch("' . admin_url('admin-ajax.php') . '?action=video_embed&id=" + id)
+                    .then(r => r.text())
+                    .then(html => {
+                        const col = document.createElement("div");
+                        col.className = "col-md-4 mb-4";
+                        col.innerHTML = html;
+                        container.appendChild(col);
+                    });
+            });
+            document.getElementById("video-pagina-prev").disabled = videoPaginaIndex === 0;
+            document.getElementById("video-pagina-next").disabled = videoPaginaIndex + maxPerPage >= videoPaginaData.length;
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            renderVideoPagina();
+            document.getElementById("video-pagina-prev").addEventListener("click", function () {
+                if (videoPaginaIndex > 0) {
+                    videoPaginaIndex--;
+                    renderVideoPagina();
+                }
+            });
+            document.getElementById("video-pagina-next").addEventListener("click", function () {
+                if (videoPaginaIndex + maxPerPage < videoPaginaData.length) {
+                    videoPaginaIndex++;
+                    renderVideoPagina();
+                }
+            });
+        });
+    </script>';
+
+    return ob_get_clean();
+}
+add_shortcode('video_pagina', 'ac_video_pagina_shortcode');
+
+add_action('wp_ajax_video_embed', 'ajax_video_embed');
+add_action('wp_ajax_nopriv_video_embed', 'ajax_video_embed');
+function ajax_video_embed() {
+    $id = intval($_GET['id'] ?? 0);
+    if (! $id) wp_die();
+    $src = get_post_meta($id, 'video_link', true);
+    $embed = wp_oembed_get($src);
+    if (! $embed) wp_die();
+    echo '<div class="card h-100">'
+       . '<div class="card-video embed-responsive embed-responsive-16by9">' . $embed . '</div>'
+       . '<div class="card-body">'
+       . '<h5 class="card-title text-center py-2 mb-0">'
+       . '<a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">'
+       . esc_html(get_the_title($id)) . '</a>'
+       . '</h5></div></div>';
+    wp_die();
+}
