@@ -138,19 +138,36 @@ function ac_video_pagina_shortcode($atts = []) {
         $embed = wp_oembed_get($src);
         if (! $embed) continue;
 
-        echo '<div class="swiper-slide">'
-           . '<div class="card h-100 d-flex flex-column">'
-           . '<div class="card-video embed-responsive embed-responsive-16by9">' . $embed . '</div>'
-           . '<div class="card-body d-flex align-items-end">'
-           . '<h5 class="card-title text-center w-100 py-2 mb-0">'
-           . '<a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">'
-           . esc_html(get_the_title($id)) . '</a>'
-           . '</h5></div></div></div>';
+        $title = esc_html(get_the_title($id));
+
+        echo '<div class="swiper-slide">
+                <div class="card h-100 d-flex flex-column position-relative group">
+                    <div class="card-video embed-responsive embed-responsive-16by9">' . $embed . '</div>
+                    <div class="card-body d-flex align-items-end">
+                        <h5 class="card-title text-center w-100 py-2 mb-0 text-truncate" title="' . $title . '">
+                            <a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer" class="d-block text-decoration-none text-dark">'
+                            . $title . '</a>
+                        </h5>
+                    </div>
+                </div>
+              </div>';
     }
 
     echo '  </div>
           </div>
           <div class="swiper-pagination position-absolute start-50 translate-middle-x mt-2" style="bottom: 0;"></div>';
+
+    echo '<style>
+        .card-title.text-truncate {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .card:hover .card-title.text-truncate {
+            white-space: normal;
+            overflow: visible;
+        }
+    </style>';
 
     echo '<script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -184,6 +201,7 @@ function ac_video_pagina_shortcode($atts = []) {
     return ob_get_clean();
 }
 add_shortcode('video_pagina', 'ac_video_pagina_shortcode');
+
 
 
 
