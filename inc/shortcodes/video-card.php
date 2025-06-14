@@ -86,14 +86,19 @@ add_shortcode('video_prodotto', 'ac_video_prodotto_shortcode');
 /**
  * Shortcode [video_pagina] – compatibile con WPML e Divi
  * Mostra tutti i video associati a una pagina e filtra in base a 'lingua_aggiuntiva'.
+ * Supporta parametro: titolo="Titolo da visualizzare sopra i video"
  */
 
-function ac_video_pagina_shortcode() {
+function ac_video_pagina_shortcode($atts = []) {
     ob_start();
 
     if (! is_page()) {
         return '<!-- [video_pagina] disponibile solo nelle pagine -->';
     }
+
+    $atts = shortcode_atts([
+        'titolo' => ''
+    ], $atts);
 
     $source_id   = get_the_ID();
     $pod_context = 'page';
@@ -118,6 +123,10 @@ function ac_video_pagina_shortcode() {
 
     if (empty($video_ids)) {
         return '<!-- Nessun video nella lingua corrente -->';
+    }
+
+    if (!empty($atts['titolo'])) {
+        echo '<h5 class="text-bg-dark text-center py-2 my-4 rounded-2">' . esc_html($atts['titolo']) . '</h5>';
     }
 
     echo '<div class="video-card-grid row">';
