@@ -300,7 +300,24 @@ sup.r {
 // padding-left: 0.05em;
 // padding-right: 0.05em;
 }
-*/
+*//* MENU FOOTER */
+/*show desktop menu on phone*/
+
+.pa-open-mobile-menu{
+  &.vertical.et_pb_menu .et_pb_menu__menu>nav>ul{
+    flex-direction:column;
+  }
+  
+  @media (max-width: 980px) {
+    .et_pb_menu__menu {
+      display: flex!important;
+    }
+    .et_mobile_nav_menu {
+      display: none!important;
+    }
+  }
+}
+
 
 /* menù social */
 #menu-social{
