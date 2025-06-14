@@ -141,9 +141,9 @@ function ac_video_pagina_shortcode($atts = []) {
         $title = esc_html(get_the_title($id));
 
         echo '<div class="swiper-slide">
-                <div class="card h-100 d-flex flex-column position-relative group video-card-height">
+                <div class="card d-flex flex-column position-relative group video-card-height">
                     <div class="card-video embed-responsive embed-responsive-16by9">' . $embed . '</div>
-                    <div class="card-body d-flex align-items-end">
+                    <div class="card-body">
                         <h5 class="card-title text-center w-100 py-2 mb-0">
                             <a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer" class="d-block text-decoration-none text-dark">'
                             . $title . '</a>
@@ -203,6 +203,7 @@ function ac_video_pagina_shortcode($atts = []) {
     return ob_get_clean();
 }
 add_shortcode('video_pagina', 'ac_video_pagina_shortcode');
+
 
 
 
