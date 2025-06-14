@@ -150,39 +150,36 @@ function ac_video_pagina_shortcode($atts = []) {
         }
         echo '</div>';
     } else {
-        echo '<div id="' . esc_attr($carousel_id) . '" class="carousel slide carousel-dark" data-bs-ride="carousel" data-bs-interval="5000" data-bs-wrap="true">';
+        echo '<div class="overflow-hidden position-relative">';
+        echo '<div class="video-carousel d-flex flex-nowrap gap-4" id="video-carousel-' . esc_attr($source_id) . '">';
 
-        // Indicators
-        echo '<div class="carousel-indicators">';
-        foreach ($video_ids as $i => $_) {
-            echo '<button type="button" data-bs-target="#' . esc_attr($carousel_id) . '" data-bs-slide-to="' . $i . '"' . ($i === 0 ? ' class="active" aria-current="true"' : '') . ' aria-label="Slide ' . ($i+1) . '"></button>';
-        }
-        echo '</div>';
-
-        // Carousel inner
-        echo '<div class="carousel-inner">';
-        foreach ($video_ids as $i => $id) {
+        foreach ($video_ids as $id) {
             $src = get_post_meta($id, 'video_link', true);
             $embed = wp_oembed_get($src);
             if (! $embed) continue;
 
-            echo '<div class="carousel-item' . ($i === 0 ? ' active' : '') . '">';
-            echo '<div class="d-flex justify-content-center">
-                    <div class="card h-100" style="min-width: 320px; max-width: 600px;">
-                        <div class="card-video embed-responsive embed-responsive-16by9">' . $embed . '</div>
-                        <div class="card-body">
-                            <h5 class="card-title text-center py-2 mb-0">
-                                <a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">' . esc_html(get_the_title($id)) . '</a>
-                            </h5>
-                        </div>
-                    </div>
-                  </div>';
-            echo '</div>';
+            echo '<div class="flex-shrink-0" style="width: calc(100% / 3)">'
+               . '<div class="card h-100">'
+               . '<div class="card-video embed-responsive embed-responsive-16by9">' . $embed . '</div>'
+               . '<div class="card-body">'
+               . '<h5 class="card-title text-center py-2 mb-0">'
+               . '<a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">'
+               . esc_html(get_the_title($id)) . '</a>'
+               . '</h5></div></div></div>';
         }
-        echo '</div>';
 
-        // Nessun controllo frecce
-        echo '</div>';
+        echo '</div></div>';
+
+        echo '<style>
+        #video-carousel-' . esc_attr($source_id) . ' {
+            animation: scrollVideos-' . esc_attr($source_id) . ' ' . (count($video_ids) * 5) . 's linear infinite;
+        }
+
+        @keyframes scrollVideos-' . esc_attr($source_id) . ' {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(calc(-100% / ' . count($video_ids) . ')); }
+        }
+        </style>';
     }
 
     return ob_get_clean();
