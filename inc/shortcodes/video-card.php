@@ -130,27 +130,27 @@ function ac_video_pagina_shortcode($atts = []) {
     }
 
     $carousel_id = 'swiper_' . $source_id;
-    echo '<div class="swiper-container" id="' . esc_attr($carousel_id) . '">
-            <div class="swiper-wrapper">';
+    echo '<div class="swiper-container overflow-hidden position-relative pb-5" id="' . esc_attr($carousel_id) . '">
+            <div class="swiper-wrapper align-items-stretch">';
 
     foreach ($video_ids as $id) {
         $src = get_post_meta($id, 'video_link', true);
         $embed = wp_oembed_get($src);
         if (! $embed) continue;
 
-        echo '<div class="swiper-slide">'
-           . '<div class="card h-100">'
+        echo '<div class="swiper-slide h-100">'
+           . '<div class="card h-100 d-flex flex-column">'
            . '<div class="card-video embed-responsive embed-responsive-16by9">' . $embed . '</div>'
-           . '<div class="card-body">'
-           . '<h5 class="card-title text-center py-2 mb-0">'
+           . '<div class="card-body d-flex align-items-center">'
+           . '<h5 class="card-title text-center w-100 py-2 mb-0">'
            . '<a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">'
            . esc_html(get_the_title($id)) . '</a>'
            . '</h5></div></div></div>';
     }
 
     echo '  </div>
-          <div class="swiper-pagination"></div>
-        </div>';
+          </div>
+          <div class="swiper-pagination position-relative mt-3"></div>';
 
     echo '<script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -163,7 +163,7 @@ function ac_video_pagina_shortcode($atts = []) {
                     disableOnInteraction: false,
                 },
                 pagination: {
-                    el: ".swiper-pagination",
+                    el: "#' . esc_js($carousel_id) . ' ~ .swiper-pagination",
                     clickable: true,
                 },
                 breakpoints: {
@@ -184,4 +184,5 @@ function ac_video_pagina_shortcode($atts = []) {
     return ob_get_clean();
 }
 add_shortcode('video_pagina', 'ac_video_pagina_shortcode');
+
 
