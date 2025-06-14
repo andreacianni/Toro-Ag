@@ -308,18 +308,22 @@ sup.r {
     display: flex;
     &:before{
       font-family: "Font Awesome 6 Brands";
-      font-size: 2em;
+      font-size: 1.75em;
+      margin-inline-end: 0.25em;
     }
   }
   .footer-icon.youtube a:before {
     content: "\f167"; // Youtube icon
     // content: "\f431"; // Youtube Square icon
+    color: #CD201F;
   }
   .footer-icon.facebook a:before {
     content: "\f082"; // Facebook icon
+    color: #1877F2;
   }
   .footer-icon.linkedin a:before {
     content: "\f08c"; // LinkedIn icon
+    color: #0A66C2;
   }
 }
 
