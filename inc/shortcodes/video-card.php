@@ -240,8 +240,8 @@ function ac_video_pagina_shortcode($atts = []) {
         'titolo' => ''
     ], $atts);
 
-    $source_id   = get_the_ID();
-    $pod         = pods('page', $source_id);
+    $source_id = get_the_ID();
+    $pod       = pods('page', $source_id);
     if (! $pod) {
         return '<!-- Errore: pod non trovato -->';
     }
@@ -261,21 +261,22 @@ function ac_video_pagina_shortcode($atts = []) {
         return '<!-- Nessun video nella lingua corrente -->';
     }
 
-    // Pre-render all embed HTML server-side
+    // Pre-render all embed HTML server-side:
     $embeds = [];
     foreach ($video_ids as $id) {
-        $src   = get_post_meta($id, 'video_link', true);
-        $oemb  = wp_oembed_get($src);
+        $src  = get_post_meta($id, 'video_link', true);
+        $oemb = wp_oembed_get($src);
         if (! $oemb) {
             continue;
         }
-        $card  = '<div class="card h-100">'
-               . '<div class="card-video ratio ratio-16x9">' . $oemb . '</div>'
-               . '<div class="card-body">'
-               . '<h5 class="card-title text-center py-2 mb-0">'
-               . '<a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">'
-               . esc_html(get_the_title($id)) . '</a>'
-               . '</h5></div></div>';
+        // Use Bootstrap 4 embed-responsive classes instead of ratio
+        $card = '<div class="card h-100">'
+              . '<div class="embed-responsive embed-responsive-16by9 w-100">' . $oemb . '</div>'
+              . '<div class="card-body">'
+              . '<h5 class="card-title text-center py-2 mb-0">'
+              . '<a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">'
+              . esc_html(get_the_title($id)) . '</a>'
+              . '</h5></div></div>';
         $embeds[] = $card;
     }
 
@@ -285,13 +286,12 @@ function ac_video_pagina_shortcode($atts = []) {
 
     ob_start();
 
-    if (!empty($atts['titolo'])) {
+    if (! empty($atts['titolo'])) {
         echo '<h5 class="text-bg-dark text-center py-2 my-4 rounded-2">' . esc_html($atts['titolo']) . '</h5>';
     }
-
     ?>
     <div id="video-pagina-wrapper">
-        <div class="video-card-grid row" id="video-pagina-grid"></div>
+        <div class="d-flex flex-wrap justify-content-start" id="video-pagina-grid"></div>
         <div class="d-flex justify-content-center gap-2 mt-3">
             <button class="btn btn-secondary" id="video-pagina-prev" disabled>Precedente</button>
             <button class="btn btn-primary" id="video-pagina-next">Successivo</button>
@@ -300,57 +300,60 @@ function ac_video_pagina_shortcode($atts = []) {
     </div>
     <script>
     (function() {
-        const embeds        = <?php echo json_encode($embeds); ?>;
-        const maxPerPage    = 3;
-        let currentIndex    = 0;
-        const container     = document.getElementById('video-pagina-grid');
-        const btnPrev       = document.getElementById('video-pagina-prev');
-        const btnNext       = document.getElementById('video-pagina-next');
-        const btnShowAll    = document.getElementById('video-pagina-show-all');
+        const embeds     = <?php echo json_encode($embeds); ?>;
+        const maxVisible = 3;
+        let idx          = 0;
+        const container  = document.getElementById('video-pagina-grid');
+        const btnPrev    = document.getElementById('video-pagina-prev');
+        const btnNext    = document.getElementById('video-pagina-next');
+        const btnAll     = document.getElementById('video-pagina-show-all');
 
-        function renderPage(start) {
+        function render(count) {
             container.innerHTML = '';
-            const slice = embeds.slice(start, start + maxPerPage);
-            slice.forEach(html => {
-                const col = document.createElement('div');
-                col.className = 'col-md-4 mb-4';
-                col.innerHTML = html;
-                container.appendChild(col);
-            });
-            btnPrev.disabled    = start === 0;
-            btnNext.disabled    = (start + maxPerPage) >= embeds.length;
+            for (let i = 0; i < count; i++) {
+                const iPos = idx + i;
+                if (iPos >= embeds.length) break;
+                const cardHtml = embeds[iPos];
+                const div      = document.createElement('div');
+                div.className = 'p-2';
+                div.style.flex = '0 0 ' + (100 / maxVisible) + '%';
+                div.innerHTML = cardHtml;
+                container.appendChild(div);
+            }
+            btnPrev.disabled = idx <= 0;
+            btnNext.disabled = (idx + maxVisible) >= embeds.length;
         }
 
         btnPrev.addEventListener('click', () => {
-            if (currentIndex > 0) {
-                currentIndex -= 1;
-                renderPage(currentIndex);
+            if (idx > 0) {
+                idx--;
+                render(maxVisible);
             }
         });
         btnNext.addEventListener('click', () => {
-            if ((currentIndex + maxPerPage) < embeds.length) {
-                currentIndex += 1;
-                renderPage(currentIndex);
+            if ((idx + maxVisible) < embeds.length) {
+                idx++;
+                render(maxVisible);
             }
         });
-        btnShowAll.addEventListener('click', () => {
+        btnAll.addEventListener('click', () => {
             container.innerHTML = '';
             embeds.forEach(html => {
-                const col = document.createElement('div');
-                col.className = 'col-md-4 mb-4';
-                col.innerHTML = html;
-                container.appendChild(col);
+                const div = document.createElement('div');
+                div.className = 'p-2 w-100';
+                div.innerHTML = html;
+                container.appendChild(div);
             });
             btnPrev.disabled = btnNext.disabled = true;
         });
 
-        // Initial render
-        renderPage(0);
+        render(maxVisible);
     })();
     </script>
     <?php
     return ob_get_clean();
 }
 add_shortcode('video_pagina', 'ac_video_pagina_shortcode');
+
 
 
