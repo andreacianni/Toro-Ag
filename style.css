@@ -252,23 +252,28 @@ sup.r {
 }
 
 /* menù social */
-#menu-social .footer-icon a {
+#menu-social .footer-icon a,
+#menu-social-inglese .footer-icon a {
   display: flex;
 }
-#menu-social .footer-icon a:before {
+#menu-social .footer-icon a:before,
+#menu-social-inglese .footer-icon a:before {
   font-family: "Font Awesome 6 Brands";
   font-size: 1.75em;
   margin-inline-end: 0.25em;
 }
-#menu-social .footer-icon.youtube a:before {
+#menu-social .footer-icon.youtube a:before,
+#menu-social-inglese .footer-icon.youtube a:before {
   content: "\f167";
   color: #CD201F;
 }
-#menu-social .footer-icon.facebook a:before {
+#menu-social .footer-icon.facebook a:before,
+#menu-social-inglese .footer-icon.facebook a:before {
   content: "\f082";
   color: #1877F2;
 }
-#menu-social .footer-icon.linkedin a:before {
+#menu-social .footer-icon.linkedin a:before,
+#menu-social-inglese .footer-icon.linkedin a:before {
   content: "\f08c";
   color: #0A66C2;
 }/*# sourceMappingURL=style.css.map */
