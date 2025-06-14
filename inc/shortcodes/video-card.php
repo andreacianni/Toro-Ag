@@ -141,10 +141,10 @@ function ac_video_pagina_shortcode($atts = []) {
         $title = esc_html(get_the_title($id));
 
         echo '<div class="swiper-slide">
-                <div class="card h-100 d-flex flex-column position-relative group">
+                <div class="card h-100 d-flex flex-column position-relative group video-card-height">
                     <div class="card-video embed-responsive embed-responsive-16by9">' . $embed . '</div>
                     <div class="card-body d-flex align-items-end">
-                        <h5 class="card-title text-center w-100 py-2 mb-0 text-truncate" title="' . $title . '">
+                        <h5 class="card-title text-center w-100 py-2 mb-0">
                             <a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer" class="d-block text-decoration-none text-dark">'
                             . $title . '</a>
                         </h5>
@@ -156,18 +156,6 @@ function ac_video_pagina_shortcode($atts = []) {
     echo '  </div>
           </div>
           <div class="swiper-pagination position-absolute start-50 translate-middle-x mt-2" style="bottom: 0;"></div>';
-
-    echo '<style>
-        .card-title.text-truncate {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .card:hover .card-title.text-truncate {
-            white-space: normal;
-            overflow: visible;
-        }
-    </style>';
 
     echo '<script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -195,12 +183,26 @@ function ac_video_pagina_shortcode($atts = []) {
                     }
                 }
             });
+
+            function equalizeCardHeights() {
+                const cards = document.querySelectorAll("#' . esc_js($carousel_id) . ' .video-card-height");
+                let max = 0;
+                cards.forEach(c => {
+                    c.style.height = "auto";
+                    max = Math.max(max, c.offsetHeight);
+                });
+                cards.forEach(c => c.style.height = max + "px");
+            }
+
+            equalizeCardHeights();
+            window.addEventListener('resize', equalizeCardHeights);
         });
     </script>';
 
     return ob_get_clean();
 }
 add_shortcode('video_pagina', 'ac_video_pagina_shortcode');
+
 
 
 
