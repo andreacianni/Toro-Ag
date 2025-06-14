@@ -129,85 +129,98 @@ function ac_carosello_video_pagina_shortcode($atts = []) {
         echo '<h5 class="text-bg-dark text-center py-2 my-4 rounded-2">' . esc_html($atts['titolo']) . '</h5>';
     }
 
-    $carousel_id = 'swiper_' . $source_id;
-    echo '<div class="swiper-container overflow-hidden position-relative pb-5" id="' . esc_attr($carousel_id) . '">
-            <div class="swiper-wrapper">';
+    $total_videos = count($video_ids);
 
-    foreach ($video_ids as $id) {
-        $src = get_post_meta($id, 'video_link', true);
-        $embed = wp_oembed_get($src);
-        if (! $embed) continue;
+    if ($total_videos <= 3) {
+        echo '<div class="video-card-grid row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">';
+        foreach ($video_ids as $id) {
+            $src = get_post_meta($id, 'video_link', true);
+            $embed = wp_oembed_get($src);
+            if (! $embed) continue;
 
-        $title = esc_html(get_the_title($id));
+            echo '<div class="col">'
+               . '<div class="card">'
+               . '<div class="card-video embed-responsive embed-responsive-16by9">' . $embed . '</div>'
+               . '<div class="card-body">'
+               . '<h5 class="card-title text-center py-2 mb-0">'
+               . '<a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">'
+               . esc_html(get_the_title($id)) . '</a>'
+               . '</h5></div></div></div>';
+        }
+        echo '</div>';
+    } else {
+        $carousel_id = 'swiper_' . $source_id;
+        echo '<div class="swiper-container overflow-hidden position-relative pb-5" id="' . esc_attr($carousel_id) . '">
+                <div class="swiper-wrapper">';
 
-        echo '<div class="swiper-slide">
-                <div class="card d-flex flex-column position-relative group video-card-height">
-                    <div class="card-video embed-responsive embed-responsive-16by9">' . $embed . '</div>
-                    <div class="card-body">
-                        <h5 class="card-title text-center w-100 py-2 mb-0">
-                            <a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer" class="d-block text-decoration-none text-dark">'
-                            . $title . '</a>
-                        </h5>
+        foreach ($video_ids as $id) {
+            $src = get_post_meta($id, 'video_link', true);
+            $embed = wp_oembed_get($src);
+            if (! $embed) continue;
+
+            $title = esc_html(get_the_title($id));
+
+            echo '<div class="swiper-slide">
+                    <div class="card d-flex flex-column position-relative group video-card-height">
+                        <div class="card-video embed-responsive embed-responsive-16by9">' . $embed . '</div>
+                        <div class="card-body">
+                            <h5 class="card-title text-center w-100 py-2 mb-0">
+                                <a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer" class="d-block text-decoration-none text-dark">'
+                                . $title . '</a>
+                            </h5>
+                        </div>
                     </div>
-                </div>
-              </div>';
-    }
-
-    echo '  </div>
-          </div>
-          <div class="swiper-pagination position-absolute start-50 translate-middle-x mt-2" style="bottom: 0;"></div>';
-
-    echo '<script>
-        function equalizeCardHeights_' . esc_js($carousel_id) . '() {
-            const cards = document.querySelectorAll("#' . esc_js($carousel_id) . ' .video-card-height");
-            let max = 0;
-            cards.forEach(c => {
-                c.style.height = "auto";
-                max = Math.max(max, c.offsetHeight);
-            });
-            cards.forEach(c => c.style.height = max + "px");
+                  </div>';
         }
 
-        document.addEventListener("DOMContentLoaded", function () {
-            new Swiper("#' . esc_js($carousel_id) . '", {
-                slidesPerView: 3,
-                spaceBetween: 30,
-                loop: true,
-                autoplay: {
-                    delay: 5000,
-                    disableOnInteraction: false,
-                },
-                pagination: {
-                    el: "#' . esc_js($carousel_id) . ' ~ .swiper-pagination",
-                    clickable: true,
-                },
-                breakpoints: {
-                    0: {
-                        slidesPerView: 1,
+        echo '  </div>
+              </div>
+              <div class="swiper-pagination position-absolute start-50 translate-middle-x mt-2" style="bottom: 0;"></div>';
+
+        echo '<script>
+            function equalizeCardHeights_' . esc_js($carousel_id) . '() {
+                const cards = document.querySelectorAll("#' . esc_js($carousel_id) . ' .video-card-height");
+                let max = 0;
+                cards.forEach(c => {
+                    c.style.height = "auto";
+                    max = Math.max(max, c.offsetHeight);
+                });
+                cards.forEach(c => c.style.height = max + "px");
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+                new Swiper("#' . esc_js($carousel_id) . '", {
+                    slidesPerView: 3,
+                    spaceBetween: 30,
+                    loop: true,
+                    autoplay: {
+                        delay: 5000,
+                        disableOnInteraction: false,
                     },
-                    768: {
-                        slidesPerView: 2,
+                    pagination: {
+                        el: "#' . esc_js($carousel_id) . ' ~ .swiper-pagination",
+                        clickable: true,
                     },
-                    992: {
-                        slidesPerView: 3,
+                    breakpoints: {
+                        0: {
+                            slidesPerView: 1,
+                        },
+                        768: {
+                            slidesPerView: 2,
+                        },
+                        992: {
+                            slidesPerView: 3,
+                        }
+                    },
+                    on: {
+                        init: equalizeCardHeights_' . esc_js($carousel_id) . ',
+                        resize: equalizeCardHeights_' . esc_js($carousel_id) . '
                     }
-                },
-                on: {
-                    init: equalizeCardHeights_' . esc_js($carousel_id) . ',
-                    resize: equalizeCardHeights_' . esc_js($carousel_id) . '
-                }
+                });
             });
-        });
-    </script>';
+        </script>';
+    }
 
     return ob_get_clean();
 }
 add_shortcode('carosello_video_pagina', 'ac_carosello_video_pagina_shortcode');
-
-
-
-
-
-
-
-
