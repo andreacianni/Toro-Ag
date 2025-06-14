@@ -150,53 +150,41 @@ function ac_video_pagina_shortcode($atts = []) {
         }
         echo '</div>';
     } else {
-        $chunks = array_chunk($video_ids, 3);
-        echo '<div id="' . esc_attr($carousel_id) . '" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">';
+        echo '<div id="' . esc_attr($carousel_id) . '" class="carousel slide carousel-dark" data-bs-ride="carousel" data-bs-interval="5000" data-bs-wrap="true">';
 
         // Indicators
         echo '<div class="carousel-indicators">';
-        foreach ($chunks as $i => $_) {
+        foreach ($video_ids as $i => $_) {
             echo '<button type="button" data-bs-target="#' . esc_attr($carousel_id) . '" data-bs-slide-to="' . $i . '"' . ($i === 0 ? ' class="active" aria-current="true"' : '') . ' aria-label="Slide ' . ($i+1) . '"></button>';
         }
         echo '</div>';
 
         // Carousel inner
         echo '<div class="carousel-inner">';
-        foreach ($chunks as $i => $group) {
-            echo '<div class="carousel-item' . ($i === 0 ? ' active' : '') . '"><div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">';
-            foreach ($group as $id) {
-                $src = get_post_meta($id, 'video_link', true);
-                $embed = wp_oembed_get($src);
-                if (! $embed) continue;
+        foreach ($video_ids as $i => $id) {
+            $src = get_post_meta($id, 'video_link', true);
+            $embed = wp_oembed_get($src);
+            if (! $embed) continue;
 
-                echo '<div class="col">'
-                   . '<div class="card h-100">'
-                   . '<div class="card-video embed-responsive embed-responsive-16by9">' . $embed . '</div>'
-                   . '<div class="card-body">'
-                   . '<h5 class="card-title text-center py-2 mb-0">'
-                   . '<a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">'
-                   . esc_html(get_the_title($id)) . '</a>'
-                   . '</h5></div></div></div>';
-            }
-            echo '</div></div>';
+            echo '<div class="carousel-item' . ($i === 0 ? ' active' : '') . '">';
+            echo '<div class="d-flex justify-content-center">
+                    <div class="card h-100" style="min-width: 320px; max-width: 600px;">
+                        <div class="card-video embed-responsive embed-responsive-16by9">' . $embed . '</div>
+                        <div class="card-body">
+                            <h5 class="card-title text-center py-2 mb-0">
+                                <a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">' . esc_html(get_the_title($id)) . '</a>
+                            </h5>
+                        </div>
+                    </div>
+                  </div>';
+            echo '</div>';
         }
         echo '</div>';
 
-        // Controls
-        echo '<button class="carousel-control-prev" type="button" data-bs-target="#' . esc_attr($carousel_id) . '" data-bs-slide="prev">'
-           . '<span class="carousel-control-prev-icon" aria-hidden="true"></span>'
-           . '<span class="visually-hidden">Previous</span>'
-           . '</button>';
-
-        echo '<button class="carousel-control-next" type="button" data-bs-target="#' . esc_attr($carousel_id) . '" data-bs-slide="next">'
-           . '<span class="carousel-control-next-icon" aria-hidden="true"></span>'
-           . '<span class="visually-hidden">Next</span>'
-           . '</button>';
-
+        // Nessun controllo frecce
         echo '</div>';
     }
 
     return ob_get_clean();
 }
 add_shortcode('video_pagina', 'ac_video_pagina_shortcode');
-
