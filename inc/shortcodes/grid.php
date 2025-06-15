@@ -144,9 +144,18 @@ function toro_grid_prodotti_page_shortcode() {
         return '';
     }
 
+    // DEBUG: qual è l'ID della pagina corrente?
+    echo "<!-- DEBUG: Page ID = " . get_the_ID() . " -->\n";
+
     // recupero array di IDs salvati nel meta 'prodotti'
     $ids = get_post_meta( get_the_ID(), 'prodotti', true );
+    // DEBUG: che cosa c'è in $ids?
+    echo "<!-- DEBUG: prodotti meta IDs = ";
+    echo is_array($ids) ? implode(',', $ids) : var_export($ids, true);
+    echo " -->\n";
+
     if ( empty( $ids ) || ! is_array( $ids ) ) {
+        echo "<!-- DEBUG: nessun ID di prodotto trovato, esco -->\n";
         return '';
     }
 
@@ -157,6 +166,10 @@ function toro_grid_prodotti_page_shortcode() {
         'post__in'       => $ids,
         'orderby'        => 'post__in',
     ]);
+
+    // DEBUG: quali prodotti sono stati recuperati?
+    $prod_ids = wp_list_pluck( $products, 'ID' );
+    echo "<!-- DEBUG: recuperati prodotti post IDs = " . implode(',', $prod_ids) . " -->\n";
 
     return toro_ag_render_grid_view(
         $products,
@@ -174,9 +187,18 @@ function toro_grid_colture_page_shortcode() {
         return '';
     }
 
+    // DEBUG: Page ID per colture
+    echo "<!-- DEBUG: Page ID = " . get_the_ID() . " -->\n";
+
     // recupero array di term IDs salvati nel meta 'applicazioni'
     $term_ids = get_post_meta( get_the_ID(), 'applicazioni', true );
+    // DEBUG: contenuto di $term_ids
+    echo "<!-- DEBUG: applicazioni meta term IDs = ";
+    echo is_array($term_ids) ? implode(',', $term_ids) : var_export($term_ids, true);
+    echo " -->\n";
+
     if ( empty( $term_ids ) || ! is_array( $term_ids ) ) {
+        echo "<!-- DEBUG: nessun term ID trovato, esco -->\n";
         return '';
     }
 
@@ -187,9 +209,14 @@ function toro_grid_colture_page_shortcode() {
         'include'    => $term_ids,
         'orderby'    => 'include',
     ]);
-    if ( is_wp_error( $terms ) || empty( $terms ) ) {
+
+    if ( is_wp_error( $terms ) ) {
+        echo "<!-- DEBUG: get_terms WP_Error: " . $terms->get_error_message() . " -->\n";
         return '';
     }
+
+    $term_slugs = wp_list_pluck( $terms, 'slug' );
+    echo "<!-- DEBUG: recuperati termini slug = " . implode(',', $term_slugs) . " -->\n";
 
     return toro_ag_render_grid_view(
         $terms,
