@@ -11,7 +11,7 @@ if ( empty( $doc_plus_data ) || ! is_array( $doc_plus_data ) ) {
 }
 
 // Validiamo e definiamo il layout
-$allowed_layouts = ['clean', 'list','multiple', 'compact', 'card', 'modern', 'single'];
+$allowed_layouts = ['clean', 'list','multiple', 'card-imgsx', 'card-imgdx', 'modern', 'single'];
 $layout = isset( $layout ) && in_array( $layout, $allowed_layouts, true ) ? $layout : 'single';
 
 // Recuperiamo la mappa di priorità lingue
@@ -81,105 +81,61 @@ foreach ( $doc_plus_data as $index => $doc ):
             }
             echo '</div></div></div>';
             break;
-
-
-        case 'list':
-            // Layout a lista: thumbs + testo a fianco
-            echo '<div class="layout-list col-12 mb-4">';
-            echo '<div class="d-flex flex-column flex-sm-row">';
-            if($doc['cover_url']) echo '<img src="'.esc_url($doc['cover_url']).'"class="col-12 col-sm-5 col-lg-4 img-fluid p-0" alt="Cover">';
-            // echo '<div>';            
-            // echo '<h5>'.esc_html($doc['title']).'</h5>';
-            echo '<div class="col-12 col-sm-7 col-lg-8 px-2 ps-sm-3 ps-xl-5 pe-sm-0 py-4 d-flex flex-column justify-content-evenly">';
-            // echo '<ul class="list-unstyled">';
-            foreach($filtered as $att){
-                $slug=$att['lang']['slug'];
-                // echo '<li class="mb-1">';
-                echo '<h4 class="fw-bold text-center text-sm-start"><a href="'.esc_url($att['url']).'">'.esc_html($att['title']).' ';
-                if($slug!=='italiano') echo toroag_get_flag_html($slug);
-                echo '</a></h4>';
-            }
+        case 'card-imgsx':  // ex 'list'
+            echo '<div class="layout-compact col-12 mb-4">';
+            echo '<div class="card h-100">';
+            echo '<div class="row g-0 align-items-stretch">';
+                // Colonna immagine a sinistra
+                echo '<div class="col-md-4">';
+                    if ( ! empty( $doc['cover_url'] ) ) {
+                        echo '<img src="' . esc_url( $doc['cover_url'] ) . '" '
+                        . 'class="img-fluid h-100" style="object-fit:cover;" alt="Cover">';
+                    }
+                echo '</div>';
+                // Colonna testo a destra
+                echo '<div class="col-md-8"><div class="card-body">';
+                    foreach ( $filtered as $att ) {
+                        $title = esc_html( $att['title'] );
+                        $url   = esc_url( $att['url'] );
+                        $slug  = $att['lang']['slug'];
+                        echo "<h4 class=\"fw-bold\">";
+                        echo "<a href=\"{$url}\" target=\"_blank\">{$title}</a>";
+                        if ( $slug !== 'italiano' ) {
+                            echo ' ' . toroag_get_flag_html( $slug );
+                        }
+                        echo "</h4>";
+                    }
+                echo '</div></div>';
             echo '</div></div></div>';
             break;
 
-        case 'multiple':
-            echo '<!-- Layout multiple -->';
-            echo '<div class="Layout-multiple col-12 mb-4"><div class="card h-100"><div class="row g-0 align-items-stretch">';
-            // Colonna testo a sinistra
-            echo '<div class="col-md-8"><div class="card-body">';
-            foreach ( $filtered as $att ) {
-                $title = esc_html( $att['title'] );
-                $url   = esc_url( $att['url'] );
-                $slug  = $att['lang']['slug'];
-                echo "<h4><strong><a href=\"{$url}\" target=\"_blank\">{$title}</a></strong>";
-                if ( $slug !== 'italiano' ) {
-                    echo ' ' . toroag_get_flag_html( $slug );
-                }
-                echo '</h4>';
-            }
-            echo '</div></div>';
-            // Colonna immagine a destra
-            echo '<div class="col-md-4">';
-            if ( ! empty( $doc['cover_url'] ) ) {
-                echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="img-fluid h-100" style="object-fit:cover;" alt="Cover">';
-            }
-            echo '</div></div></div></div>';
+        case 'card-imgdx':  // ex 'multiple'
+            echo '<!-- Layout card -->';
+            echo '<div class="layout-card col-12 mb-4">';
+            echo '<div class="card h-100">';
+            echo '<div class="row g-0 align-items-stretch">';
+                // Colonna testo a sinistra
+                echo '<div class="col-md-8"><div class="card-body">';
+                    foreach ( $filtered as $att ) {
+                        $title = esc_html( $att['title'] );
+                        $url   = esc_url( $att['url'] );
+                        $slug  = $att['lang']['slug'];
+                        echo "<h4><strong><a href=\"{$url}\" target=\"_blank\">{$title}</a></strong>";
+                        if ( $slug !== 'italiano' ) {
+                            echo ' ' . toroag_get_flag_html( $slug );
+                        }
+                        echo '</h4>';
+                    }
+                echo '</div></div>';
+                // Colonna immagine a destra
+                echo '<div class="col-md-4">';
+                    if ( ! empty( $doc['cover_url'] ) ) {
+                        echo '<img src="' . esc_url( $doc['cover_url'] ) . '" '
+                        . 'class="img-fluid h-100" style="object-fit:cover;" alt="Cover">';
+                    }
+                echo '</div>';
+            echo '</div></div></div>';
             break;
-        case 'compact':  // ex 'list'
-        echo '<div class="layout-compact col-12 mb-4">';
-        echo '<div class="card h-100">';
-        echo '<div class="row g-0 align-items-stretch">';
-            // Colonna immagine a sinistra
-            echo '<div class="col-md-4">';
-                if ( ! empty( $doc['cover_url'] ) ) {
-                    echo '<img src="' . esc_url( $doc['cover_url'] ) . '" '
-                      . 'class="img-fluid h-100" style="object-fit:cover;" alt="Cover">';
-                }
-            echo '</div>';
-            // Colonna testo a destra
-            echo '<div class="col-md-8"><div class="card-body">';
-                foreach ( $filtered as $att ) {
-                    $title = esc_html( $att['title'] );
-                    $url   = esc_url( $att['url'] );
-                    $slug  = $att['lang']['slug'];
-                    echo "<h4 class=\"fw-bold\">";
-                    echo "<a href=\"{$url}\" target=\"_blank\">{$title}</a>";
-                    if ( $slug !== 'italiano' ) {
-                        echo ' ' . toroag_get_flag_html( $slug );
-                    }
-                    echo "</h4>";
-                }
-            echo '</div></div>';
-        echo '</div></div></div>';
-        break;
-
-    case 'card':  // ex 'multiple'
-        echo '<!-- Layout card -->';
-        echo '<div class="layout-card col-12 mb-4">';
-        echo '<div class="card h-100">';
-        echo '<div class="row g-0 align-items-stretch">';
-            // Colonna testo a sinistra
-            echo '<div class="col-md-8"><div class="card-body">';
-                foreach ( $filtered as $att ) {
-                    $title = esc_html( $att['title'] );
-                    $url   = esc_url( $att['url'] );
-                    $slug  = $att['lang']['slug'];
-                    echo "<h4><strong><a href=\"{$url}\" target=\"_blank\">{$title}</a></strong>";
-                    if ( $slug !== 'italiano' ) {
-                        echo ' ' . toroag_get_flag_html( $slug );
-                    }
-                    echo '</h4>';
-                }
-            echo '</div></div>';
-            // Colonna immagine a destra
-            echo '<div class="col-md-4">';
-                if ( ! empty( $doc['cover_url'] ) ) {
-                    echo '<img src="' . esc_url( $doc['cover_url'] ) . '" '
-                      . 'class="img-fluid h-100" style="object-fit:cover;" alt="Cover">';
-                }
-            echo '</div>';
-        echo '</div></div></div>';
-        break;
 
         case 'modern':
             echo '<!-- Layout modern -->';
