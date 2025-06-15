@@ -145,13 +145,20 @@ function toro_grid_prodotti_page_shortcode() {
         return '';
     }
 
-    $ids_raw = get_post_meta( get_the_ID(), 'prodotti', true );
-    if ( empty( $ids_raw ) ) {
+    // DEBUG: raw prodotti meta
+    $meta_raw = get_post_meta( get_the_ID(), 'prodotti', true );
+    echo "<!-- DEBUG: raw prodotti meta = " . esc_html( $meta_raw ) . " -->\n";
+    if ( empty( $meta_raw ) ) {
+        echo "<!-- DEBUG: meta vuoto, esco -->\n";
         return '';
     }
-    $ids = is_array( $ids_raw ) ? $ids_raw : array( $ids_raw );
-    $ids = array_filter( array_map( 'intval', $ids ) );
+
+    // Estrai tutti i numeri (ogni ID) da qualunque stringa
+    preg_match_all( '/\d+/', $meta_raw, $matches );
+    $ids = array_map( 'intval', $matches[0] );
+    echo "<!-- DEBUG: parsed prodotti IDs = " . implode( ',', $ids ) . " -->\n";
     if ( empty( $ids ) ) {
+        echo "<!-- DEBUG: nessun ID valido, esco -->\n";
         return '';
     }
 
@@ -162,7 +169,9 @@ function toro_grid_prodotti_page_shortcode() {
         'orderby'        => 'post__in',
     ) );
 
+    echo "<!-- DEBUG: recuperati prodotti post IDs = " . implode( ',', wp_list_pluck( $products, 'ID' ) ) . " -->\n";
     if ( empty( $products ) ) {
+        echo "<!-- DEBUG: get_posts non ha trovato nulla, esco -->\n";
         return '';
     }
 
@@ -183,13 +192,20 @@ function toro_grid_colture_page_shortcode() {
         return '';
     }
 
-    $term_ids_raw = get_post_meta( get_the_ID(), 'applicazioni', true );
-    if ( empty( $term_ids_raw ) ) {
+    // DEBUG: raw applicazioni meta
+    $meta_raw = get_post_meta( get_the_ID(), 'applicazioni', true );
+    echo "<!-- DEBUG: raw applicazioni meta = " . esc_html( $meta_raw ) . " -->\n";
+    if ( empty( $meta_raw ) ) {
+        echo "<!-- DEBUG: meta vuoto, esco -->\n";
         return '';
     }
-    $term_ids = is_array( $term_ids_raw ) ? $term_ids_raw : array( $term_ids_raw );
-    $term_ids = array_filter( array_map( 'intval', $term_ids ) );
+
+    // Estrai tutti i numeri (ogni term ID)
+    preg_match_all( '/\d+/', $meta_raw, $matches );
+    $term_ids = array_map( 'intval', $matches[0] );
+    echo "<!-- DEBUG: parsed applicazioni term IDs = " . implode( ',', $term_ids ) . " -->\n";
     if ( empty( $term_ids ) ) {
+        echo "<!-- DEBUG: nessun term ID valido, esco -->\n";
         return '';
     }
 
@@ -200,7 +216,13 @@ function toro_grid_colture_page_shortcode() {
         'orderby'    => 'include',
     ) );
 
-    if ( is_wp_error( $terms ) || empty( $terms ) ) {
+    if ( is_wp_error( $terms ) ) {
+        echo "<!-- DEBUG: get_terms WP_Error: " . esc_html( $terms->get_error_message() ) . " -->\n";
+        return '';
+    }
+    echo "<!-- DEBUG: recuperati termini term IDs = " . implode( ',', wp_list_pluck( $terms, 'term_id' ) ) . " -->\n";
+    if ( empty( $terms ) ) {
+        echo "<!-- DEBUG: get_terms non ha trovato nulla, esco -->\n";
         return '';
     }
 
