@@ -19,6 +19,15 @@ if ( isset( $title ) && trim( $title ) !== '' ) {
     echo '<h5 class="text-bg-dark text-center py-2 my-4 rounded-2">' . esc_html( $title ) . '</h5>';
 }
 
+// Se è stato passato un griglia, la usiamo, altrimenti fallback a "row"
+$grid_class = '';
+if ( isset($griglia) && trim($griglia) !== '' ) {
+  // esempio: "row row-cols-1 row-cols-md-3 g-4"
+  $grid_class = ' '. esc_attr( $griglia );
+} else {
+  $grid_class = 'row';  // comportamento preesistente
+}
+
 // Recuperiamo la mappa di priorità lingue
 $order_map = function_exists('toroag_get_language_order') ? toroag_get_language_order() : [];
 
@@ -41,7 +50,7 @@ foreach ( $doc_plus_data as $index => $doc ):
     } );
 
     // Debug: numero totale prima del filtro
-    echo '<!-- Debug: before filter - total attachments ' . count( $attachments ) . ' -->';
+    // echo '<!-- Debug: before filter - total attachments ' . count( $attachments ) . ' -->';
 
     // Filtriamo per lingua corrente
     $filtered = array_filter( $attachments, function( $att ) use ( $current_lang ) {
@@ -51,7 +60,7 @@ foreach ( $doc_plus_data as $index => $doc ):
     } );
 
     // Debug: numero dopo il filtro
-    echo '<!-- Debug: after filter - filtered attachments ' . count( $filtered ) . ' -->';
+    // echo '<!-- Debug: after filter - filtered attachments ' . count( $filtered ) . ' -->';
 
     if ( empty( $filtered ) ) {
         echo '<!-- Skip: no attachments -->';
@@ -63,7 +72,10 @@ foreach ( $doc_plus_data as $index => $doc ):
         case 'clean':
             // Layout clean: card pulita con link anche nell'immagine
             echo '<!-- Layout clean -->';
-            echo '<div class="Layout-clean col-md-4 col-12 mb-4">';
+            // echo '<div class="Layout-clean col-md-4 col-12 mb-4">';
+            // Apriamo la griglia delle card
+            echo '<div class="'. $grid_class .' doc-plus-view-layout-'. esc_attr($layout) .' mb-4">';
+
             echo '<div class="card border-0 h-100">';
             if ( ! empty( $doc['cover_url'] ) ) {
                 // Recupera il primo link di attachment
@@ -87,7 +99,9 @@ foreach ( $doc_plus_data as $index => $doc ):
             echo '</div></div></div>';
             break;
         case 'card-imgsx':
-            echo '<div class="layout-compact col-12 mb-4">';
+            // echo '<div class="layout-compact col-12 mb-4">';
+            // Apriamo la griglia delle card
+            echo '<div class="'. $grid_class .' doc-plus-view-layout-'. esc_attr($layout) .' mb-4">';
             echo '<div class="card h-100">';
             echo '<div class="row g-0 align-items-stretch">';
                 // Colonna immagine a sinistra
@@ -116,7 +130,9 @@ foreach ( $doc_plus_data as $index => $doc ):
 
         case 'card-imgdx': 
             echo '<!-- Layout card -->';
-            echo '<div class="layout-card col-12 mb-4">';
+            // echo '<div class="layout-card col-12 mb-4">';
+            // Apriamo la griglia delle card
+            echo '<div class="'. $grid_class .' doc-plus-view-layout-'. esc_attr($layout) .' mb-4">';
             echo '<div class="card h-100">';
             echo '<div class="row g-0 align-items-stretch">';
                 // Colonna testo a sinistra
@@ -144,7 +160,10 @@ foreach ( $doc_plus_data as $index => $doc ):
 
         case 'modern':
             echo '<!-- Layout modern -->';
-            echo '<div class="col-lg-4 col-12 mb-4"><div class="card h-100 modern-layout position-relative overflow-hidden">';
+            // echo '<div class="col-lg-4 col-12 mb-4"><div class="card h-100 modern-layout position-relative overflow-hidden">';
+            // Apriamo la griglia delle card
+            echo '<div class="'. $grid_class .' doc-plus-view-layout-'. esc_attr($layout) .' mb-4">';
+            echo '<div class="card h-100 modern-layout position-relative overflow-hidden2">';
             if ( ! empty( $doc['cover_url'] ) ) {
                 echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img h-100" style="object-fit:cover;" alt="Cover">';
             }
@@ -165,7 +184,9 @@ foreach ( $doc_plus_data as $index => $doc ):
         case 'single':
         default:
             echo '<!-- Layout single -->';
-            echo '<div class="col-lg-4 col-12 mb-4"><div class="card h-100">';
+            // echo '<div class="col-lg-4 col-12 mb-4"><div class="card h-100">';
+            // Apriamo la griglia delle card
+            echo '<div class="'. $grid_class .' doc-plus-view-layout-'. esc_attr($layout) .' mb-4">';
             if ( ! empty( $doc['cover_url'] ) ) {
                 echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top" alt="Cover">';
             }
