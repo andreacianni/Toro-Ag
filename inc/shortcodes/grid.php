@@ -145,22 +145,20 @@ function toro_grid_prodotti_page_shortcode() {
         return '';
     }
 
-    // DEBUG: raw prodotti meta
-    $meta_raw = get_post_meta( get_the_ID(), 'prodotti', true );
-    echo "<!-- DEBUG: raw prodotti meta = " . esc_html( $meta_raw ) . " -->\n";
-    if ( empty( $meta_raw ) ) {
-        echo "<!-- DEBUG: meta vuoto, esco -->\n";
+    // DEBUG: prendo tutti i meta 'prodotti'
+    $ids_raw = get_post_meta( get_the_ID(), 'prodotti', false );
+    echo "<!-- DEBUG: get_post_meta(false) prodotti = ";
+    echo is_array($ids_raw) ? implode(',', $ids_raw) : var_export($ids_raw, true);
+    echo " -->\n";
+
+    if ( empty( $ids_raw ) ) {
+        echo "<!-- DEBUG: nessun meta 'prodotti' trovato, esco -->\n";
         return '';
     }
 
-    // Estrai tutti i numeri (ogni ID) da qualunque stringa
-    preg_match_all( '/\d+/', $meta_raw, $matches );
-    $ids = array_map( 'intval', $matches[0] );
+    // cast a interi
+    $ids = array_map( 'intval', $ids_raw );
     echo "<!-- DEBUG: parsed prodotti IDs = " . implode( ',', $ids ) . " -->\n";
-    if ( empty( $ids ) ) {
-        echo "<!-- DEBUG: nessun ID valido, esco -->\n";
-        return '';
-    }
 
     $products = get_posts( array(
         'post_type'      => 'prodotto',
@@ -170,6 +168,7 @@ function toro_grid_prodotti_page_shortcode() {
     ) );
 
     echo "<!-- DEBUG: recuperati prodotti post IDs = " . implode( ',', wp_list_pluck( $products, 'ID' ) ) . " -->\n";
+
     if ( empty( $products ) ) {
         echo "<!-- DEBUG: get_posts non ha trovato nulla, esco -->\n";
         return '';
@@ -192,22 +191,19 @@ function toro_grid_colture_page_shortcode() {
         return '';
     }
 
-    // DEBUG: raw applicazioni meta
-    $meta_raw = get_post_meta( get_the_ID(), 'applicazioni', true );
-    echo "<!-- DEBUG: raw applicazioni meta = " . esc_html( $meta_raw ) . " -->\n";
-    if ( empty( $meta_raw ) ) {
-        echo "<!-- DEBUG: meta vuoto, esco -->\n";
+    // DEBUG: prendo tutti i meta 'applicazioni'
+    $term_ids_raw = get_post_meta( get_the_ID(), 'applicazioni', false );
+    echo "<!-- DEBUG: get_post_meta(false) applicazioni = ";
+    echo is_array($term_ids_raw) ? implode(',', $term_ids_raw) : var_export($term_ids_raw, true);
+    echo " -->\n";
+
+    if ( empty( $term_ids_raw ) ) {
+        echo "<!-- DEBUG: nessun meta 'applicazioni' trovato, esco -->\n";
         return '';
     }
 
-    // Estrai tutti i numeri (ogni term ID)
-    preg_match_all( '/\d+/', $meta_raw, $matches );
-    $term_ids = array_map( 'intval', $matches[0] );
+    $term_ids = array_map( 'intval', $term_ids_raw );
     echo "<!-- DEBUG: parsed applicazioni term IDs = " . implode( ',', $term_ids ) . " -->\n";
-    if ( empty( $term_ids ) ) {
-        echo "<!-- DEBUG: nessun term ID valido, esco -->\n";
-        return '';
-    }
 
     $terms = get_terms( array(
         'taxonomy'   => 'coltura',
@@ -217,10 +213,12 @@ function toro_grid_colture_page_shortcode() {
     ) );
 
     if ( is_wp_error( $terms ) ) {
-        echo "<!-- DEBUG: get_terms WP_Error: " . esc_html( $terms->get_error_message() ) . " -->\n";
+        echo "<!-- DEBUG: get_terms WP_Error: " . $terms->get_error_message() . " -->\n";
         return '';
     }
+
     echo "<!-- DEBUG: recuperati termini term IDs = " . implode( ',', wp_list_pluck( $terms, 'term_id' ) ) . " -->\n";
+
     if ( empty( $terms ) ) {
         echo "<!-- DEBUG: get_terms non ha trovato nulla, esco -->\n";
         return '';
