@@ -137,42 +137,63 @@ function toro_grid_tipi_per_coltura_shortcode() {
 
 /**
  * [toro_prodotti_page]
- * Mostra in griglia i prodotti selezionati nel campo Relationship 'prodotti'
- * da usare all’interno di una Page.
+ * Page con campo meta 'prodotti' (array di post IDs) → grid di prodotti
  */
 function toro_grid_prodotti_page_shortcode() {
-    if (! is_page() ) {
+    if ( ! is_page() ) {
         return '';
     }
-    // Recupera gli oggetti 'prodotto' selezionati
-    $items = get_field('prodotti', get_the_ID());
-    if ( empty($items) || ! is_array($items) ) {
+
+    // recupero array di IDs salvati nel meta 'prodotti'
+    $ids = get_post_meta( get_the_ID(), 'prodotti', true );
+    if ( empty( $ids ) || ! is_array( $ids ) ) {
         return '';
     }
+
+    // prendo i prodotti nell'ordine specificato
+    $products = get_posts([
+        'post_type'      => 'prodotto',
+        'posts_per_page' => -1,
+        'post__in'       => $ids,
+        'orderby'        => 'post__in',
+    ]);
+
     return toro_ag_render_grid_view(
-        $items,
-        'featured',                   // thumbnail di default
-        'toro-grid--prodotti-page'    // wrapper CSS
+        $products,
+        'featured',
+        'toro-grid--prodotti-page'
     );
 }
 
 /**
  * [toro_colture_page]
- * Mostra in griglia le colture selezionate nel campo Relationship 'applicazioni'
- * da usare all’interno di una Page.
+ * Page con campo meta 'applicazioni' (array di term IDs) → grid di colture
  */
 function toro_grid_colture_page_shortcode() {
-    if (! is_page() ) {
+    if ( ! is_page() ) {
         return '';
     }
-    // Recupera i termini di coltura selezionati
-    $items = get_field('applicazioni', get_the_ID());
-    if ( empty($items) || ! is_array($items) ) {
+
+    // recupero array di term IDs salvati nel meta 'applicazioni'
+    $term_ids = get_post_meta( get_the_ID(), 'applicazioni', true );
+    if ( empty( $term_ids ) || ! is_array( $term_ids ) ) {
         return '';
     }
+
+    // prendo i termini nell'ordine salvato
+    $terms = get_terms([
+        'taxonomy'   => 'coltura',
+        'hide_empty' => false,
+        'include'    => $term_ids,
+        'orderby'    => 'include',
+    ]);
+    if ( is_wp_error( $terms ) || empty( $terms ) ) {
+        return '';
+    }
+
     return toro_ag_render_grid_view(
-        $items,
-        'col_thumb',                  // term-meta per le colture
-        'toro-grid--colture-page'     // wrapper CSS
+        $terms,
+        'col_thumb',
+        'toro-grid--colture-page'
     );
 }
