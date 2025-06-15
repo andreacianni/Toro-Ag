@@ -137,65 +137,19 @@ function toro_grid_tipi_per_coltura_shortcode() {
 
 /**
  * [toro_prodotti_page]
- * Page con campo meta 'prodotti' (array di post IDs) → grid di prodotti
+ * Recupera il meta 'prodotti', normalizza anche un singolo ID in array,
+ * e mostra la grid dei prodotti selezionati.
  */
 function toro_grid_prodotti_page_shortcode() {
     if ( ! is_page() ) {
         return '';
     }
 
-    // DEBUG: qual è l'ID della pagina corrente?
-    echo "<!-- DEBUG: Page ID = " . get_the_ID() . " -->\n";
-
-    // recupero array di IDs salvati nel meta 'prodotti'
-    $ids = get_post_meta( get_the_ID(), 'prodotti', true );
-    // DEBUG: che cosa c'è in $ids?
-    echo "<!-- DEBUG: prodotti meta IDs = ";
-    echo is_array($ids) ? implode(',', $ids) : var_export($ids, true);
-    echo " -->\n";
-
-    if ( empty( $ids ) || ! is_array( $ids ) ) {
-        echo "<!-- DEBUG: nessun ID di prodotto trovato, esco -->\n";
-        return '';
-    }
-
-    // prendo i prodotti nell'ordine specificato
-    $products = get_posts([
-        'post_type'      => 'prodotto',
-        'posts_per_page' => -1,
-        'post__in'       => $ids,
-        'orderby'        => 'post__in',
-    ]);
-
-    // DEBUG: quali prodotti sono stati recuperati?
-    $prod_ids = wp_list_pluck( $products, 'ID' );
-    echo "<!-- DEBUG: recuperati prodotti post IDs = " . implode(',', $prod_ids) . " -->\n";
-
-    return toro_ag_render_grid_view(
-        $products,
-        'featured',
-        'toro-grid--prodotti-page'
-    );
-}
-
-/**
- * [toro_prodotti_page]
- * Recupera il meta 'prodotti' (anche se è un singolo ID) e lo passa come array a get_posts().
- */
-function toro_grid_prodotti_page_shortcode() {
-    if ( ! is_page() ) {
-        return '';
-    }
-
-    // prendo il valore raw dal meta
     $ids_raw = get_post_meta( get_the_ID(), 'prodotti', true );
     if ( empty( $ids_raw ) ) {
         return '';
     }
-
-    // se non è già array, lo trasformo in array di un singolo elemento
     $ids = is_array( $ids_raw ) ? $ids_raw : array( $ids_raw );
-    // cast a interi e filtro eventuali vuoti
     $ids = array_filter( array_map( 'intval', $ids ) );
     if ( empty( $ids ) ) {
         return '';
@@ -221,22 +175,19 @@ function toro_grid_prodotti_page_shortcode() {
 
 /**
  * [toro_colture_page]
- * Recupera il meta 'applicazioni' (term ID singolo o multipli) e lo passa a get_terms().
+ * Recupera il meta 'applicazioni', normalizza anche un singolo ID in array,
+ * e mostra la grid delle colture selezionate.
  */
 function toro_grid_colture_page_shortcode() {
     if ( ! is_page() ) {
         return '';
     }
 
-    // prendo il valore raw dal meta
     $term_ids_raw = get_post_meta( get_the_ID(), 'applicazioni', true );
     if ( empty( $term_ids_raw ) ) {
         return '';
     }
-
-    // array anche per un singolo ID
     $term_ids = is_array( $term_ids_raw ) ? $term_ids_raw : array( $term_ids_raw );
-    // cast a interi e filtro eventuali vuoti
     $term_ids = array_filter( array_map( 'intval', $term_ids ) );
     if ( empty( $term_ids ) ) {
         return '';
