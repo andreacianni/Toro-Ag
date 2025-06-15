@@ -191,41 +191,43 @@ function toro_grid_colture_page_shortcode() {
         return '';
     }
 
-    // DEBUG: prendo tutti i meta 'applicazioni'
+    // prendo tutti i meta 'applicazioni'
     $term_ids_raw = get_post_meta( get_the_ID(), 'applicazioni', false );
-    echo "<!-- DEBUG: get_post_meta(false) applicazioni = ";
-    echo is_array($term_ids_raw) ? implode(',', $term_ids_raw) : var_export($term_ids_raw, true);
-    echo " -->\n";
-
     if ( empty( $term_ids_raw ) ) {
-        echo "<!-- DEBUG: nessun meta 'applicazioni' trovato, esco -->\n";
         return '';
     }
 
+    // cast a interi
     $term_ids = array_map( 'intval', $term_ids_raw );
-    echo "<!-- DEBUG: parsed applicazioni term IDs = " . implode( ',', $term_ids ) . " -->\n";
+    if ( empty( $term_ids ) ) {
+        return '';
+    }
 
+    // recupero i termini (l'ordine restituito può non rispettare quello di include)
     $terms = get_terms( array(
         'taxonomy'   => 'coltura',
         'hide_empty' => false,
         'include'    => $term_ids,
-        'orderby'    => 'include',
     ) );
 
-    if ( is_wp_error( $terms ) ) {
-        echo "<!-- DEBUG: get_terms WP_Error: " . $terms->get_error_message() . " -->\n";
+    if ( is_wp_error( $terms ) || empty( $terms ) ) {
         return '';
     }
 
-    echo "<!-- DEBUG: recuperati termini term IDs = " . implode( ',', wp_list_pluck( $terms, 'term_id' ) ) . " -->\n";
-
-    if ( empty( $terms ) ) {
-        echo "<!-- DEBUG: get_terms non ha trovato nulla, esco -->\n";
-        return '';
+    // riordino esplicitamente secondo $term_ids
+    $by_id = array();
+    foreach ( $terms as $term ) {
+        $by_id[ $term->term_id ] = $term;
+    }
+    $ordered = array();
+    foreach ( $term_ids as $tid ) {
+        if ( isset( $by_id[ $tid ] ) ) {
+            $ordered[] = $by_id[ $tid ];
+        }
     }
 
     return toro_ag_render_grid_view(
-        $terms,
+        $ordered,
         'col_thumb',
         'toro-grid--colture-page'
     );
