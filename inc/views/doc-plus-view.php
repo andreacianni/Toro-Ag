@@ -14,6 +14,11 @@ if ( empty( $doc_plus_data ) || ! is_array( $doc_plus_data ) ) {
 $allowed_layouts = ['clean', 'list','multiple', 'card-imgsx', 'card-imgdx', 'modern', 'single'];
 $layout = isset( $layout ) && in_array( $layout, $allowed_layouts, true ) ? $layout : 'single';
 
+// Se è stato passato un titolo, lo mostriamo sopra la griglia
+if ( isset( $title ) && trim( $title ) !== '' ) {
+    echo '<h5 class="text-bg-dark text-center py-2 my-4 rounded-2">' . esc_html( $title ) . '</h5>';
+}
+
 // Recuperiamo la mappa di priorità lingue
 $order_map = function_exists('toroag_get_language_order') ? toroag_get_language_order() : [];
 
@@ -81,7 +86,7 @@ foreach ( $doc_plus_data as $index => $doc ):
             }
             echo '</div></div></div>';
             break;
-        case 'card-imgsx':  // ex 'list'
+        case 'card-imgsx':
             echo '<div class="layout-compact col-12 mb-4">';
             echo '<div class="card h-100">';
             echo '<div class="row g-0 align-items-stretch">';
@@ -109,7 +114,7 @@ foreach ( $doc_plus_data as $index => $doc ):
             echo '</div></div></div>';
             break;
 
-        case 'card-imgdx':  // ex 'multiple'
+        case 'card-imgdx': 
             echo '<!-- Layout card -->';
             echo '<div class="layout-card col-12 mb-4">';
             echo '<div class="card h-100">';
