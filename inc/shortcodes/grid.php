@@ -179,44 +179,79 @@ function toro_grid_prodotti_page_shortcode() {
 }
 
 /**
+ * [toro_prodotti_page]
+ * Recupera il meta 'prodotti' (anche se è un singolo ID) e lo passa come array a get_posts().
+ */
+function toro_grid_prodotti_page_shortcode() {
+    if ( ! is_page() ) {
+        return '';
+    }
+
+    // prendo il valore raw dal meta
+    $ids_raw = get_post_meta( get_the_ID(), 'prodotti', true );
+    if ( empty( $ids_raw ) ) {
+        return '';
+    }
+
+    // se non è già array, lo trasformo in array di un singolo elemento
+    $ids = is_array( $ids_raw ) ? $ids_raw : array( $ids_raw );
+    // cast a interi e filtro eventuali vuoti
+    $ids = array_filter( array_map( 'intval', $ids ) );
+    if ( empty( $ids ) ) {
+        return '';
+    }
+
+    $products = get_posts( array(
+        'post_type'      => 'prodotto',
+        'posts_per_page' => -1,
+        'post__in'       => $ids,
+        'orderby'        => 'post__in',
+    ) );
+
+    if ( empty( $products ) ) {
+        return '';
+    }
+
+    return toro_ag_render_grid_view(
+        $products,
+        'featured',
+        'toro-grid--prodotti-page'
+    );
+}
+
+/**
  * [toro_colture_page]
- * Page con campo meta 'applicazioni' (array di term IDs) → grid di colture
+ * Recupera il meta 'applicazioni' (term ID singolo o multipli) e lo passa a get_terms().
  */
 function toro_grid_colture_page_shortcode() {
     if ( ! is_page() ) {
         return '';
     }
 
-    // DEBUG: Page ID per colture
-    echo "<!-- DEBUG: Page ID = " . get_the_ID() . " -->\n";
-
-    // recupero array di term IDs salvati nel meta 'applicazioni'
-    $term_ids = get_post_meta( get_the_ID(), 'applicazioni', true );
-    // DEBUG: contenuto di $term_ids
-    echo "<!-- DEBUG: applicazioni meta term IDs = ";
-    echo is_array($term_ids) ? implode(',', $term_ids) : var_export($term_ids, true);
-    echo " -->\n";
-
-    if ( empty( $term_ids ) || ! is_array( $term_ids ) ) {
-        echo "<!-- DEBUG: nessun term ID trovato, esco -->\n";
+    // prendo il valore raw dal meta
+    $term_ids_raw = get_post_meta( get_the_ID(), 'applicazioni', true );
+    if ( empty( $term_ids_raw ) ) {
         return '';
     }
 
-    // prendo i termini nell'ordine salvato
-    $terms = get_terms([
+    // array anche per un singolo ID
+    $term_ids = is_array( $term_ids_raw ) ? $term_ids_raw : array( $term_ids_raw );
+    // cast a interi e filtro eventuali vuoti
+    $term_ids = array_filter( array_map( 'intval', $term_ids ) );
+    if ( empty( $term_ids ) ) {
+        return '';
+    }
+
+    $terms = get_terms( array(
         'taxonomy'   => 'coltura',
         'hide_empty' => false,
         'include'    => $term_ids,
         'orderby'    => 'include',
-    ]);
+    ) );
 
-    if ( is_wp_error( $terms ) ) {
-        echo "<!-- DEBUG: get_terms WP_Error: " . $terms->get_error_message() . " -->\n";
+    if ( is_wp_error( $terms ) || empty( $terms ) ) {
         return '';
     }
-
-    $term_slugs = wp_list_pluck( $terms, 'slug' );
-    echo "<!-- DEBUG: recuperati termini slug = " . implode(',', $term_slugs) . " -->\n";
 
     return toro_ag_render_grid_view(
         $terms,
