@@ -17,7 +17,7 @@ function doc_plus_debug_shortcode( $atts ) {
         'ids'    => '',
         'layout' => 'default',
         'title'   => '',
-        'grid' => '',
+        'griglia' => '',
     ), $atts, 'doc_plus' );
 
     $filter_ids = [];
@@ -131,7 +131,7 @@ function doc_plus_debug_shortcode( $atts ) {
             'doc_plus_data' => $data,
             'layout'        => $atts['layout'],
             'title'         => $atts['title'],
-            'grid'          => $atts['grid'],
+            'griglia'          => $atts['griglia'],
         ] );
     }
 

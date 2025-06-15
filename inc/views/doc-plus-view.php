@@ -21,9 +21,9 @@ if ( isset( $title ) && trim( $title ) !== '' ) {
 
 // Se è stato passato un griglia, la usiamo, altrimenti fallback a "row"
 $grid_class = '';
-if ( isset($grid) && trim($grid) !== '' ) {
+if ( isset($griglia) && trim($griglia) !== '' ) {
   // esempio: "row row-cols-1 row-cols-md-3 g-4"
-  $grid_class = ' '. esc_attr( $grid );
+  $grid_class = ' '. esc_attr( $griglia );
 } else {
   $grid_class = 'row';  // comportamento preesistente
 }
