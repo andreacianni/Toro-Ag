@@ -110,26 +110,28 @@ require $shortcode_file;
  */
 
 // Applichiamo il filtro ai titoli e ai contenuti “normali” di WP
-add_filter( 'the_title',   'toro_ag_trademarks_to_superscript' );
-add_filter( 'the_content', 'toro_ag_trademarks_to_superscript' );
+// add_filter( 'the_title',   'toro_ag_trademarks_to_superscript' );
+// add_filter( 'the_content', 'toro_ag_trademarks_to_superscript' );
 
 // Se usi Pods, intercetta anche i Custom Field
-add_filter( 'pods_content', 'toro_ag_trademarks_to_superscript', 10, 2 );
-add_filter( 'pods_title',   'toro_ag_trademarks_to_superscript', 10, 2 );
+//add_filter( 'pods_content', 'toro_ag_trademarks_to_superscript', 10, 2 );
+// add_filter( 'pods_title',   'toro_ag_trademarks_to_superscript', 10, 2 );
 
 // Se Divi “salta” the_content, intercetta anche qui
-add_filter( 'et_pb_render_content', 'toro_ag_trademarks_to_superscript', 999 );
+// add_filter( 'et_pb_render_content', 'toro_ag_trademarks_to_superscript', 999 );
 
 /**
  * Wrapper generico per catturare TUTTI gli shortcode:
  * così l'output di qualsiasi [tuo_shortcode] viene prima “ripulito” dagli sup duplicati
  * (anche quelli escapati) e poi wrappato correttamente.
  */
+/*
 function toro_ag_trademarks_shortcodes_wrapper( $output, $tag, $attr, $m ) {
     return toro_ag_trademarks_to_superscript( $output );
 }
 add_filter( 'do_shortcode_tag', 'toro_ag_trademarks_shortcodes_wrapper', 10, 4 );
-
+*/
+/*
 function toro_ag_enqueue_sup_classes_script() {
   // Registra ed enqueue del nostro JS
   wp_enqueue_script(
@@ -141,7 +143,7 @@ function toro_ag_enqueue_sup_classes_script() {
   );
 }
 add_action( 'wp_enqueue_scripts', 'toro_ag_enqueue_sup_classes_script' );
-
+*/
 
 // SHORTCODE PER CARICARE UNA PAGINA PHP
 function shortcode_includi_php($atts) {
