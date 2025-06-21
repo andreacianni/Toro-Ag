@@ -136,14 +136,25 @@ function toro_grid_tipi_per_coltura_shortcode() {
 }
 
 /**
- * [toro_prodotti_page]
+ * [toro_prodotti_page title="Titolo" columns="4"]
  * Recupera il meta 'prodotti', normalizza anche un singolo ID in array,
  * e mostra la grid dei prodotti selezionati.
  */
-function toro_grid_prodotti_page_shortcode() {
+function toro_grid_prodotti_page_shortcode($atts) {
     if ( ! is_page() ) {
         return '';
     }
+
+    // Parse degli attributi
+    $atts = shortcode_atts( array(
+        'title'   => '',
+        'columns' => 3,
+    ), $atts, 'toro_prodotti_page' );
+
+    // Sanitize
+    $title = sanitize_text_field($atts['title']);
+    $columns = intval($atts['columns']);
+    if ($columns < 1 || $columns > 6) $columns = 3; // limitiamo tra 1 e 6
 
     // DEBUG: prendo tutti i meta 'prodotti'
     $ids_raw = get_post_meta( get_the_ID(), 'prodotti', false );
@@ -174,22 +185,35 @@ function toro_grid_prodotti_page_shortcode() {
         return '';
     }
 
-    return toro_ag_render_grid_view(
+    return toro_ag_render_grid_page_view(
         $products,
         'featured',
-        'toro-grid--prodotti-page'
+        'toro-grid--prodotti-page',
+        $title,
+        $columns
     );
 }
 
 /**
- * [toro_colture_page]
+ * [toro_colture_page title="Titolo" columns="4"]
  * Recupera il meta 'applicazioni', normalizza anche un singolo ID in array,
  * e mostra la grid delle colture selezionate.
  */
-function toro_grid_colture_page_shortcode() {
+function toro_grid_colture_page_shortcode($atts) {
     if ( ! is_page() ) {
         return '';
     }
+
+    // Parse degli attributi
+    $atts = shortcode_atts( array(
+        'title'   => '',
+        'columns' => 3,
+    ), $atts, 'toro_colture_page' );
+
+    // Sanitize
+    $title = sanitize_text_field($atts['title']);
+    $columns = intval($atts['columns']);
+    if ($columns < 1 || $columns > 6) $columns = 3; // limitiamo tra 1 e 6
 
     // prendo tutti i meta 'applicazioni'
     $term_ids_raw = get_post_meta( get_the_ID(), 'applicazioni', false );
@@ -226,9 +250,11 @@ function toro_grid_colture_page_shortcode() {
         }
     }
 
-    return toro_ag_render_grid_view(
+    return toro_ag_render_grid_page_view(
         $ordered,
         'col_thumb',
-        'toro-grid--colture-page'
+        'toro-grid--colture-page',
+        $title,
+        $columns
     );
 }
