@@ -52,7 +52,20 @@ function toro_ag_render_grid_view($items, $img_field, $wrapper_class = '') {
     get_template_part('inc/views/shortcode', 'grid');
     return ob_get_clean();
 }
-
+/**
+ * New renderer for page shortcodes: uses view inc/views/shortcode-grid-page.php
+ * Accepts title and columns parameters
+ */
+function toro_ag_render_grid_page_view($items, $img_field, $wrapper_class = '', $title = '', $columns = 3) {
+    ob_start();
+    set_query_var('toro_ag_grid_items',       $items);
+    set_query_var('toro_ag_grid_image_field', $img_field);
+    set_query_var('toro_ag_grid_wrapper_class', $wrapper_class);
+    set_query_var('toro_ag_grid_title',       $title);
+    set_query_var('toro_ag_grid_columns',     $columns);
+    get_template_part('inc/views/shortcode', 'grid-page');
+    return ob_get_clean();
+}
 /**
  * /tipi-di-prodotto/ - static: all tipo_di_prodotto terms
  */
