@@ -40,6 +40,18 @@ Template: Divi
   display: grid;
   grid-template-columns: repeat(1, minmax(0, 1fr));
   gap: 1rem;
+
+  // Support for dynamic columns via CSS custom property
+    &[style*="--toro-grid-columns"] {
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+      
+      @media (min-width: 576px) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      @media (min-width: 768px) {
+        grid-template-columns: repeat(var(--toro-grid-columns, 3), minmax(0, 1fr));
+      }
+    }
   
   // Responsive columns using CSS media queries matching Bootstrap breakpoints
   @media (min-width: 576px) {

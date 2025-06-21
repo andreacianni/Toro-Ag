@@ -9,9 +9,9 @@ $columns   = get_query_var('toro_ag_grid_columns', 3); // default 3 colonne
   <h5 class="text-bg-dark px-3 py-2 my-4 rounded-2"><?php echo esc_html($title); ?></h5>
 <?php endif; ?>
 
-<div class="row g-4 row-cols-1 row-cols-md-2 row-cols-lg-<?php echo esc_attr($columns); ?> <?php echo esc_attr( get_query_var('toro_ag_grid_wrapper_class','') ); ?>">
+<div class="toro-grid <?php echo esc_attr( get_query_var('toro_ag_grid_wrapper_class','') ); ?>" style="--toro-grid-columns: <?php echo esc_attr($columns); ?>;">
     <?php foreach ($items as $item) : ?>
-        <div class="col toro-grid__item">
+        <div class="toro-grid__item">
             <?php
             if (is_a($item,'WP_Term')) {
                 $img_id = get_term_meta($item->term_id, $img_field, true);
