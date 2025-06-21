@@ -20,9 +20,9 @@ $col_class = isset($bootstrap_cols[$columns]) ? $bootstrap_cols[$columns] : 'col
   <h5 class="text-bg-dark px-3 py-2 my-4 rounded-2"><?php echo esc_html($title); ?></h5>
 <?php endif; ?>
 
-<div class="row g-4 <?php echo esc_attr( get_query_var('toro_ag_grid_wrapper_class','') ); ?>">
+<div class="row g-4 px-3 <?php echo esc_attr( get_query_var('toro_ag_grid_wrapper_class','') ); ?>">
     <?php foreach ($items as $item) : ?>
-        <div class="<?php echo esc_attr($col_class); ?>">
+        <div class="<?php echo esc_attr($col_class); ?> toro-grid__item px-0">
             <?php
             if (is_a($item,'WP_Term')) {
                 $img_id = get_term_meta($item->term_id, $img_field, true);
