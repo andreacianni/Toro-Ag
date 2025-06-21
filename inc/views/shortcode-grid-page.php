@@ -3,26 +3,15 @@ $items     = get_query_var('toro_ag_grid_items', []);
 $img_field = get_query_var('toro_ag_grid_image_field','featured');
 $title     = get_query_var('toro_ag_grid_title', '');
 $columns   = get_query_var('toro_ag_grid_columns', 3); // default 3 colonne
-
-// Calcola le classi Bootstrap per le colonne
-$bootstrap_cols = array(
-    1 => 'col-12',
-    2 => 'col-md-6',
-    3 => 'col-lg-4',
-    4 => 'col-lg-3',
-    5 => 'col-lg-2', // 5 colonne: un po' stretto ma funziona
-    6 => 'col-lg-2'
-);
-$col_class = isset($bootstrap_cols[$columns]) ? $bootstrap_cols[$columns] : 'col-lg-4';
 ?>
 
 <?php if (!empty($title)) : ?>
   <h5 class="text-bg-dark px-3 py-2 my-4 rounded-2"><?php echo esc_html($title); ?></h5>
 <?php endif; ?>
 
-<div class="row g-4 px-3 <?php echo esc_attr( get_query_var('toro_ag_grid_wrapper_class','') ); ?>">
+<div class="row g-4 row-cols-1 row-cols-md-2 row-cols-lg-<?php echo esc_attr($columns); ?> <?php echo esc_attr( get_query_var('toro_ag_grid_wrapper_class','') ); ?>">
     <?php foreach ($items as $item) : ?>
-        <div class="<?php echo esc_attr($col_class); ?> toro-grid__item px-0">
+        <div class="col toro-grid__item">
             <?php
             if (is_a($item,'WP_Term')) {
                 $img_id = get_term_meta($item->term_id, $img_field, true);
