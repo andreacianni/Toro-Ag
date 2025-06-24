@@ -30,63 +30,11 @@ function toroag_filtra_per_lingua_aggiuntiva($video_ids) {
     return $filtered;
 }
 
-function ac_video_prodotto_shortcode() {
-    ob_start();
-
-    if (! is_singular('prodotto')) {
-        return '<!-- [video_prodotto] disponibile solo nelle pagine singolo prodotto -->';
-    }
-
-    $source_id   = get_the_ID();
-    $pod_context = 'prodotto';
-    $field_name  = 'video_prodotto';
-
-    $pod = pods($pod_context, $source_id);
-    if (! $pod) {
-        return '<!-- Errore: pod non trovato -->';
-    }
-
-    $raw = $pod->field($field_name);
-    if (empty($raw) || ! is_array($raw)) {
-        return "<!-- Nessun video associato: campo '{$field_name}' vuoto. ID post: {$source_id} -->";
-    }
-
-    $video_ids = array_map(function($v) {
-        return is_array($v) && !empty($v['ID']) ? intval($v['ID']) : intval($v);
-    }, $raw);
-
-    $video_ids = array_filter($video_ids);
-    $video_ids = toroag_filtra_per_lingua_aggiuntiva($video_ids);
-
-    if (empty($video_ids)) {
-        return '<!-- Nessun video nella lingua corrente -->';
-    }
-
-    echo '<div class="video-card-grid row">';
-    foreach ($video_ids as $id) {
-        $src = get_post_meta($id, 'video_link', true);
-        $embed = wp_oembed_get($src);
-        if (! $embed) continue;
-
-        echo '<div class="col">'
-           . '<div class="card h-100">'
-           . '<div class="card-video embed-responsive embed-responsive-16by9">' . $embed . '</div>'
-           . '<div class="card-body">'
-           . '<h5 class="card-title text-center py-2 mb-0">'
-           . '<a href="' . esc_url($src) . '" target="_blank" rel="noopener noreferrer">'
-           . esc_html(get_the_title($id)) . '</a>'
-           . '</h5></div></div></div>';
-    }
-    echo '</div>';
-
-    return ob_get_clean();
-}
-add_shortcode('video_prodotto', 'ac_video_prodotto_shortcode');
-
 /**
  * Shortcode [carosello_video_pagina] – compatibile con WPML e Divi
  * Mostra tutti i video associati a una pagina e filtra in base a 'lingua_aggiuntiva'.
  * Supporta parametro: titolo="Titolo da visualizzare sopra i video"
+ * VERSIONE CORRETTA CON FALLBACK WPML
  */
 
 function ac_carosello_video_pagina_shortcode($atts = []) {
@@ -100,29 +48,47 @@ function ac_carosello_video_pagina_shortcode($atts = []) {
         'titolo' => ''
     ], $atts);
 
-    $source_id   = get_the_ID();
+    // Gestione WPML robusta come negli shortcode funzionanti
+    $current_lang = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : apply_filters('wpml_current_language', null);
+    $default_lang = apply_filters('wpml_default_language', null);
+    
+    $source_id = get_the_ID();
     $pod_context = 'page';
-    $field_name  = 'video_pagina';
+    $field_name = 'video_pagina';
 
-    $pod = pods($pod_context, $source_id);
-    if (! $pod) {
-        return '<!-- Errore: pod non trovato -->';
-    }
+    // Debug info
+    echo "<!-- shortcode carosello_video_pagina: ID corrente {$source_id}, lingua {$current_lang} -->";
 
-    $raw = $pod->field($field_name);
-    if (empty($raw) || ! is_array($raw)) {
-        return "<!-- Nessun video associato: campo '{$field_name}' vuoto. ID post: {$source_id} -->";
+    // Tentativo con Pods nella lingua corrente
+    $pod = pods($pod_context, $source_id, ['lang' => $current_lang]);
+    $raw = $pod && $pod->exists() ? $pod->field($field_name) : [];
+
+    // Fallback WPML se non trova video nella lingua corrente
+    if (empty($raw)) {
+        echo "<!-- shortcode carosello_video_pagina: nessun video in lingua corrente, fallback -->";
+        $page_id_default = apply_filters('wpml_object_id', $source_id, 'page', true, $default_lang);
+        $page_id_default = $page_id_default ? intval($page_id_default) : intval($source_id);
+        echo "<!-- shortcode carosello_video_pagina: ID lingua default: {$page_id_default} -->";
+        
+        // Recupero diretto con get_post_meta come fallback
+        $raw = array_map('intval', get_post_meta($page_id_default, $field_name, false));
+        
+        if (empty($raw)) {
+            return "<!-- Nessun video associato: campo '{$field_name}' vuoto anche in lingua default. ID post: {$source_id} -->";
+        }
     }
 
     $video_ids = array_map(function($v) {
         return is_array($v) && !empty($v['ID']) ? intval($v['ID']) : intval($v);
-    }, $raw);
+    }, (array)$raw);
 
     $video_ids = array_filter($video_ids);
+    echo "<!-- shortcode carosello_video_pagina: video IDs pre-filtro: " . implode(',', $video_ids) . " -->";
+    
     $video_ids = toroag_filtra_per_lingua_aggiuntiva($video_ids);
 
     if (empty($video_ids)) {
-        return '<!-- Nessun video nella lingua corrente -->';
+        return '<!-- Nessun video nella lingua corrente dopo filtro -->';
     }
 
     if (!empty($atts['titolo'])) {
@@ -229,6 +195,7 @@ add_shortcode('carosello_video_pagina', 'ac_carosello_video_pagina_shortcode');
  * Shortcode [video_pagina] – compatibile con WPML e Divi
  * Carica subito tutti i video in una griglia statica
  * Supporta parametro: titolo="Titolo da visualizzare sopra i video"
+ * VERSIONE CORRETTA CON FALLBACK WPML
  */
 
 function ac_video_pagina_shortcode($atts = []) {
@@ -240,25 +207,46 @@ function ac_video_pagina_shortcode($atts = []) {
         'titolo' => ''
     ], $atts);
 
+    // Gestione WPML robusta come negli shortcode funzionanti
+    $current_lang = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : apply_filters('wpml_current_language', null);
+    $default_lang = apply_filters('wpml_default_language', null);
+    
     $source_id = get_the_ID();
-    $pod       = pods('page', $source_id);
-    if (! $pod) {
-        return '<!-- Errore: pod non trovato -->';
-    }
+    $field_name = 'video_pagina';
 
-    $raw = $pod->field('video_pagina');
-    if (empty($raw) || ! is_array($raw)) {
-        return "<!-- Nessun video associato: campo 'video_pagina' vuoto. ID post: {$source_id} -->";
+    // Debug info
+    echo "<!-- shortcode video_pagina: ID corrente {$source_id}, lingua {$current_lang} -->";
+
+    // Tentativo con Pods nella lingua corrente
+    $pod = pods('page', $source_id, ['lang' => $current_lang]);
+    $raw = $pod && $pod->exists() ? $pod->field($field_name) : [];
+
+    // Fallback WPML se non trova video nella lingua corrente
+    if (empty($raw)) {
+        echo "<!-- shortcode video_pagina: nessun video in lingua corrente, fallback -->";
+        $page_id_default = apply_filters('wpml_object_id', $source_id, 'page', true, $default_lang);
+        $page_id_default = $page_id_default ? intval($page_id_default) : intval($source_id);
+        echo "<!-- shortcode video_pagina: ID lingua default: {$page_id_default} -->";
+        
+        // Recupero diretto con get_post_meta come fallback
+        $raw = array_map('intval', get_post_meta($page_id_default, $field_name, false));
+        
+        if (empty($raw)) {
+            return "<!-- Nessun video associato: campo '{$field_name}' vuoto anche in lingua default. ID post: {$source_id} -->";
+        }
     }
 
     $video_ids = array_map(function($v) {
         return is_array($v) && !empty($v['ID']) ? intval($v['ID']) : intval($v);
-    }, $raw);
+    }, (array)$raw);
+    
     $video_ids = array_values(array_filter($video_ids));
+    echo "<!-- shortcode video_pagina: video IDs pre-filtro: " . implode(',', $video_ids) . " -->";
+    
     $video_ids = toroag_filtra_per_lingua_aggiuntiva($video_ids);
 
     if (empty($video_ids)) {
-        return '<!-- Nessun video nella lingua corrente -->';
+        return '<!-- Nessun video nella lingua corrente dopo filtro -->';
     }
 
     ob_start();
