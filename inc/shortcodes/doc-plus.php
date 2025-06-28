@@ -15,6 +15,7 @@ function doc_plus_debug_shortcode( $atts ) {
     // 1) Parsing attributi (con nuovo parametro "layout")
     $atts = shortcode_atts( array(
         'ids'    => '',
+        'slugs'   => '', 
         'layout' => 'default',
         'title'   => '',
         'griglia' => '',
@@ -28,7 +29,19 @@ function doc_plus_debug_shortcode( $atts ) {
             }
         }
     }
-
+    if ( ! empty( $atts['slugs'] ) ) {
+        foreach ( preg_split('/\s*,\s*/', $atts['slugs'] ) as $slug ) {
+            $slug = trim( $slug );
+            if ( ! empty( $slug ) ) {
+                // Cerca il post tramite slug
+                $post = get_page_by_path( $slug, OBJECT, 'doc_plus' );
+                if ( $post ) {
+                    $filter_ids[] = $post->ID;
+                }
+            }
+        }
+    }
+    
     // 2) Lingua corrente e default
     $current_lang = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : apply_filters('wpml_current_language', null);
     $default_lang = apply_filters('wpml_default_language', null);
