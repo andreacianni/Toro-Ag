@@ -71,35 +71,35 @@ foreach ( $doc_plus_data as $index => $doc ):
     switch ( $layout ) {
         case 'clean':
             // Layout clean: card pulita con link anche nell'immagine
-            // echo '<!-- Layout clean -->';
-            echo '<div class="col mb-4">';
-
-            echo '<div class="card border-0 h-100">';
-            if ( ! empty( $doc['cover_url'] ) ) {
-                // Recupera il primo link di attachment
-                $first_url = esc_url( reset( $filtered )['url'] );
-                echo '<a href="' . $first_url . '" target="_blank">';
-                echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top px-xl-5" alt="Cover">';
-                echo '</a>';
-            }
-            echo '<div class="card-body pt-4 text-center">';
-            foreach ( $filtered as $att ) {
-                $title = esc_html( $att['title'] );
-                $url   = esc_url( $att['url'] );
-                $slug  = $att['lang']['slug'];
-                echo '<h4 class="mb-3"><strong><a href="' . $url . '" target="_blank" class="text-decoration-none">'
-                    . $title . '</a></strong>';
-                if ( $slug !== 'italiano' ) {
-                    echo ' ' . toroag_get_flag_html( $slug );
+            echo '<div class="col mb-4 layout-clean">';
+                echo '<div class="card border-0 h-100 layout-clean">';
+                if ( ! empty( $doc['cover_url'] ) ) {
+                    // Recupera il primo link di attachment
+                    $first_url = esc_url( reset( $filtered )['url'] );
+                    echo '<a href="' . $first_url . '" target="_blank">';
+                    echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top px-xl-5" alt="Cover">';
+                    echo '</a>';
                 }
-                echo '</h4>';
-            }
-            echo '</div></div></div>';
+                    echo '<div class="card-body pt-4 text-center">';
+                    foreach ( $filtered as $att ) {
+                        $title = esc_html( $att['title'] );
+                        $url   = esc_url( $att['url'] );
+                        $slug  = $att['lang']['slug'];
+                        echo '<h4 class="mb-3"><a href="' . $url . '" target="_blank" class="text-decoration-none">'
+                            . $title . '</a>';
+                        if ( $slug !== 'italiano' ) {
+                            echo ' ' . toroag_get_flag_html( $slug );
+                        }
+                        echo '</h4>';
+                    }
+                    echo '</div>';
+                echo '</div>';
+            echo '</div>';
             break;
         case 'card-imgsup':
             // Layout clean: card pulita con link anche nell'immagine
             // echo '<!-- Layout clean -->';
-            echo '<div class="col mb-4">';
+            echo '<div class="col mb-4 layout-card-imgsup">';
 
             echo '<div class="card h-100">';
             if ( ! empty( $doc['cover_url'] ) ) {
@@ -124,7 +124,7 @@ foreach ( $doc_plus_data as $index => $doc ):
             echo '</div></div></div>';
             break;
         case 'card-imgsx':
-            echo '<div class="col mb-4">';
+            echo '<div class="col mb-4 layout-card-imgsx">';
             echo '<div class="card h-100">';
             echo '<div class="row g-0 align-items-stretch">';
                 // Colonna immagine a sinistra
@@ -151,9 +151,9 @@ foreach ( $doc_plus_data as $index => $doc ):
             echo '</div></div></div>';
             break;
 
-        case 'card-imgdx': 
-            echo '<!-- Layout card -->';
-            echo '<div class="col mb-4">';
+        case 'card-imgdx':
+            // Layout card con immagine a destra
+            echo '<div class="col mb-4 layout-card-imgdx">';
             echo '<div class="card h-100">';
             echo '<div class="row g-0 align-items-stretch">';
                 // Colonna testo a sinistra
@@ -162,7 +162,7 @@ foreach ( $doc_plus_data as $index => $doc ):
                         $title = esc_html( $att['title'] );
                         $url   = esc_url( $att['url'] );
                         $slug  = $att['lang']['slug'];
-                        echo "<h4><strong><a href=\"{$url}\" target=\"_blank\">{$title}</a></strong>";
+                        echo "<h4><a href=\"{$url}\" target=\"_blank\">{$title}</a>";
                         if ( $slug !== 'italiano' ) {
                             echo ' ' . toroag_get_flag_html( $slug );
                         }
@@ -180,7 +180,8 @@ foreach ( $doc_plus_data as $index => $doc ):
             break;
 
         case 'modern':
-            echo '<div class="col mb-4">';
+            // Layout moderno: card con immagine di copertura e titolo centrato
+            echo '<div class="col mb-4 layout-modern">';
             echo '<div class="card h-100 modern-layout position-relative overflow-hidden2">';
             if ( ! empty( $doc['cover_url'] ) ) {
                 echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img h-100" style="object-fit:cover;" alt="Cover">';
@@ -190,7 +191,7 @@ foreach ( $doc_plus_data as $index => $doc ):
                 $title = esc_html( $att['title'] );
                 $url   = esc_url( $att['url'] );
                 $slug  = $att['lang']['slug'];
-                echo "<h5 class=\"mb-0 pt-2 text-center bg-dark\" style=\"--bs-bg-opacity: .7;\"><strong><a href=\"{$url}\" target=\"_blank\" class=\"text-white text-decoration-none\">{$title}</a></strong>";
+                echo "<h5 class=\"mb-0 pt-2 text-center bg-dark\" style=\"--bs-bg-opacity: .7;\"><a href=\"{$url}\" target=\"_blank\" class=\"text-white text-decoration-none\">{$title}</a>";
                 if ( $slug !== 'italiano' ) {
                     echo ' ' . toroag_get_flag_html( $slug );
                 }
@@ -201,7 +202,8 @@ foreach ( $doc_plus_data as $index => $doc ):
 
         case 'single':
         default:
-            echo '<div class="col mb-4">';
+            // Layout singolo: card con copertina e titolo centrato
+            echo '<div class="col mb-4 layout-single">';
                 if ( ! empty( $doc['cover_url'] ) ) {
                     echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top" alt="Cover">';
                 }
@@ -210,7 +212,7 @@ foreach ( $doc_plus_data as $index => $doc ):
                         $title = esc_html( $att['title'] );
                         $url   = esc_url( $att['url'] );
                         $slug  = $att['lang']['slug'];
-                        echo "<h4><strong><a href=\"{$url}\" target=\"_blank\" class=\"text-decoration-none\">{$title}</a></strong>";
+                        echo "<h4><a href=\"{$url}\" target=\"_blank\" class=\"text-decoration-none\">{$title}</a>";
                         if ( $slug !== 'italiano' ) {
                             echo ' ' . toroag_get_flag_html( $slug );
                         }
