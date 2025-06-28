@@ -87,12 +87,12 @@ foreach ( $doc_plus_data as $index => $doc ):
                         $slug  = $att['lang']['slug'];
                         // *** MODIFICATO: aggiunta bandiera prima del titolo e icona dopo il titolo ***
                         $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $url ) : 'bi-file-earmark-text';
-                        echo '<h4 class="mb-3"><a href="' . $url . '" target="_blank" class="text-decoration-none">';
+                        echo '<p class="mb-3"><a href="' . $url . '" target="_blank" class="text-decoration-none">';
                         if ( $slug !== 'italiano' ) {
                             echo toroag_get_flag_html( $slug ) . ' ';
                         }
                         echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
-                        echo '</a></h4>';
+                        echo '</a></p>';
                     }
                     echo '</div>';
                 echo '</div>';
@@ -118,12 +118,12 @@ foreach ( $doc_plus_data as $index => $doc ):
                 $slug  = $att['lang']['slug'];
                 // *** MODIFICATO: aggiunta bandiera prima del titolo e icona dopo il titolo ***
                 $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $url ) : 'bi-file-earmark-text';
-                echo '<h4 class="mb-3"><a href="' . $url . '" target="_blank" class="text-decoration-none">';
+                echo '<p class="mb-3"><a href="' . $url . '" target="_blank" class="text-decoration-none">';
                 if ( $slug !== 'italiano' ) {
                     echo toroag_get_flag_html( $slug ) . ' ';
                 }
                 echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
-                echo '</a></h4>';
+                echo '</a></p>';
             }
             echo '</div></div></div>';
             break;
@@ -146,13 +146,13 @@ foreach ( $doc_plus_data as $index => $doc ):
                         $slug  = $att['lang']['slug'];
                         // *** MODIFICATO: aggiunta bandiera prima del titolo e icona dopo il titolo ***
                         $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $url ) : 'bi-file-earmark-text';
-                        echo "<h4 class=\"fw-bold\">";
+                        echo "<p class=\"fw-bold\">";
                         echo "<a href=\"{$url}\" target=\"_blank\">";
                         if ( $slug !== 'italiano' ) {
                             echo toroag_get_flag_html( $slug ) . ' ';
                         }
                         echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
-                        echo "</a></h4>";
+                        echo "</a></p>";
                     }
                 echo '</div></div>';
             echo '</div></div></div>';
@@ -171,12 +171,12 @@ foreach ( $doc_plus_data as $index => $doc ):
                         $slug  = $att['lang']['slug'];
                         // *** MODIFICATO: aggiunta bandiera prima del titolo e icona dopo il titolo ***
                         $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $url ) : 'bi-file-earmark-text';
-                        echo "<h4><a href=\"{$url}\" target=\"_blank\">";
+                        echo "<p><a href=\"{$url}\" target=\"_blank\">";
                         if ( $slug !== 'italiano' ) {
                             echo toroag_get_flag_html( $slug ) . ' ';
                         }
                         echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
-                        echo '</a></h4>';
+                        echo '</a></p>';
                     }
                 echo '</div></div>';
                 // Colonna immagine a destra
@@ -227,12 +227,12 @@ foreach ( $doc_plus_data as $index => $doc ):
                         $slug  = $att['lang']['slug'];
                         // *** MODIFICATO: aggiunta bandiera prima del titolo e icona dopo il titolo ***
                         $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $url ) : 'bi-file-earmark-text';
-                        echo "<h4><a href=\"{$url}\" target=\"_blank\" class=\"text-decoration-none\">";
+                        echo "<p><a href=\"{$url}\" target=\"_blank\" class=\"text-decoration-none\">";
                         if ( $slug !== 'italiano' ) {
                             echo toroag_get_flag_html( $slug ) . ' ';
                         }
                         echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
-                        echo '</a></h4>';
+                        echo '</a></p>';
                     }
                 echo '</div>';
             echo '</div>';
