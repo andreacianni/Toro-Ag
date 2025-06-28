@@ -289,4 +289,11 @@ sup.r {
 #menu-social-inglese .footer-icon.linkedin a:before {
   content: "\f08c";
   color: #0A66C2;
+}
+
+.box-home:hover .et_pb_with_border {
+  border-bottom-color: #CD2027;
+}
+.box-home:hover h3 {
+  color: #CD2027 !important;
 }/*# sourceMappingURL=style.css.map */

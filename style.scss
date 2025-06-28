@@ -357,3 +357,12 @@ sup.r {
   }
 }
 
+// box home page
+.box-home:hover{
+  .et_pb_with_border {
+    border-bottom-color: #CD2027;
+  }
+  h3{
+    color: #CD2027 !important;
+  }
+}
