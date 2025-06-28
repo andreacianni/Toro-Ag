@@ -11,7 +11,7 @@ if ( empty( $doc_plus_data ) || ! is_array( $doc_plus_data ) ) {
 }
 
 // Validiamo e definiamo il layout
-$allowed_layouts = ['clean', 'list','multiple', 'card-imgsup', 'card-imgsx', 'card-imgdx', 'modern', 'single'];
+$allowed_layouts = ['clean','multiple', 'card-imgsup', 'card-imgsx', 'card-imgdx', 'modern', 'single'];
 $layout = isset( $layout ) && in_array( $layout, $allowed_layouts, true ) ? $layout : 'single';
 
 // Se è stato passato un titolo, lo mostriamo sopra la griglia
@@ -202,21 +202,22 @@ foreach ( $doc_plus_data as $index => $doc ):
         case 'single':
         default:
             echo '<div class="col mb-4">';
-            if ( ! empty( $doc['cover_url'] ) ) {
-                echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top" alt="Cover">';
-            }
-            echo '<div class="card-body text-center">';
-            foreach ( $filtered as $att ) {
-                $title = esc_html( $att['title'] );
-                $url   = esc_url( $att['url'] );
-                $slug  = $att['lang']['slug'];
-                echo "<h4><strong><a href=\"{$url}\" target=\"_blank\" class=\"text-decoration-none\">{$title}</a></strong>";
-                if ( $slug !== 'italiano' ) {
-                    echo ' ' . toroag_get_flag_html( $slug );
+                if ( ! empty( $doc['cover_url'] ) ) {
+                    echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top" alt="Cover">';
                 }
-                echo '</h4>';
-            }
-            echo '</div></div></div>';
+                echo '<div class="card-body text-center">';
+                    foreach ( $filtered as $att ) {
+                        $title = esc_html( $att['title'] );
+                        $url   = esc_url( $att['url'] );
+                        $slug  = $att['lang']['slug'];
+                        echo "<h4><strong><a href=\"{$url}\" target=\"_blank\" class=\"text-decoration-none\">{$title}</a></strong>";
+                        if ( $slug !== 'italiano' ) {
+                            echo ' ' . toroag_get_flag_html( $slug );
+                        }
+                        echo '</h4>';
+                    }
+                echo '</div>';
+            echo '</div>';
             break;
     }
 
