@@ -139,14 +139,15 @@ foreach ( $doc_plus_data as $index => $doc ):
                     }
                 echo '</div>';
                 // Colonna testo a destra
-                echo '<div class="col-md-8"><div class="card-body">';
+                echo '<div class="col-md-8 d-flex align-items-center">';
+                echo '<div class="card-body">';
                     foreach ( $filtered as $att ) {
                         $title = esc_html( $att['title'] );
                         $url   = esc_url( $att['url'] );
                         $slug  = $att['lang']['slug'];
                         // *** MODIFICATO: aggiunta bandiera prima del titolo e icona dopo il titolo ***
                         $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $url ) : 'bi-file-earmark-text';
-                        echo "<p class=\"fw-bold\">";
+                        echo "<p class=\"\">";
                         echo "<a href=\"{$url}\" target=\"_blank\">";
                         if ( $slug !== 'italiano' ) {
                             echo toroag_get_flag_html( $slug ) . ' ';
@@ -164,7 +165,7 @@ foreach ( $doc_plus_data as $index => $doc ):
             echo '<div class="card h-100">';
             echo '<div class="row g-0 align-items-stretch">';
                 // Colonna testo a sinistra
-                echo '<div class="col-md-8"><div class="card-body">';
+                echo '<div class="col-md-8 d-flex align-items-center"><div class="card-body">';
                     foreach ( $filtered as $att ) {
                         $title = esc_html( $att['title'] );
                         $url   = esc_url( $att['url'] );
