@@ -60,7 +60,7 @@ if ( ! function_exists('ta_render_video_prodotto_v2_shortcode') ) {
             $output .= '</div></div>';
             $output .= '<div class="card-body">';
             $output .= '<h5 class="card-title text-center py-2 mb-0">';
-            $output .= '<a href="' . esc_url($video_link) . '" target="_blank" rel="noopener noreferrer">' . esc_html($video->post_title) . ' ' . $flag_html . '</a>';
+            $output .= '<a href="' . esc_url($video_link) . '" target="_blank" rel="noopener noreferrer">'. $flag_html . ' ' . esc_html($video->post_title) .'</a>';
             $output .= '</h5></div></div></div>';
         }
 
