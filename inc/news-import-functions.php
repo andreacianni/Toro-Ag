@@ -717,12 +717,17 @@ function toro_import_single_news($news_data, $all_data, $lang = 'it', $force_upd
     ];
 }
 /**
- * Forza le date di un post esistente
+ * Forza le date di un post esistente - VERSIONE DEBUG
  */
 function toro_force_post_dates($post_id, $date_string) {
     global $wpdb;
     
+    // Debug: vediamo cosa c'è prima
+    $before = $wpdb->get_row($wpdb->prepare("SELECT post_date, post_date_gmt, post_modified, post_modified_gmt FROM {$wpdb->posts} WHERE ID = %d", $post_id));
+    error_log("BEFORE UPDATE POST {$post_id}: " . print_r($before, true));
+    
     $parsed_date_gmt = get_gmt_from_date($date_string);
+    error_log("TRYING TO SET: post_date={$date_string}, post_date_gmt={$parsed_date_gmt}");
     
     // Query diretta brutale
     $result = $wpdb->query(
@@ -741,8 +746,13 @@ function toro_force_post_dates($post_id, $date_string) {
         )
     );
     
+    error_log("UPDATE RESULT: " . $result);
+    
+    // Debug: vediamo cosa c'è dopo
+    $after = $wpdb->get_row($wpdb->prepare("SELECT post_date, post_date_gmt, post_modified, post_modified_gmt FROM {$wpdb->posts} WHERE ID = %d", $post_id));
+    error_log("AFTER UPDATE POST {$post_id}: " . print_r($after, true));
+    
     // Forza refresh del post object
-    $wpdb->query("FLUSH QUERY CACHE");
     clean_post_cache($post_id);
     
     return $result;

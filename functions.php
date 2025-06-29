@@ -459,16 +459,22 @@ function test_toro_debug() {
     exit;
 }
 /**
- * Converte data Excel formato europeo (dd/mm/yyyy) in formato WordPress
+ * Converte data Excel formato europeo (dd/mm/yyyy) in formato WordPress - DEBUG
  */
 function toro_parse_excel_date($date_string) {
+    error_log("PARSING DATE: input='{$date_string}'");
+    
     if (empty($date_string)) {
-        return date('Y-m-d H:i:s'); // Data attuale se vuota
+        $result = date('Y-m-d H:i:s');
+        error_log("PARSING DATE: empty input, returning current date: {$result}");
+        return $result;
     }
     
     // Se è già in formato corretto, usala
     if (preg_match('/^\d{4}-\d{2}-\d{2}/', $date_string)) {
-        return date('Y-m-d H:i:s', strtotime($date_string));
+        $result = date('Y-m-d H:i:s', strtotime($date_string));
+        error_log("PARSING DATE: already correct format, returning: {$result}");
+        return $result;
     }
     
     // Converte formato europeo dd/mm/yyyy
@@ -477,16 +483,21 @@ function toro_parse_excel_date($date_string) {
         $month = str_pad($matches[2], 2, '0', STR_PAD_LEFT);
         $year = $matches[3];
         
-        // Crea data in formato ISO e imposta ore 00:00:00
-        return $year . '-' . $month . '-' . $day . ' 00:00:00';
+        $result = $year . '-' . $month . '-' . $day . ' 00:00:00';
+        error_log("PARSING DATE: converted from european format: {$result}");
+        return $result;
     }
     
     // Fallback: prova strtotime normale
     $timestamp = strtotime($date_string);
     if ($timestamp !== false) {
-        return date('Y-m-d H:i:s', $timestamp);
+        $result = date('Y-m-d H:i:s', $timestamp);
+        error_log("PARSING DATE: strtotime fallback: {$result}");
+        return $result;
     }
     
     // Ultima risorsa: data attuale
-    return date('Y-m-d H:i:s');
+    $result = date('Y-m-d H:i:s');
+    error_log("PARSING DATE: last resort current date: {$result}");
+    return $result;
 }
