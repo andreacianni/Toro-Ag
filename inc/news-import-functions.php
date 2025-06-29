@@ -664,7 +664,7 @@ function toro_import_single_news($news_data, $all_data, $lang = 'it', $force_upd
         'post_content' => $content,
         'post_status' => 'publish',
         'post_type' => 'post',
-        'post_date' => date('Y-m-d H:i:s', strtotime($news_data['news_data'] ?? 'now')),
+        'post_date' => toro_parse_excel_date($news_data['news_data'] ?? ''),
         'meta_input' => [
             'news_id_originale' => $news_id
         ]
