@@ -293,6 +293,21 @@ function toro_news_import_scripts($hook) {
 add_action('wp_ajax_toro_import_news', 'toro_handle_import_ajax');
 
 function toro_handle_import_ajax() {
+
+        // 🔧 FIX: Previeni output HTML indesiderato
+    ob_start(); // Cattura tutto l'output
+    
+    // 🔧 FIX: Disabilita notice/warning che rompono JSON
+    error_reporting(E_ERROR | E_PARSE); // Solo errori critici
+    
+    try {
+        // Verifica security nonce
+        if (!wp_verify_nonce($_POST['security'], 'toro_import_news')) {
+            ob_clean();
+            wp_send_json_error('Nonce non valido');
+            return;
+        }
+
     // Verifica security nonce
     if (!wp_verify_nonce($_POST['security'], 'toro_import_news')) {
         wp_send_json_error('Nonce non valido');
@@ -339,6 +354,13 @@ function toro_handle_import_ajax() {
         } else {
             wp_send_json_success($results);
         }
+    }
+        } catch (Exception $e) {
+        ob_clean();
+        wp_send_json_error('Eccezione: ' . $e->getMessage());
+    } catch (Error $e) {
+        ob_clean(); 
+        wp_send_json_error('Errore fatale: ' . $e->getMessage());
     }
 }
 
