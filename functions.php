@@ -291,7 +291,7 @@ function toro_news_import_scripts($hook) {
 
 // Handler AJAX per importazione news
 add_action('wp_ajax_toro_import_news', 'toro_handle_import_ajax');
-
+/* nascosta per debug
 function toro_handle_import_ajax() {
     // 🔧 FIX: Previeni output HTML indesiderato
     ob_start(); // Cattura tutto l'output
@@ -362,7 +362,39 @@ function toro_handle_import_ajax() {
         wp_send_json_error('Errore fatale: ' . $e->getMessage());
     }
 }
-
+*/
+function toro_handle_import_ajax() {
+    ob_start();
+    error_reporting(0); // Disabilita tutti gli errori
+    
+    try {
+        // Test base
+        if (!wp_verify_nonce($_POST['security'], 'toro_import_news')) {
+            ob_clean();
+            wp_send_json_error('Nonce non valido');
+            return;
+        }
+        
+        // 🔍 TEST: Solo lettura Excel
+        $data = toro_read_excel_data();
+        if (is_wp_error($data)) {
+            ob_clean();
+            wp_send_json_error('Errore lettura Excel: ' . $data->get_error_message());
+            return;
+        }
+        
+        ob_clean();
+        wp_send_json_success([
+            'debug' => 'Lettura Excel OK',
+            'fogli' => array_keys($data),
+            'news_ita' => count($data['NewsToImport (ITA)'] ?? [])
+        ]);
+        
+    } catch (Exception $e) {
+        ob_clean();
+        wp_send_json_error('Eccezione: ' . $e->getMessage());
+    }
+}
 // Download SimpleXLSX se non esiste
 add_action('init', 'toro_ensure_simplexlsx');
 
