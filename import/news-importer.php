@@ -58,7 +58,7 @@ if (isset($_GET['dry_run'])) {
         </div>
         <div class="inside">
             <?php
-            $excel_file = get_template_directory() . '/import/DB_News_da importare.xlsx';
+            $excel_file = get_stylesheet_directory() . '/import/DB_News_da importare.xlsx';
             if (file_exists($excel_file)) {
                 $file_size = size_format(filesize($excel_file));
                 $file_date = date('d/m/Y H:i', filemtime($excel_file));
@@ -395,7 +395,7 @@ if (isset($_GET['dry_run'])) {
 if (current_user_can('manage_options') && isset($_GET['debug'])) {
     echo '<div class="notice notice-info">';
     echo '<h3>🔧 Debug Info</h3>';
-    echo '<p><strong>File Excel:</strong> ' . get_template_directory() . '/import/DB_News_da importare.xlsx</p>';
+    echo '<p><strong>File Excel:</strong> ' . get_stylesheet_directory() . '/import/DB_News_da importare.xlsx</p>';
     echo '<p><strong>Funzioni caricate:</strong> ' . (function_exists('toro_read_excel_data') ? '✅' : '❌') . '</p>';
     echo '<p><strong>WPML attivo:</strong> ' . (function_exists('icl_object_id') ? '✅' : '❌') . '</p>';
     echo '<p><strong>PODS attivo:</strong> ' . (function_exists('pods') ? '✅' : '❌') . '</p>';

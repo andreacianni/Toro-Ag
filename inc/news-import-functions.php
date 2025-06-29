@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
  * Legge il file Excel e restituisce i dati strutturati
  */
 function toro_read_excel_data() {
-    $excel_file = get_template_directory() . '/import/DB_News_da importare.xlsx';
+    $excel_file = get_stylesheet_directory() . '/import/DB_News_da importare.xlsx';
     
     if (!file_exists($excel_file)) {
         return new WP_Error('file_not_found', 'File Excel non trovato: ' . $excel_file);
@@ -21,7 +21,7 @@ function toro_read_excel_data() {
     
     // Usa SimpleXLSX per leggere Excel (incluso in molti hosting)
     if (!class_exists('SimpleXLSX')) {
-        require_once get_template_directory() . '/import/SimpleXLSX.php';
+        require_once get_stylesheet_directory() . '/import/SimpleXLSX.php';
     }
     
     try {

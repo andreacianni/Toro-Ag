@@ -325,7 +325,7 @@ function toro_handle_import_ajax() {
 add_action('init', 'toro_ensure_simplexlsx');
 
 function toro_ensure_simplexlsx() {
-    $xlsx_file = get_template_directory() . '/import/SimpleXLSX.php';
+    $xlsx_file = get_stylesheet_directory() . '/import/SimpleXLSX.php';
     
     // Se non esiste, scaricalo
     if (!file_exists($xlsx_file) && is_admin()) {
@@ -368,12 +368,12 @@ function toro_check_excel_file_notice() {
         return;
     }
     
-    $excel_file = get_template_directory() . '/import/DB_News_da importare.xlsx';
+    $excel_file = get_stylesheet_directory() . '/import/DB_News_da importare.xlsx';
     
     if (!file_exists($excel_file)) {
         echo '<div class="notice notice-warning is-dismissible">';
         echo '<p><strong>⚠️ File Excel mancante!</strong> ';
-        echo 'Carica il file <code>DB_News_da importare.xlsx</code> in <code>' . get_template_directory() . '/import/</code></p>';
+        echo 'Carica il file <code>DB_News_da importare.xlsx</code> in <code>' . get_stylesheet_directory() . '/import/</code></p>';
         echo '</div>';
     }
 }
