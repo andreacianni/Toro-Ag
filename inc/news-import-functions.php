@@ -628,7 +628,7 @@ function toro_run_full_import($options = []) {
 }
 
 /**
- * Importa singola news - VERSIONE CON UPDATE E DATE FORZATE
+ * Importa singola news - VERSIONE CON DATE FORZATE POST-IMPORT
  */
 function toro_import_single_news($news_data, $all_data, $lang = 'it', $force_update = false) {
     $news_id = $news_data['news_id'] ?? 0;
@@ -650,24 +650,17 @@ function toro_import_single_news($news_data, $all_data, $lang = 'it', $force_upd
     $is_update = !empty($existing);
     $post_id = $is_update ? $existing[0]->ID : 0;
     
-    // 🔧 NUOVO: Gestione modalità update
     if ($is_update && !$force_update) {
         return 'skipped';
     }
     
     // Parse della data
     $parsed_date = toro_parse_excel_date($news_data['news_data'] ?? '');
-    $parsed_date_gmt = get_gmt_from_date($parsed_date);
     
-    // Pulisci contenuto con la nuova funzione
+    // Pulisci contenuto
     $content = toro_clean_news_content($news_data['news_contenuto'] ?? '');
     
-    // 🔧 DISABILITA HOOK TEMPORANEAMENTE
-    remove_all_actions('save_post');
-    remove_all_actions('wp_insert_post');
-    remove_all_actions('post_updated');
-    
-    // Dati del post - SENZA date (le forzeremo dopo)
+    // Dati del post NORMALI
     $post_data = [
         'post_title' => sanitize_text_field($news_data['news_titolo'] ?? ''),
         'post_content' => $content,
@@ -679,7 +672,6 @@ function toro_import_single_news($news_data, $all_data, $lang = 'it', $force_upd
     ];
     
     if ($is_update) {
-        // 🔧 AGGIORNA post esistente
         $post_data['ID'] = $post_id;
         $result = wp_update_post($post_data);
         
@@ -689,7 +681,6 @@ function toro_import_single_news($news_data, $all_data, $lang = 'it', $force_upd
         
         $action = 'updated';
     } else {
-        // 🔧 CREA nuovo post
         $post_id = wp_insert_post($post_data);
         
         if (is_wp_error($post_id)) {
@@ -699,25 +690,8 @@ function toro_import_single_news($news_data, $all_data, $lang = 'it', $force_upd
         $action = 'created';
     }
     
-    // 🔧 FORZA le date originali BRUTALMENTE
-    global $wpdb;
-    $update_result = $wpdb->update(
-        $wpdb->posts,
-        [
-            'post_date' => $parsed_date,
-            'post_date_gmt' => $parsed_date_gmt,
-            'post_modified' => $parsed_date,
-            'post_modified_gmt' => $parsed_date_gmt
-        ],
-        ['ID' => $post_id],
-        ['%s', '%s', '%s', '%s'],
-        ['%d']
-    );
-    
-    // Pulisci TUTTE le cache
-    clean_post_cache($post_id);
-    wp_cache_delete($post_id, 'posts');
-    wp_cache_delete($post_id, 'post_meta');
+    // 🔧 DOPO che il post esiste, forza le date
+    toro_force_post_dates($post_id, $parsed_date);
     
     // Imposta lingua WPML (solo per nuovi post)
     if (!$is_update && function_exists('icl_object_id')) {
@@ -728,7 +702,7 @@ function toro_import_single_news($news_data, $all_data, $lang = 'it', $force_upd
         ]);
     }
     
-    // Gestisci categoria (sempre, anche per update)
+    // Gestisci categoria
     $category_name = $news_data['newscat_nome'] ?? '';
     if (!empty($category_name)) {
         $category_id = toro_create_news_category($category_name, $lang);
@@ -739,11 +713,40 @@ function toro_import_single_news($news_data, $all_data, $lang = 'it', $force_upd
     
     return [
         'post_id' => $post_id,
-        'action' => $action,
-        'date_forced' => $parsed_date
+        'action' => $action
     ];
 }
-
+/**
+ * Forza le date di un post esistente
+ */
+function toro_force_post_dates($post_id, $date_string) {
+    global $wpdb;
+    
+    $parsed_date_gmt = get_gmt_from_date($date_string);
+    
+    // Query diretta brutale
+    $result = $wpdb->query(
+        $wpdb->prepare(
+            "UPDATE {$wpdb->posts} 
+             SET post_date = %s, 
+                 post_date_gmt = %s, 
+                 post_modified = %s, 
+                 post_modified_gmt = %s 
+             WHERE ID = %d",
+            $date_string,
+            $parsed_date_gmt,
+            $date_string,
+            $parsed_date_gmt,
+            $post_id
+        )
+    );
+    
+    // Forza refresh del post object
+    $wpdb->query("FLUSH QUERY CACHE");
+    clean_post_cache($post_id);
+    
+    return $result;
+}
 /**
  * Collega tutte le traduzioni WPML
  */
