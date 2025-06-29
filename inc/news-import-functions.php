@@ -477,12 +477,13 @@ function toro_dry_run_import() {
 }
 
 /**
- * Importazione con opzioni - VERSIONE MIGLIORATA
+ * Importazione con opzioni - VERSIONE CON TRADUZIONI
  */
 function toro_run_full_import($options = []) {
     $defaults = [
         'force_update' => false,
         'import_media' => false,
+        'connect_translations' => false,
         'skip_existing' => true
     ];
     
@@ -499,6 +500,8 @@ function toro_run_full_import($options = []) {
         'updated' => [],
         'skipped' => [],
         'errors' => [],
+        'translations_connected' => [],
+        'translations_errors' => [],
         'total_processed' => 0
     ];
     
@@ -548,6 +551,21 @@ function toro_run_full_import($options = []) {
             
             $processed++;
             $results['total_processed'] = $processed;
+        }
+    }
+    
+    // 🔧 NUOVO: Collega traduzioni WPML se richiesto
+    if ($options['connect_translations'] && isset($data['Tabella_ID_traduzioni'])) {
+        $translation_results = toro_connect_wpml_translations($data['Tabella_ID_traduzioni']);
+        
+        if (is_wp_error($translation_results)) {
+            $results['translations_errors'][] = $translation_results->get_error_message();
+        } else {
+            $results['translations_connected'] = $translation_results['connected'];
+            $results['translations_errors'] = array_merge(
+                $results['translations_errors'], 
+                $translation_results['errors']
+            );
         }
     }
     
@@ -643,4 +661,164 @@ function toro_import_single_news($news_data, $all_data, $lang = 'it', $force_upd
         'post_id' => $post_id,
         'action' => $action
     ];
+}
+
+/**
+ * Collega tutte le traduzioni WPML
+ */
+function toro_connect_wpml_translations($translation_data) {
+    if (!function_exists('icl_object_id')) {
+        return new WP_Error('wpml_not_active', 'WPML non è attivo');
+    }
+    
+    $results = [
+        'connected' => [],
+        'errors' => [],
+        'skipped' => []
+    ];
+    
+    foreach ($translation_data as $translation) {
+        $ita_id = $translation['Ita-id'] ?? 0;
+        $eng_id = $translation['Eng-id'] ?? 0;
+        
+        if (empty($ita_id) || empty($eng_id)) {
+            $results['errors'][] = "Mapping vuoto: ITA={$ita_id}, ENG={$eng_id}";
+            continue;
+        }
+        
+        // Trova i post WordPress corrispondenti
+        $ita_post = toro_find_post_by_news_id($ita_id);
+        $eng_post = toro_find_post_by_news_id($eng_id);
+        
+        if (!$ita_post) {
+            $results['errors'][] = "Post italiano non trovato per news_id: {$ita_id}";
+            continue;
+        }
+        
+        if (!$eng_post) {
+            $results['errors'][] = "Post inglese non trovato per news_id: {$eng_id}";
+            continue;
+        }
+        
+        // Verifica se già collegati
+        if (toro_are_posts_already_connected($ita_post->ID, $eng_post->ID)) {
+            $results['skipped'][] = "Già collegati: Post ITA {$ita_post->ID} ↔ Post ENG {$eng_post->ID}";
+            continue;
+        }
+        
+        // Collega le traduzioni
+        $connect_result = toro_connect_post_translations($ita_post->ID, $eng_post->ID);
+        
+        if (is_wp_error($connect_result)) {
+            $results['errors'][] = "Errore collegamento ITA {$ita_post->ID} ↔ ENG {$eng_post->ID}: " . $connect_result->get_error_message();
+        } else {
+            $results['connected'][] = "Collegati: Post ITA {$ita_post->ID} ({$ita_post->post_title}) ↔ Post ENG {$eng_post->ID} ({$eng_post->post_title})";
+        }
+    }
+    
+    return $results;
+}
+
+/**
+ * Trova un post WordPress dal news_id originale
+ */
+function toro_find_post_by_news_id($news_id) {
+    $posts = get_posts([
+        'meta_query' => [
+            [
+                'key' => 'news_id_originale',
+                'value' => $news_id,
+                'compare' => '='
+            ]
+        ],
+        'post_type' => 'post',
+        'post_status' => 'any',
+        'posts_per_page' => 1
+    ]);
+    
+    return !empty($posts) ? $posts[0] : null;
+}
+
+/**
+ * Verifica se due post sono già collegati come traduzioni
+ */
+function toro_are_posts_already_connected($post_id_1, $post_id_2) {
+    if (!function_exists('icl_object_id')) {
+        return false;
+    }
+    
+    // Ottieni il trid (translation group ID) del primo post
+    $trid_1 = apply_filters('wpml_element_trid', null, $post_id_1, 'post_post');
+    $trid_2 = apply_filters('wpml_element_trid', null, $post_id_2, 'post_post');
+    
+    // Se hanno lo stesso trid (e non è null), sono già collegati
+    return !empty($trid_1) && !empty($trid_2) && $trid_1 === $trid_2;
+}
+
+/**
+ * Collega due post come traduzioni WPML
+ */
+function toro_connect_post_translations($ita_post_id, $eng_post_id) {
+    if (!function_exists('icl_object_id')) {
+        return new WP_Error('wpml_not_active', 'WPML non è attivo');
+    }
+    
+    try {
+        // 1. Assicurati che i post abbiano le lingue corrette
+        do_action('wpml_set_element_language_details', [
+            'element_id' => $ita_post_id,
+            'element_type' => 'post_post',
+            'language_code' => 'it'
+        ]);
+        
+        do_action('wpml_set_element_language_details', [
+            'element_id' => $eng_post_id,
+            'element_type' => 'post_post',
+            'language_code' => 'en',
+            'source_language_code' => 'it'
+        ]);
+        
+        // 2. Ottieni o crea il TRID (Translation ID)
+        $trid = apply_filters('wpml_element_trid', null, $ita_post_id, 'post_post');
+        
+        if (empty($trid)) {
+            // Se il post italiano non ha ancora un TRID, WPML ne creerà uno
+            // Riapplica la lingua per forzare la creazione del TRID
+            do_action('wpml_set_element_language_details', [
+                'element_id' => $ita_post_id,
+                'element_type' => 'post_post',
+                'language_code' => 'it'
+            ]);
+            
+            $trid = apply_filters('wpml_element_trid', null, $ita_post_id, 'post_post');
+        }
+        
+        // 3. Collega il post inglese al TRID del post italiano
+        if (!empty($trid)) {
+            do_action('wpml_set_element_language_details', [
+                'element_id' => $eng_post_id,
+                'element_type' => 'post_post',
+                'language_code' => 'en',
+                'source_language_code' => 'it',
+                'trid' => $trid
+            ]);
+        }
+        
+        // 4. Verifica che il collegamento sia avvenuto
+        $ita_trid = apply_filters('wpml_element_trid', null, $ita_post_id, 'post_post');
+        $eng_trid = apply_filters('wpml_element_trid', null, $eng_post_id, 'post_post');
+        
+        if ($ita_trid !== $eng_trid || empty($ita_trid)) {
+            return new WP_Error('connection_failed', 'WPML non ha collegato i post correttamente');
+        }
+        
+        return [
+            'ita_post_id' => $ita_post_id,
+            'eng_post_id' => $eng_post_id,
+            'trid' => $ita_trid
+        ];
+        
+    } catch (Exception $e) {
+        return new WP_Error('exception', 'Errore durante collegamento: ' . $e->getMessage());
+    }
 }

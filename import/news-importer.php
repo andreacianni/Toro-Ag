@@ -463,6 +463,16 @@ if (isset($_GET['dry_run'])) {
                 data.updated.forEach(item => addToLog(item, 'success'));
             }
             
+            if (data.translations_connected && data.translations_connected.length > 0) {
+                addToLog(`🔗 Traduzioni collegate ${data.translations_connected.length}:`, 'info');
+                data.translations_connected.forEach(item => addToLog(item, 'success'));
+            }
+            
+            if (data.translations_errors && data.translations_errors.length > 0) {
+                addToLog(`⚠️ Errori traduzioni (${data.translations_errors.length}):`, 'info');
+                data.translations_errors.forEach(item => addToLog(item, 'warning'));
+            }
+            
             if (data.skipped && data.skipped.length > 0) {
                 addToLog(`⚠️ Saltate ${data.skipped.length} news:`, 'info');
                 data.skipped.forEach(item => addToLog(item, 'warning'));
