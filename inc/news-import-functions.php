@@ -520,8 +520,8 @@ function toro_run_full_import($options = []) {
     
     // Importa news italiane
     if (isset($data['NewsToImport (ITA)'])) {
-        // foreach ($data['NewsToImport (ITA)'] as $news) {
-        foreach (array_slice($data['NewsToImport (ITA)'], 0, 10) as $news) { // Limita a 10 per test notizia
+        foreach ($data['NewsToImport (ITA)'] as $news) {
+        // foreach (array_slice($data['NewsToImport (ITA)'], 0, 10) as $news) { // Limita a 10 per test notizia
             $result = toro_import_single_news_with_media(
                 $news, 
                 $data, 
