@@ -58,6 +58,7 @@ if (isset($_GET['dry_run'])) {
         </div>
         <div class="inside">
             <?php
+            // ✅ CORRETTO: usa get_stylesheet_directory() per child theme
             $excel_file = get_stylesheet_directory() . '/import/DB_News_da importare.xlsx';
             if (file_exists($excel_file)) {
                 $file_size = size_format(filesize($excel_file));
@@ -216,19 +217,69 @@ if (isset($_GET['dry_run'])) {
                 <?php endif; ?>
             </div>
             
-            <!-- Pulsante importazione vera -->
+            <!-- Opzioni di importazione -->
             <?php if (count($dry_run_report['errors']) === 0): ?>
             <div style="margin-top: 30px; padding: 20px; background: #f0f6fc; border-left: 4px solid #2271b1;">
-                <h4 style="margin-top: 0;">🚀 Pronto per l'Importazione Reale</h4>
-                <p>Il dry run non ha rilevato errori. Puoi procedere con l'importazione vera.</p>
-                <p><strong>⚠️ ATTENZIONE:</strong> Questa operazione creerà contenuti reali nel database. Assicurati di aver fatto il backup!</p>
+                <h4 style="margin-top: 0;">🚀 Opzioni di Importazione</h4>
+                <p>Il dry run non ha rilevato errori. Configura le opzioni e procedi con l'importazione.</p>
+                <p><strong>⚠️ ATTENZIONE:</strong> Questa operazione modificherà contenuti nel database. Assicurati di aver fatto il backup!</p>
                 
-                <button id="start-real-import" class="button button-primary button-large" style="margin-right: 10px;">
-                    🚀 Avvia Importazione Reale
-                </button>
-                <button id="download-backup" class="button button-secondary" onclick="alert('Funzione backup non ancora implementata. Usa tools esterni per il backup del DB.')">
-                    💾 Backup Database
-                </button>
+                <!-- Opzioni -->
+                <div style="margin: 20px 0; padding: 15px; background: #fff; border: 1px solid #c3c4c7; border-radius: 4px;">
+                    <h5 style="margin-top: 0;">⚙️ Opzioni di Importazione</h5>
+                    
+                    <p style="margin: 15px 0;">
+                        <label>
+                            <input type="checkbox" id="force-update" checked> 
+                            <strong>Aggiorna news esistenti</strong>
+                        </label>
+                        <br><small style="color: #646970;">Applica i fix di pulizia contenuti (BBCode → HTML) alle news già importate</small>
+                    </p>
+                    
+                    <p style="margin: 15px 0;">
+                        <label>
+                            <input type="checkbox" id="import-media"> 
+                            <strong>Importa media (immagini e PDF)</strong>
+                        </label>
+                        <br><small style="color: #646970;">Scarica e importa immagini e documenti dalle URL originali (più lento)</small>
+                    </p>
+                    
+                    <p style="margin: 15px 0;">
+                        <label>
+                            <input type="checkbox" id="connect-translations"> 
+                            <strong>Collega traduzioni WPML</strong>
+                        </label>
+                        <br><small style="color: #646970;">Collega automaticamente le news ITA ↔ ENG usando la tabella traduzioni</small>
+                    </p>
+                    
+                    <p style="margin: 15px 0;">
+                        <label>
+                            <input type="checkbox" id="dry-run-mode"> 
+                            <strong>Solo simulazione (Dry Run)</strong>
+                        </label>
+                        <br><small style="color: #646970;">Simula l'importazione senza modificare il database (per test)</small>
+                    </p>
+                </div>
+                
+                <!-- Statistiche previste -->
+                <div style="margin: 20px 0; padding: 15px; background: #f6f7f7; border-radius: 4px;">
+                    <h5 style="margin-top: 0;">📊 Previsione Operazioni</h5>
+                    <div id="import-preview">
+                        <p>✅ <span id="preview-create"><?php echo count($dry_run_report['would_create']); ?></span> news verrebbero create</p>
+                        <p>🔄 <span id="preview-update">0</span> news verrebbero aggiornate</p>
+                        <p>⏭️ <span id="preview-skip"><?php echo count($dry_run_report['would_skip']); ?></span> news verrebbero saltate</p>
+                    </div>
+                </div>
+                
+                <!-- Pulsanti -->
+                <div style="margin-top: 20px;">
+                    <button id="start-real-import" class="button button-primary button-large" style="margin-right: 10px;">
+                        🚀 Avvia Importazione
+                    </button>
+                    <button id="download-backup" class="button button-secondary" onclick="alert('Funzione backup non ancora implementata. Usa tools esterni per il backup del DB.')">
+                        💾 Backup Database
+                    </button>
+                </div>
             </div>
             <?php else: ?>
             <div style="margin-top: 30px; padding: 20px; background: #fcf0f1; border-left: 4px solid #d63638;">
@@ -287,13 +338,61 @@ if (isset($_GET['dry_run'])) {
         const currentItem = document.getElementById('current-item');
         const importLog = document.getElementById('import-log');
         
+        // Elementi opzioni
+        const forceUpdateCheckbox = document.getElementById('force-update');
+        const importMediaCheckbox = document.getElementById('import-media');
+        const connectTranslationsCheckbox = document.getElementById('connect-translations');
+        const dryRunCheckbox = document.getElementById('dry-run-mode');
+        
+        // Elementi preview
+        const previewCreate = document.getElementById('preview-create');
+        const previewUpdate = document.getElementById('preview-update');
+        const previewSkip = document.getElementById('preview-skip');
+        
         let importInProgress = false;
+        
+        // Aggiorna preview quando cambiano le opzioni
+        if (forceUpdateCheckbox) {
+            forceUpdateCheckbox.addEventListener('change', updatePreview);
+            dryRunCheckbox.addEventListener('change', updatePreview);
+        }
+        
+        function updatePreview() {
+            const forceUpdate = forceUpdateCheckbox.checked;
+            const dryRun = dryRunCheckbox.checked;
+            
+            if (forceUpdate && !dryRun) {
+                // Se force update, le esistenti diventano "aggiornate"
+                previewCreate.textContent = '<?php echo count($dry_run_report["would_create"]); ?>';
+                previewUpdate.textContent = '<?php echo count($dry_run_report["would_skip"]); ?>';
+                previewSkip.textContent = '0';
+            } else {
+                // Modalità normale
+                previewCreate.textContent = '<?php echo count($dry_run_report["would_create"]); ?>';
+                previewUpdate.textContent = '0';
+                previewSkip.textContent = '<?php echo count($dry_run_report["would_skip"]); ?>';
+            }
+            
+            // Aggiorna testo pulsante
+            if (dryRun) {
+                startButton.textContent = '🧪 Esegui Simulazione';
+                startButton.className = 'button button-secondary button-large';
+            } else {
+                startButton.textContent = '🚀 Avvia Importazione';
+                startButton.className = 'button button-primary button-large';
+            }
+        }
         
         if (startButton) {
             startButton.addEventListener('click', function() {
                 if (importInProgress) return;
                 
-                if (!confirm('Sei sicuro di voler avviare l\'importazione reale? Questa operazione creerà contenuti nel database.')) {
+                const isDryRun = dryRunCheckbox.checked;
+                const confirmMessage = isDryRun 
+                    ? 'Eseguire la simulazione di importazione?'
+                    : 'Sei sicuro di voler avviare l\'importazione reale? Questa operazione modificherà il database.';
+                
+                if (!confirm(confirmMessage)) {
                     return;
                 }
                 
@@ -304,7 +403,9 @@ if (isset($_GET['dry_run'])) {
         function startImport() {
             importInProgress = true;
             startButton.disabled = true;
-            startButton.textContent = '⏳ Importazione in corso...';
+            
+            const isDryRun = dryRunCheckbox.checked;
+            startButton.textContent = isDryRun ? '⏳ Simulazione in corso...' : '⏳ Importazione in corso...';
             progressContainer.style.display = 'block';
             
             // Scorri fino alla sezione progress
@@ -318,6 +419,12 @@ if (isset($_GET['dry_run'])) {
             const formData = new FormData();
             formData.append('action', 'toro_import_news');
             formData.append('security', '<?php echo wp_create_nonce("toro_import_news"); ?>');
+            
+            // Aggiungi opzioni
+            formData.append('force_update', forceUpdateCheckbox.checked ? '1' : '0');
+            formData.append('import_media', importMediaCheckbox.checked ? '1' : '0');
+            formData.append('connect_translations', connectTranslationsCheckbox.checked ? '1' : '0');
+            formData.append('dry_run_mode', dryRunCheckbox.checked ? '1' : '0');
             
             fetch('<?php echo admin_url("admin-ajax.php"); ?>', {
                 method: 'POST',
@@ -338,19 +445,26 @@ if (isset($_GET['dry_run'])) {
         
         function handleImportSuccess(data) {
             progressFill.style.width = '100%';
-            progressText.textContent = 'Importazione completata!';
+            
+            const isDryRun = dryRunCheckbox.checked;
+            progressText.textContent = isDryRun ? 'Simulazione completata!' : 'Importazione completata!';
             currentItem.textContent = '';
             
             // Aggiungi risultati al log
-            addToLog('✅ Importazione completata!', 'success');
+            addToLog(isDryRun ? '✅ Simulazione completata!' : '✅ Importazione completata!', 'success');
             
             if (data.created && data.created.length > 0) {
                 addToLog(`📝 Create ${data.created.length} news:`, 'info');
                 data.created.forEach(item => addToLog(item, 'success'));
             }
             
+            if (data.updated && data.updated.length > 0) {
+                addToLog(`🔄 Aggiornate ${data.updated.length} news:`, 'info');
+                data.updated.forEach(item => addToLog(item, 'success'));
+            }
+            
             if (data.skipped && data.skipped.length > 0) {
-                addToLog(`⚠️ Saltate ${data.skipped.length} news (già esistenti):`, 'info');
+                addToLog(`⚠️ Saltate ${data.skipped.length} news:`, 'info');
                 data.skipped.forEach(item => addToLog(item, 'warning'));
             }
             
@@ -362,7 +476,7 @@ if (isset($_GET['dry_run'])) {
             // Reset
             importInProgress = false;
             startButton.disabled = false;
-            startButton.textContent = '✅ Importazione Completata';
+            startButton.textContent = isDryRun ? '✅ Simulazione Completata' : '✅ Importazione Completata';
             startButton.style.backgroundColor = '#00a32a';
         }
         
@@ -371,10 +485,10 @@ if (isset($_GET['dry_run'])) {
             
             importInProgress = false;
             startButton.disabled = false;
-            startButton.textContent = '❌ Importazione Fallita';
+            startButton.textContent = '❌ Operazione Fallita';
             startButton.style.backgroundColor = '#d63638';
             
-            progressText.textContent = 'Importazione fallita!';
+            progressText.textContent = 'Operazione fallita!';
         }
         
         function addToLog(message, type = 'info') {
@@ -386,6 +500,9 @@ if (isset($_GET['dry_run'])) {
             // Scroll to bottom
             importLog.scrollTop = importLog.scrollHeight;
         }
+        
+        // Inizializza preview
+        updatePreview();
     });
     </script>
 </div>

@@ -193,12 +193,14 @@ function aggiungi_sottomenu_scheda() {
         'post-new.php?post_type=scheda_prodotto'
     );
 }
-/* NEW IMPORT NEWS */
 
 /**
- * Aggiungi questo codice al tuo functions.php esistente
- * Hook per aggiungere la pagina di importazione news nel menu admin
+ * Fix per Child Theme - Sostituisci nel functions.php
+ * Cambia get_template_directory() con get_stylesheet_directory()
  */
+
+// ✅ CORRETTO (punta al child theme)
+require_once get_stylesheet_directory() . '/inc/news-import-functions.php';
 
 // Hook per aggiungere menu admin
 add_action('admin_menu', 'toro_add_news_import_menu');
@@ -214,12 +216,9 @@ function toro_add_news_import_menu() {
 }
 
 function toro_news_import_page() {
-    // Include la pagina di importazione
+    // ✅ CORRETTO: usa get_stylesheet_directory() per child theme
     include get_stylesheet_directory() . '/import/news-importer.php';
 }
-
-// Includi le funzioni di importazione
-require_once get_stylesheet_directory() . '/inc/news-import-functions.php';
 
 // Hook per scripts e styles della pagina admin
 add_action('admin_enqueue_scripts', 'toro_news_import_scripts');
@@ -290,11 +289,6 @@ function toro_news_import_scripts($hook) {
     ');
 }
 
-/**
- * Aggiungi questo codice al functions.php dopo gli hook precedenti
- * Handler AJAX per importazione progressiva
- */
-
 // Handler AJAX per importazione news
 add_action('wp_ajax_toro_import_news', 'toro_handle_import_ajax');
 
@@ -311,13 +305,40 @@ function toro_handle_import_ajax() {
         return;
     }
     
-    // Esegui importazione
-    $results = toro_run_full_import();
+    // Leggi opzioni dal POST
+    $options = [
+        'force_update' => !empty($_POST['force_update']),
+        'import_media' => !empty($_POST['import_media']),
+        'connect_translations' => !empty($_POST['connect_translations']),
+        'dry_run_mode' => !empty($_POST['dry_run_mode'])
+    ];
     
-    if (is_wp_error($results)) {
-        wp_send_json_error($results->get_error_message());
+    // Se è dry run, usa la funzione di simulazione
+    if ($options['dry_run_mode']) {
+        $results = toro_dry_run_import();
+        
+        if (is_wp_error($results)) {
+            wp_send_json_error($results->get_error_message());
+        } else {
+            // Formatta risultati dry run per essere compatibili con l'interfaccia
+            $formatted_results = [
+                'created' => $results['would_create'],
+                'updated' => [], // Dry run non distingue tra create/update
+                'skipped' => $results['would_skip'],
+                'errors' => $results['errors'],
+                'total_processed' => count($results['would_create']) + count($results['would_skip'])
+            ];
+            wp_send_json_success($formatted_results);
+        }
     } else {
-        wp_send_json_success($results);
+        // Esegui importazione reale
+        $results = toro_run_full_import($options);
+        
+        if (is_wp_error($results)) {
+            wp_send_json_error($results->get_error_message());
+        } else {
+            wp_send_json_success($results);
+        }
     }
 }
 
@@ -325,6 +346,7 @@ function toro_handle_import_ajax() {
 add_action('init', 'toro_ensure_simplexlsx');
 
 function toro_ensure_simplexlsx() {
+    // ✅ CORRETTO: usa get_stylesheet_directory() per child theme
     $xlsx_file = get_stylesheet_directory() . '/import/SimpleXLSX.php';
     
     // Se non esiste, scaricalo
@@ -368,6 +390,7 @@ function toro_check_excel_file_notice() {
         return;
     }
     
+    // ✅ CORRETTO: usa get_stylesheet_directory() per child theme
     $excel_file = get_stylesheet_directory() . '/import/DB_News_da importare.xlsx';
     
     if (!file_exists($excel_file)) {
