@@ -293,8 +293,7 @@ function toro_news_import_scripts($hook) {
 add_action('wp_ajax_toro_import_news', 'toro_handle_import_ajax');
 
 function toro_handle_import_ajax() {
-
-        // 🔧 FIX: Previeni output HTML indesiderato
+    // 🔧 FIX: Previeni output HTML indesiderato
     ob_start(); // Cattura tutto l'output
     
     // 🔧 FIX: Disabilita notice/warning che rompono JSON
@@ -307,55 +306,55 @@ function toro_handle_import_ajax() {
             wp_send_json_error('Nonce non valido');
             return;
         }
-
-    // Verifica security nonce
-    if (!wp_verify_nonce($_POST['security'], 'toro_import_news')) {
-        wp_send_json_error('Nonce non valido');
-        return;
-    }
-    
-    // Verifica permessi
-    if (!current_user_can('manage_options')) {
-        wp_send_json_error('Permessi insufficienti');
-        return;
-    }
-    
-    // Leggi opzioni dal POST
-    $options = [
-        'force_update' => !empty($_POST['force_update']),
-        'import_media' => !empty($_POST['import_media']),
-        'connect_translations' => !empty($_POST['connect_translations']),
-        'dry_run_mode' => !empty($_POST['dry_run_mode'])
-    ];
-    
-    // Se è dry run, usa la funzione di simulazione
-    if ($options['dry_run_mode']) {
-        $results = toro_dry_run_import();
         
-        if (is_wp_error($results)) {
-            wp_send_json_error($results->get_error_message());
-        } else {
-            // Formatta risultati dry run per essere compatibili con l'interfaccia
-            $formatted_results = [
-                'created' => $results['would_create'],
-                'updated' => [], // Dry run non distingue tra create/update
-                'skipped' => $results['would_skip'],
-                'errors' => $results['errors'],
-                'total_processed' => count($results['would_create']) + count($results['would_skip'])
-            ];
-            wp_send_json_success($formatted_results);
+        // Verifica permessi
+        if (!current_user_can('manage_options')) {
+            ob_clean();
+            wp_send_json_error('Permessi insufficienti');
+            return;
         }
-    } else {
-        // Esegui importazione reale
-        $results = toro_run_full_import($options);
         
-        if (is_wp_error($results)) {
-            wp_send_json_error($results->get_error_message());
+        // Leggi opzioni dal POST
+        $options = [
+            'force_update' => !empty($_POST['force_update']),
+            'import_media' => !empty($_POST['import_media']),
+            'connect_translations' => !empty($_POST['connect_translations']),
+            'dry_run_mode' => !empty($_POST['dry_run_mode'])
+        ];
+        
+        // Se è dry run, usa la funzione di simulazione
+        if ($options['dry_run_mode']) {
+            $results = toro_dry_run_import();
+            
+            if (is_wp_error($results)) {
+                ob_clean();
+                wp_send_json_error($results->get_error_message());
+            } else {
+                // Formatta risultati dry run per essere compatibili con l'interfaccia
+                $formatted_results = [
+                    'created' => $results['would_create'],
+                    'updated' => [], // Dry run non distingue tra create/update
+                    'skipped' => $results['would_skip'],
+                    'errors' => $results['errors'],
+                    'total_processed' => count($results['would_create']) + count($results['would_skip'])
+                ];
+                ob_clean();
+                wp_send_json_success($formatted_results);
+            }
         } else {
-            wp_send_json_success($results);
+            // Esegui importazione reale
+            $results = toro_run_full_import($options);
+            
+            if (is_wp_error($results)) {
+                ob_clean();
+                wp_send_json_error($results->get_error_message());
+            } else {
+                ob_clean();
+                wp_send_json_success($results);
+            }
         }
-    }
-        } catch (Exception $e) {
+        
+    } catch (Exception $e) {
         ob_clean();
         wp_send_json_error('Eccezione: ' . $e->getMessage());
     } catch (Error $e) {
