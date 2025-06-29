@@ -215,11 +215,11 @@ function toro_add_news_import_menu() {
 
 function toro_news_import_page() {
     // Include la pagina di importazione
-    include get_template_directory() . '/import/news-importer.php';
+    include get_stylesheet_directory() . '/import/news-importer.php';
 }
 
 // Includi le funzioni di importazione
-require_once get_template_directory() . '/inc/news-import-functions.php';
+require_once get_stylesheet_directory() . '/inc/news-import-functions.php';
 
 // Hook per scripts e styles della pagina admin
 add_action('admin_enqueue_scripts', 'toro_news_import_scripts');
