@@ -163,15 +163,15 @@ if (isset($_GET['dry_run'])) {
         <div class="inside">
             <div class="import-stats">
                 <div class="stat-box">
-                    <div class="stat-number" style="color: #00a32a;"><?php echo count($dry_run_report['would_create']); ?></div>
+                    <div class="stat-number" style="color: #00a32a;"><?php echo count($dry_run_report['would_create'] ?? []); ?></div>
                     <div class="stat-label">Verrebbero Create</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-number" style="color: #dba617;"><?php echo count($dry_run_report['would_skip']); ?></div>
+                    <div class="stat-number" style="color: #dba617;"><?php echo count($dry_run_report['would_skip'] ?? []); ?></div>
                     <div class="stat-label">Verrebbero Saltate</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-number" style="color: #d63638;"><?php echo count($dry_run_report['errors']); ?></div>
+                    <div class="stat-number" style="color: #d63638;"><?php echo count($dry_run_report['errors'] ?? []); ?></div>
                     <div class="stat-label">Errori</div>
                 </div>
             </div>
@@ -183,7 +183,7 @@ if (isset($_GET['dry_run'])) {
                 <!-- News che verrebbero create -->
                 <?php if (!empty($dry_run_report['would_create'])): ?>
                 <details style="margin: 10px 0;">
-                    <summary><strong style="color: #00a32a;">✅ News che verrebbero create (<?php echo count($dry_run_report['would_create']); ?>)</strong></summary>
+                    <summary><strong style="color: #00a32a;">✅ News che verrebbero create (<?php echo count($dry_run_report['would_create'] ?? []); ?>)</strong></summary>
                     <div class="import-log" style="max-height: 200px;">
                         <?php foreach ($dry_run_report['would_create'] as $item): ?>
                         <div class="log-success"><?php echo esc_html($item); ?></div>
@@ -195,7 +195,7 @@ if (isset($_GET['dry_run'])) {
                 <!-- News che verrebbero saltate -->
                 <?php if (!empty($dry_run_report['would_skip'])): ?>
                 <details style="margin: 10px 0;">
-                    <summary><strong style="color: #dba617;">⚠️ News che verrebbero saltate (<?php echo count($dry_run_report['would_skip']); ?>)</strong></summary>
+                    <summary><strong style="color: #dba617;">⚠️ News che verrebbero saltate (<?php echo count($dry_run_report['would_skip'] ?? []); ?>)</strong></summary>
                     <div class="import-log" style="max-height: 200px;">
                         <?php foreach ($dry_run_report['would_skip'] as $item): ?>
                         <div class="log-warning"><?php echo esc_html($item); ?></div>
@@ -207,7 +207,7 @@ if (isset($_GET['dry_run'])) {
                 <!-- Errori -->
                 <?php if (!empty($dry_run_report['errors'])): ?>
                 <details style="margin: 10px 0;">
-                    <summary><strong style="color: #d63638;">❌ Errori rilevati (<?php echo count($dry_run_report['errors']); ?>)</strong></summary>
+                    <summary><strong style="color: #d63638;">❌ Errori rilevati (<?php echo count($dry_run_report['errors'] ?? []); ?>)</strong></summary>
                     <div class="import-log" style="max-height: 200px;">
                         <?php foreach ($dry_run_report['errors'] as $error): ?>
                         <div class="log-error"><?php echo esc_html($error); ?></div>
@@ -218,7 +218,7 @@ if (isset($_GET['dry_run'])) {
             </div>
             
             <!-- Opzioni di importazione -->
-            <?php if (count($dry_run_report['errors']) === 0): ?>
+            <?php if (count($dry_run_report['errors'] ?? []) === 0): ?>
             <div style="margin-top: 30px; padding: 20px; background: #f0f6fc; border-left: 4px solid #2271b1;">
                 <h4 style="margin-top: 0;">🚀 Opzioni di Importazione</h4>
                 <p>Il dry run non ha rilevato errori. Configura le opzioni e procedi con l'importazione.</p>
@@ -265,9 +265,9 @@ if (isset($_GET['dry_run'])) {
                 <div style="margin: 20px 0; padding: 15px; background: #f6f7f7; border-radius: 4px;">
                     <h5 style="margin-top: 0;">📊 Previsione Operazioni</h5>
                     <div id="import-preview">
-                        <p>✅ <span id="preview-create"><?php echo count($dry_run_report['would_create']); ?></span> news verrebbero create</p>
+                        <p>✅ <span id="preview-create"><?php echo count($dry_run_report['would_create'] ?? []); ?></span> news verrebbero create</p>
                         <p>🔄 <span id="preview-update">0</span> news verrebbero aggiornate</p>
-                        <p>⏭️ <span id="preview-skip"><?php echo count($dry_run_report['would_skip']); ?></span> news verrebbero saltate</p>
+                        <p>⏭️ <span id="preview-skip"><?php echo count($dry_run_report['would_skip'] ?? []); ?></span> news verrebbero saltate</p>
                     </div>
                 </div>
                 
@@ -363,14 +363,14 @@ if (isset($_GET['dry_run'])) {
             
             if (forceUpdate && !dryRun) {
                 // Se force update, le esistenti diventano "aggiornate"
-                previewCreate.textContent = '<?php echo count($dry_run_report["would_create"]); ?>';
-                previewUpdate.textContent = '<?php echo count($dry_run_report["would_skip"]); ?>';
+                previewCreate.textContent = '<?php echo count($dry_run_report["would_create"] ?? []); ?>';
+                previewUpdate.textContent = '<?php echo count($dry_run_report["would_skip"] ?? []); ?>';
                 previewSkip.textContent = '0';
             } else {
                 // Modalità normale
-                previewCreate.textContent = '<?php echo count($dry_run_report["would_create"]); ?>';
+                previewCreate.textContent = '<?php echo count($dry_run_report["would_create"] ?? []); ?>';
                 previewUpdate.textContent = '0';
-                previewSkip.textContent = '<?php echo count($dry_run_report["would_skip"]); ?>';
+                previewSkip.textContent = '<?php echo count($dry_run_report["would_skip"] ?? []); ?>';
             }
             
             // Aggiorna testo pulsante
