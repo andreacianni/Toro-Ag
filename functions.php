@@ -450,3 +450,13 @@ if (defined('WP_DEBUG') && WP_DEBUG) {
         wp_send_json_success("Eliminati {$deleted} post importati");
     }
 }
+
+// TEST DIRETTO AJAX
+add_action('wp_ajax_test_toro_debug', 'test_toro_debug');
+function test_toro_debug() {
+    // Output pulito
+    header('Content-Type: application/json');
+    ob_clean();
+    echo json_encode(['test' => 'success', 'time' => date('Y-m-d H:i:s')]);
+    exit;
+}
