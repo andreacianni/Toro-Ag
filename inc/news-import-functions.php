@@ -658,13 +658,17 @@ function toro_import_single_news($news_data, $all_data, $lang = 'it', $force_upd
     // Pulisci contenuto con la nuova funzione
     $content = toro_clean_news_content($news_data['news_contenuto'] ?? '');
     
+    // Parse della data
+    $parsed_date = toro_parse_excel_date($news_data['news_data'] ?? '');
+
     // Dati del post
     $post_data = [
         'post_title' => sanitize_text_field($news_data['news_titolo'] ?? ''),
         'post_content' => $content,
         'post_status' => 'publish',
         'post_type' => 'post',
-        'post_date' => toro_parse_excel_date($news_data['news_data'] ?? ''),
+        'post_date' => $parsed_date,
+        'post_date_gmt' => get_gmt_from_date($parsed_date),
         'meta_input' => [
             'news_id_originale' => $news_id
         ]
