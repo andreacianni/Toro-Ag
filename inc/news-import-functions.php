@@ -660,6 +660,7 @@ function toro_import_single_news($news_data, $all_data, $lang = 'it', $force_upd
     
     // Parse della data
     $parsed_date = toro_parse_excel_date($news_data['news_data'] ?? '');
+    $parsed_date_gmt = get_gmt_from_date($parsed_date);
 
     // Dati del post
     $post_data = [
@@ -668,7 +669,9 @@ function toro_import_single_news($news_data, $all_data, $lang = 'it', $force_upd
         'post_status' => 'publish',
         'post_type' => 'post',
         'post_date' => $parsed_date,
-        'post_date_gmt' => get_gmt_from_date($parsed_date),
+        'post_date_gmt' => $parsed_date_gmt,
+        'post_modified' => $parsed_date,
+        'post_modified_gmt' => $parsed_date_gmt,
         'meta_input' => [
             'news_id_originale' => $news_id
         ]
