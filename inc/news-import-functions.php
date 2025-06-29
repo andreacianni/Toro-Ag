@@ -697,6 +697,24 @@ function toro_import_single_news($news_data, $all_data, $lang = 'it', $force_upd
         
         $action = 'created';
     }
+
+    // 🔧 FORZA le date originali con query diretta
+    global $wpdb;
+    $wpdb->update(
+        $wpdb->posts,
+        [
+            'post_date' => $parsed_date,
+            'post_date_gmt' => $parsed_date_gmt,
+            'post_modified' => $parsed_date,
+            'post_modified_gmt' => $parsed_date_gmt
+        ],
+        ['ID' => $post_id],
+        ['%s', '%s', '%s', '%s'],
+        ['%d']
+    );
+
+    // Pulisci cache
+    clean_post_cache($post_id);
     
     // Imposta lingua WPML (solo per nuovi post)
     if (!$is_update && function_exists('icl_object_id')) {
