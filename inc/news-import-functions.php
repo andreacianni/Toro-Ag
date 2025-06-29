@@ -247,20 +247,21 @@ function toro_analyze_excel_data() {
 }
 
 /**
- * Pulisce il contenuto delle news - VERSIONE MIGLIORATA
+ * Pulisce il contenuto delle news - Alternativa più semplice e sicura: Pulisci tutto e ricostruisci
  */
-function toro_clean_news_content($content) {
+function toro_clean_news_content_safe($content) {
     if (empty($content)) return '';
     
-    $cleaned = $content;
+    // 1. Escape sequences
+    $content = str_replace(['\\r\\n', '\\n'], "\n", $content);
     
-    // 1. Fix escape sequences per newline
-    $cleaned = str_replace(['\\r\\n', '\\n'], "\n", $cleaned);
+    // 2. Strip tutto l'HTML esistente per evitare problemi
+    $content = strip_tags($content);
     
-    // 2. Fix multiple newlines consecutivi
-    $cleaned = preg_replace('/\n\s*\n\s*\n+/', "\n\n", $cleaned);
+    // 3. Decode HTML entities
+    $content = html_entity_decode($content, ENT_QUOTES, 'UTF-8');
     
-    // 3. 🔧 NUOVO: Converti BBCode in HTML
+    // 4. Converti BBCode pulito
     $bbcode_patterns = [
         '/\[URL=([^\]]+)\]([^\[]+)\[\/URL\]/i' => '<a href="$1" target="_blank">$2</a>',
         '/\[url=([^\]]+)\]([^\[]+)\[\/url\]/i' => '<a href="$1" target="_blank">$2</a>',
@@ -268,43 +269,25 @@ function toro_clean_news_content($content) {
         '/\[b\]([^\[]+)\[\/b\]/i' => '<strong>$1</strong>',
         '/\[I\]([^\[]+)\[\/I\]/i' => '<em>$1</em>',
         '/\[i\]([^\[]+)\[\/i\]/i' => '<em>$1</em>',
-        '/\[U\]([^\[]+)\[\/U\]/i' => '<u>$1</u>',
-        '/\[u\]([^\[]+)\[\/u\]/i' => '<u>$1</u>',
     ];
     
     foreach ($bbcode_patterns as $pattern => $replacement) {
-        $cleaned = preg_replace($pattern, $replacement, $cleaned);
+        $content = preg_replace($pattern, $replacement, $content);
     }
     
-    // 4. Converti URLs normali in link HTML
-    $cleaned = preg_replace(
-        '/(https?:\/\/[^\s<>"]+)/i',
-        '<a href="$1" target="_blank">$1</a>',
-        $cleaned
+    // 5. URLs normali (solo quelle non già in link)
+    $content = preg_replace(
+        '/(?<!href=["\'])https?:\/\/[^\s<>"]+(?![^<]*<\/a>)/i',
+        '<a href="$0" target="_blank">$0</a>',
+        $content
     );
     
-    // 5. Fix spacing multipli
-    $cleaned = preg_replace('/[ \t]+/', ' ', $cleaned);
+    // 6. Fix spacing e paragrafi
+    $content = preg_replace('/[ \t]+/', ' ', $content);
+    $content = wpautop(trim($content));
     
-    // 6. Converti in paragrafi WordPress
-    $cleaned = wpautop(trim($cleaned));
-    
-    // 7. 🔧 NUOVO: Pulizia finale HTML
-    $cleaned = wp_kses($cleaned, [
-        'a' => ['href' => [], 'target' => [], 'title' => []],
-        'strong' => [],
-        'em' => [],
-        'u' => [],
-        'p' => [],
-        'br' => [],
-        'ul' => [],
-        'ol' => [],
-        'li' => []
-    ]);
-    
-    return $cleaned;
+    return $content;
 }
-
 /**
  * Crea o trova una categoria
  */
