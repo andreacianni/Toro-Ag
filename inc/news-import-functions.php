@@ -249,7 +249,7 @@ function toro_analyze_excel_data() {
 /**
  * Pulisce il contenuto delle news - Alternativa più semplice e sicura: Pulisci tutto e ricostruisci
  */
-function toro_clean_news_content_safe($content) {
+function toro_clean_news_content($content) {
     if (empty($content)) return '';
     
     // 1. Escape sequences
