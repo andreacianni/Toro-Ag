@@ -193,3 +193,216 @@ function aggiungi_sottomenu_scheda() {
         'post-new.php?post_type=scheda_prodotto'
     );
 }
+/* NEW IMPORT NEWS */
+
+/**
+ * Aggiungi questo codice al tuo functions.php esistente
+ * Hook per aggiungere la pagina di importazione news nel menu admin
+ */
+
+// Hook per aggiungere menu admin
+add_action('admin_menu', 'toro_add_news_import_menu');
+
+function toro_add_news_import_menu() {
+    add_management_page(
+        'Importazione News',           // Page title
+        'Importa News',               // Menu title
+        'manage_options',             // Capability
+        'toro-news-import',          // Menu slug
+        'toro_news_import_page'      // Callback function
+    );
+}
+
+function toro_news_import_page() {
+    // Include la pagina di importazione
+    include get_template_directory() . '/import/news-importer.php';
+}
+
+// Includi le funzioni di importazione
+require_once get_template_directory() . '/inc/news-import-functions.php';
+
+// Hook per scripts e styles della pagina admin
+add_action('admin_enqueue_scripts', 'toro_news_import_scripts');
+
+function toro_news_import_scripts($hook) {
+    // Solo sulla nostra pagina
+    if ($hook !== 'tools_page_toro-news-import') {
+        return;
+    }
+    
+    // Stili custom per la pagina
+    wp_add_inline_style('wp-admin', '
+        .toro-import-container {
+            max-width: 1200px;
+            margin: 20px 0;
+        }
+        .import-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-box {
+            background: #fff;
+            border: 1px solid #c3c4c7;
+            border-radius: 4px;
+            padding: 15px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2271b1;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #646970;
+            margin-top: 5px;
+        }
+        .import-log {
+            background: #f6f7f7;
+            border: 1px solid #c3c4c7;
+            border-radius: 4px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .log-success { color: #00a32a; }
+        .log-error { color: #d63638; }
+        .log-warning { color: #dba617; }
+        .log-info { color: #2271b1; }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #00a32a;
+            transition: width 0.3s ease;
+        }
+    ');
+}
+
+/**
+ * Aggiungi questo codice al functions.php dopo gli hook precedenti
+ * Handler AJAX per importazione progressiva
+ */
+
+// Handler AJAX per importazione news
+add_action('wp_ajax_toro_import_news', 'toro_handle_import_ajax');
+
+function toro_handle_import_ajax() {
+    // Verifica security nonce
+    if (!wp_verify_nonce($_POST['security'], 'toro_import_news')) {
+        wp_send_json_error('Nonce non valido');
+        return;
+    }
+    
+    // Verifica permessi
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error('Permessi insufficienti');
+        return;
+    }
+    
+    // Esegui importazione
+    $results = toro_run_full_import();
+    
+    if (is_wp_error($results)) {
+        wp_send_json_error($results->get_error_message());
+    } else {
+        wp_send_json_success($results);
+    }
+}
+
+// Download SimpleXLSX se non esiste
+add_action('init', 'toro_ensure_simplexlsx');
+
+function toro_ensure_simplexlsx() {
+    $xlsx_file = get_template_directory() . '/import/SimpleXLSX.php';
+    
+    // Se non esiste, scaricalo
+    if (!file_exists($xlsx_file) && is_admin()) {
+        $xlsx_url = 'https://raw.githubusercontent.com/shuchkin/simplexlsx/master/src/SimpleXLSX.php';
+        $xlsx_content = wp_remote_get($xlsx_url);
+        
+        if (!is_wp_error($xlsx_content) && wp_remote_retrieve_response_code($xlsx_content) === 200) {
+            $body = wp_remote_retrieve_body($xlsx_content);
+            file_put_contents($xlsx_file, $body);
+        }
+    }
+}
+
+// Aggiungi collegamento nel menu admin per accesso rapido
+add_action('admin_bar_menu', 'toro_add_import_admin_bar', 100);
+
+function toro_add_import_admin_bar($wp_admin_bar) {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    
+    $args = [
+        'id' => 'toro-import-news',
+        'title' => '📰 Importa News',
+        'href' => admin_url('tools.php?page=toro-news-import'),
+        'meta' => [
+            'class' => 'toro-import-shortcut'
+        ]
+    ];
+    
+    $wp_admin_bar->add_node($args);
+}
+
+// Notifica admin se file Excel manca
+add_action('admin_notices', 'toro_check_excel_file_notice');
+
+function toro_check_excel_file_notice() {
+    // Solo sulla pagina di importazione
+    if (!isset($_GET['page']) || $_GET['page'] !== 'toro-news-import') {
+        return;
+    }
+    
+    $excel_file = get_template_directory() . '/import/DB_News_da importare.xlsx';
+    
+    if (!file_exists($excel_file)) {
+        echo '<div class="notice notice-warning is-dismissible">';
+        echo '<p><strong>⚠️ File Excel mancante!</strong> ';
+        echo 'Carica il file <code>DB_News_da importare.xlsx</code> in <code>' . get_template_directory() . '/import/</code></p>';
+        echo '</div>';
+    }
+}
+
+// Utility: Reset importazione (per debug)
+if (defined('WP_DEBUG') && WP_DEBUG) {
+    add_action('wp_ajax_toro_reset_import', 'toro_reset_import_debug');
+    
+    function toro_reset_import_debug() {
+        if (!current_user_can('manage_options')) {
+            wp_die('Permessi insufficienti');
+        }
+        
+        // Elimina tutti i post con news_id_originale
+        $posts = get_posts([
+            'meta_key' => 'news_id_originale',
+            'meta_compare' => 'EXISTS',
+            'post_type' => 'post',
+            'post_status' => 'any',
+            'posts_per_page' => -1
+        ]);
+        
+        $deleted = 0;
+        foreach ($posts as $post) {
+            if (wp_delete_post($post->ID, true)) {
+                $deleted++;
+            }
+        }
+        
+        wp_send_json_success("Eliminati {$deleted} post importati");
+    }
+}
