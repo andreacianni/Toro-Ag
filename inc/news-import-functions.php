@@ -1252,27 +1252,119 @@ function toro_share_media_between_translations($ita_post_id, $eng_post_id) {
 /**
  * Aggiorna la funzione di import singola news per supportare media
  */
-function toro_import_single_news_with_media($news_data, $all_data, $lang = 'it', $force_update = false, $import_media = false) {
-    // Import base della news
-    $result = toro_import_single_news($news_data, $all_data, $lang, $force_update);
+/**
+ * Importa singola news - VERSIONE CON UPDATE E DATE FORZATE
+ */
+function toro_import_single_news($news_data, $all_data, $lang = 'it', $force_update = false) {
+    $news_id = $news_data['news_id'] ?? 0;
     
-    if (is_wp_error($result) || $result === 'skipped') {
-        return $result;
+    // Controlla se esiste già
+    $existing = get_posts([
+        'meta_query' => [
+            [
+                'key' => 'news_id_originale',
+                'value' => $news_id,
+                'compare' => '='
+            ]
+        ],
+        'post_type' => 'post',
+        'post_status' => 'any',
+        'posts_per_page' => 1
+    ]);
+    
+    $is_update = !empty($existing);
+    $post_id = $is_update ? $existing[0]->ID : 0;
+    
+    // 🔧 NUOVO: Gestione modalità update
+    if ($is_update && !$force_update) {
+        return 'skipped';
     }
     
-    $post_id = is_array($result) ? $result['post_id'] : $result;
+    // Parse della data
+    $parsed_date = toro_parse_excel_date($news_data['news_data'] ?? '');
+    $parsed_date_gmt = get_gmt_from_date($parsed_date);
     
-    // Import media se richiesto
-    if ($import_media) {
-        $images_data = $all_data['ImgToImport'] ?? [];
-        $docs_data = $all_data['Doc-ToImport'] ?? [];
+    // Pulisci contenuto con la nuova funzione
+    $content = toro_clean_news_content($news_data['news_contenuto'] ?? '');
+    
+    // 🔧 DISABILITA HOOK TEMPORANEAMENTE
+    remove_all_actions('save_post');
+    remove_all_actions('wp_insert_post');
+    remove_all_actions('post_updated');
+    
+    // Dati del post - SENZA date (le forzeremo dopo)
+    $post_data = [
+        'post_title' => sanitize_text_field($news_data['news_titolo'] ?? ''),
+        'post_content' => $content,
+        'post_status' => 'publish',
+        'post_type' => 'post',
+        'meta_input' => [
+            'news_id_originale' => $news_id
+        ]
+    ];
+    
+    if ($is_update) {
+        // 🔧 AGGIORNA post esistente
+        $post_data['ID'] = $post_id;
+        $result = wp_update_post($post_data);
         
-        $media_result = toro_import_news_media($news_data, $images_data, $docs_data, $post_id);
+        if (is_wp_error($result)) {
+            return new WP_Error('post_update_failed', 'Aggiornamento post fallito: ' . $result->get_error_message());
+        }
         
-        if (is_array($result)) {
-            $result['media'] = $media_result;
+        $action = 'updated';
+    } else {
+        // 🔧 CREA nuovo post
+        $post_id = wp_insert_post($post_data);
+        
+        if (is_wp_error($post_id)) {
+            return new WP_Error('post_creation_failed', 'Creazione post fallita: ' . $post_id->get_error_message());
+        }
+        
+        $action = 'created';
+    }
+    
+    // 🔧 FORZA le date originali BRUTALMENTE
+    global $wpdb;
+    $update_result = $wpdb->update(
+        $wpdb->posts,
+        [
+            'post_date' => $parsed_date,
+            'post_date_gmt' => $parsed_date_gmt,
+            'post_modified' => $parsed_date,
+            'post_modified_gmt' => $parsed_date_gmt
+        ],
+        ['ID' => $post_id],
+        ['%s', '%s', '%s', '%s'],
+        ['%d']
+    );
+    
+    // Pulisci TUTTE le cache
+    clean_post_cache($post_id);
+    wp_cache_delete($post_id, 'posts');
+    wp_cache_delete($post_id, 'post_meta');
+    
+    // Imposta lingua WPML (solo per nuovi post)
+    if (!$is_update && function_exists('icl_object_id')) {
+        do_action('wpml_set_element_language_details', [
+            'element_id' => $post_id,
+            'element_type' => 'post_post',
+            'language_code' => $lang
+        ]);
+    }
+    
+    // Gestisci categoria (sempre, anche per update)
+    $category_name = $news_data['newscat_nome'] ?? '';
+    if (!empty($category_name)) {
+        $category_id = toro_create_news_category($category_name, $lang);
+        if ($category_id) {
+            wp_set_post_categories($post_id, [$category_id]);
         }
     }
     
-    return $result;
+    return [
+        'post_id' => $post_id,
+        'action' => $action,
+        'date_forced' => $parsed_date
+    ];
 }
