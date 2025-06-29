@@ -11,24 +11,51 @@ if (!defined('ABSPATH')) {
 
 /**
  * Legge il file Excel e restituisce i dati strutturati
+ * VERSIONE CON DEBUG E FIX
  */
 function toro_read_excel_data() {
+    // ✅ CORRETTO: usa get_stylesheet_directory() per child theme
     $excel_file = get_stylesheet_directory() . '/import/DB_News_da importare.xlsx';
     
     if (!file_exists($excel_file)) {
         return new WP_Error('file_not_found', 'File Excel non trovato: ' . $excel_file);
     }
     
-    // Usa SimpleXLSX per leggere Excel (incluso in molti hosting)
+    // 🔍 DEBUG: Controlla SimpleXLSX
+    $xlsx_path = get_stylesheet_directory() . '/import/SimpleXLSX.php';
+    
+    if (!file_exists($xlsx_path)) {
+        return new WP_Error('simplexlsx_not_found', 'SimpleXLSX.php non trovato in: ' . $xlsx_path);
+    }
+    
+    // 🔧 FIX: Include con controllo errori
     if (!class_exists('SimpleXLSX')) {
-        require_once get_stylesheet_directory() . '/import/SimpleXLSX.php';
+        try {
+            require_once $xlsx_path;
+        } catch (Exception $e) {
+            return new WP_Error('simplexlsx_include_error', 'Errore caricamento SimpleXLSX: ' . $e->getMessage());
+        }
+        
+        // Verifica se la classe è stata caricata
+        if (!class_exists('SimpleXLSX')) {
+            return new WP_Error('simplexlsx_class_not_found', 'Classe SimpleXLSX non trovata dopo include');
+        }
     }
     
     try {
+        // 🔧 FIX: Usa il path completo e controlla se il metodo esiste
+        if (!method_exists('SimpleXLSX', 'parse')) {
+            return new WP_Error('simplexlsx_method_error', 'Metodo SimpleXLSX::parse non esistente');
+        }
+        
         $xlsx = SimpleXLSX::parse($excel_file);
         
         if (!$xlsx) {
-            return new WP_Error('parse_error', 'Errore lettura Excel: ' . SimpleXLSX::parseError());
+            $error_msg = 'Errore sconosciuto';
+            if (method_exists('SimpleXLSX', 'parseError')) {
+                $error_msg = SimpleXLSX::parseError();
+            }
+            return new WP_Error('parse_error', 'Errore lettura Excel: ' . $error_msg);
         }
         
         $data = [];
@@ -61,6 +88,8 @@ function toro_read_excel_data() {
         
     } catch (Exception $e) {
         return new WP_Error('exception', 'Errore: ' . $e->getMessage());
+    } catch (Error $e) {
+        return new WP_Error('fatal_error', 'Errore fatale: ' . $e->getMessage());
     }
 }
 
