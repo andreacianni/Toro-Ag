@@ -477,7 +477,7 @@ function toro_dry_run_import() {
 }
 
 /**
- * Importazione con opzioni - VERSIONE CON TRADUZIONI
+ * Importazione con opzioni - VERSIONE CON TRADUZIONI e MEDIA
  */
 function toro_run_full_import($options = []) {
     $defaults = [
@@ -502,11 +502,13 @@ function toro_run_full_import($options = []) {
         'errors' => [],
         'translations_connected' => [],
         'translations_errors' => [],
+        'media_imported' => [],
+        'media_errors' => [],
         'total_processed' => 0
     ];
     
-    // Aumenta limiti
-    ini_set('memory_limit', '512M');
+    // Aumenta limiti per media
+    ini_set('memory_limit', '1024M');
     set_time_limit(0);
     
     // Conta totale news da processare
@@ -519,7 +521,13 @@ function toro_run_full_import($options = []) {
     // Importa news italiane
     if (isset($data['NewsToImport (ITA)'])) {
         foreach ($data['NewsToImport (ITA)'] as $news) {
-            $result = toro_import_single_news($news, $data, 'it', $options['force_update']);
+            $result = toro_import_single_news_with_media(
+                $news, 
+                $data, 
+                'it', 
+                $options['force_update'], 
+                $options['import_media']
+            );
             
             if (is_wp_error($result)) {
                 $results['errors'][] = "News ITA #{$news['news_id']}: " . $result->get_error_message();
@@ -528,6 +536,20 @@ function toro_run_full_import($options = []) {
             } elseif (is_array($result)) {
                 $action = $result['action'];
                 $results[$action][] = "News ITA #{$news['news_id']} → Post ID: {$result['post_id']}";
+                
+                // Log media se importati
+                if (isset($result['media'])) {
+                    $media = $result['media'];
+                    if (!empty($media['images'])) {
+                        $results['media_imported'][] = "ITA #{$news['news_id']}: " . count($media['images']) . " immagini";
+                    }
+                    if (!empty($media['documents'])) {
+                        $results['media_imported'][] = "ITA #{$news['news_id']}: " . count($media['documents']) . " documenti";
+                    }
+                    if (!empty($media['errors'])) {
+                        $results['media_errors'] = array_merge($results['media_errors'], $media['errors']);
+                    }
+                }
             }
             
             $processed++;
@@ -538,7 +560,13 @@ function toro_run_full_import($options = []) {
     // Importa news inglesi
     if (isset($data['NewsToImport (ENG)'])) {
         foreach ($data['NewsToImport (ENG)'] as $news) {
-            $result = toro_import_single_news($news, $data, 'en', $options['force_update']);
+            $result = toro_import_single_news_with_media(
+                $news, 
+                $data, 
+                'en', 
+                $options['force_update'], 
+                $options['import_media']
+            );
             
             if (is_wp_error($result)) {
                 $results['errors'][] = "News ENG #{$news['news_id']}: " . $result->get_error_message();
@@ -547,6 +575,20 @@ function toro_run_full_import($options = []) {
             } elseif (is_array($result)) {
                 $action = $result['action'];
                 $results[$action][] = "News ENG #{$news['news_id']} → Post ID: {$result['post_id']}";
+                
+                // Log media se importati
+                if (isset($result['media'])) {
+                    $media = $result['media'];
+                    if (!empty($media['images'])) {
+                        $results['media_imported'][] = "ENG #{$news['news_id']}: " . count($media['images']) . " immagini";
+                    }
+                    if (!empty($media['documents'])) {
+                        $results['media_imported'][] = "ENG #{$news['news_id']}: " . count($media['documents']) . " documenti";
+                    }
+                    if (!empty($media['errors'])) {
+                        $results['media_errors'] = array_merge($results['media_errors'], $media['errors']);
+                    }
+                }
             }
             
             $processed++;
@@ -554,7 +596,7 @@ function toro_run_full_import($options = []) {
         }
     }
     
-    // 🔧 NUOVO: Collega traduzioni WPML se richiesto
+    // Collega traduzioni WPML se richiesto
     if ($options['connect_translations'] && isset($data['Tabella_ID_traduzioni'])) {
         $translation_results = toro_connect_wpml_translations($data['Tabella_ID_traduzioni']);
         
@@ -566,6 +608,18 @@ function toro_run_full_import($options = []) {
                 $results['translations_errors'], 
                 $translation_results['errors']
             );
+            
+            // Condividi media tra traduzioni se import_media è attivo
+            if ($options['import_media']) {
+                foreach ($translation_results['connected'] as $connection) {
+                    // Estrai gli ID dai messaggi di log
+                    if (preg_match('/Post ITA (\d+).*Post ENG (\d+)/', $connection, $matches)) {
+                        $ita_id = $matches[1];
+                        $eng_id = $matches[2];
+                        toro_share_media_between_translations($ita_id, $eng_id);
+                    }
+                }
+            }
         }
     }
     
@@ -821,4 +875,378 @@ function toro_connect_post_translations($ita_post_id, $eng_post_id) {
     } catch (Exception $e) {
         return new WP_Error('exception', 'Errore durante collegamento: ' . $e->getMessage());
     }
+}
+/**
+ * Sistema di import media avanzato
+ * Aggiungi queste funzioni al file inc/news-import-functions.php
+ */
+
+/**
+ * Cache per evitare duplicati
+ */
+class ToroMediaCache {
+    private static $url_cache = [];
+    private static $hash_cache = [];
+    
+    public static function get_by_url($url) {
+        return self::$url_cache[$url] ?? null;
+    }
+    
+    public static function set_url($url, $attachment_id) {
+        self::$url_cache[$url] = $attachment_id;
+    }
+    
+    public static function get_by_hash($hash) {
+        return self::$hash_cache[$hash] ?? null;
+    }
+    
+    public static function set_hash($hash, $attachment_id) {
+        self::$hash_cache[$hash] = $attachment_id;
+    }
+}
+
+/**
+ * Import media con deduplicazione e ottimizzazione
+ */
+function toro_import_media_advanced($url, $title = '', $post_id = 0, $optimize = true) {
+    if (empty($url)) {
+        return new WP_Error('empty_url', 'URL vuoto');
+    }
+    
+    // 1. Controlla cache URL
+    $cached_id = ToroMediaCache::get_by_url($url);
+    if ($cached_id && get_post($cached_id)) {
+        return [
+            'attachment_id' => $cached_id,
+            'action' => 'cached_url'
+        ];
+    }
+    
+    // 2. Download temporaneo per analisi
+    $temp_file = download_url($url);
+    if (is_wp_error($temp_file)) {
+        return new WP_Error('download_failed', 'Download fallito: ' . $temp_file->get_error_message());
+    }
+    
+    // 3. Calcola hash per deduplicazione
+    $file_hash = md5_file($temp_file);
+    $cached_by_hash = ToroMediaCache::get_by_hash($file_hash);
+    if ($cached_by_hash && get_post($cached_by_hash)) {
+        unlink($temp_file);
+        ToroMediaCache::set_url($url, $cached_by_hash); // Aggiorna cache URL
+        return [
+            'attachment_id' => $cached_by_hash,
+            'action' => 'cached_hash'
+        ];
+    }
+    
+    // 4. Determina tipo file e ottimizzazioni
+    $file_info = toro_analyze_file($temp_file, $url);
+    
+    // 5. Ottimizza se necessario
+    if ($optimize && $file_info['can_optimize']) {
+        $optimized_file = toro_optimize_image($temp_file, $file_info);
+        if (!is_wp_error($optimized_file)) {
+            unlink($temp_file);
+            $temp_file = $optimized_file;
+            $file_info = toro_analyze_file($temp_file, $url);
+        }
+    }
+    
+    // 6. Prepara per upload
+    $file_array = [
+        'name' => $file_info['filename'],
+        'tmp_name' => $temp_file,
+        'type' => $file_info['mime_type']
+    ];
+    
+    // 7. Include WordPress media functions
+    require_once(ABSPATH . 'wp-admin/includes/media.php');
+    require_once(ABSPATH . 'wp-admin/includes/file.php');
+    require_once(ABSPATH . 'wp-admin/includes/image.php');
+    
+    // 8. Import in media library
+    $attachment_id = media_handle_sideload($file_array, $post_id, $title);
+    
+    // 9. Cleanup
+    if (file_exists($temp_file)) {
+        unlink($temp_file);
+    }
+    
+    if (is_wp_error($attachment_id)) {
+        return new WP_Error('import_failed', 'Import fallito: ' . $attachment_id->get_error_message());
+    }
+    
+    // 10. Salva in cache
+    ToroMediaCache::set_url($url, $attachment_id);
+    ToroMediaCache::set_hash($file_hash, $attachment_id);
+    
+    // 11. Salva metadati originali
+    update_post_meta($attachment_id, '_toro_original_url', $url);
+    update_post_meta($attachment_id, '_toro_file_hash', $file_hash);
+    
+    return [
+        'attachment_id' => $attachment_id,
+        'action' => 'imported',
+        'optimized' => $optimize && $file_info['can_optimize']
+    ];
+}
+
+/**
+ * Analizza file per determinare ottimizzazioni
+ */
+function toro_analyze_file($file_path, $original_url) {
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mime_type = finfo_file($finfo, $file_path);
+    finfo_close($finfo);
+    
+    $path_info = pathinfo($original_url);
+    $extension = strtolower($path_info['extension'] ?? '');
+    
+    // Genera nome file pulito
+    $filename = sanitize_file_name($path_info['filename'] ?? 'media');
+    
+    $can_optimize = false;
+    $target_format = null;
+    
+    // Determina se può essere ottimizzato
+    if (in_array($mime_type, ['image/png', 'image/gif']) && 
+        function_exists('imagecreatefromstring')) {
+        $can_optimize = true;
+        $target_format = 'jpg';
+        $filename = preg_replace('/\.(png|gif)$/i', '.jpg', $filename);
+        $mime_type = 'image/jpeg';
+    }
+    
+    // Gestione documenti con estensioni multiple
+    $allowed_docs = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'];
+    if (in_array($extension, $allowed_docs)) {
+        $filename .= '.' . $extension;
+    } elseif (strpos($mime_type, 'image/') === 0) {
+        $filename .= '.' . ($target_format ?: $extension ?: 'jpg');
+    } else {
+        $filename .= '.' . ($extension ?: 'file');
+    }
+    
+    return [
+        'filename' => $filename,
+        'mime_type' => $mime_type,
+        'extension' => $extension,
+        'can_optimize' => $can_optimize,
+        'target_format' => $target_format
+    ];
+}
+
+/**
+ * Ottimizza immagini (PNG → JPG compresso)
+ */
+function toro_optimize_image($file_path, $file_info) {
+    if (!function_exists('imagecreatefromstring')) {
+        return new WP_Error('gd_not_available', 'GD library non disponibile');
+    }
+    
+    $image_data = file_get_contents($file_path);
+    $image = imagecreatefromstring($image_data);
+    
+    if (!$image) {
+        return new WP_Error('image_creation_failed', 'Impossibile creare immagine');
+    }
+    
+    // Crea immagine JPG ottimizzata
+    $width = imagesx($image);
+    $height = imagesy($image);
+    
+    // Crea canvas bianco per PNG con trasparenza
+    $optimized = imagecreatetruecolor($width, $height);
+    $white = imagecolorallocate($optimized, 255, 255, 255);
+    imagefill($optimized, 0, 0, $white);
+    
+    // Copia immagine originale
+    imagecopy($optimized, $image, 0, 0, 0, 0, $width, $height);
+    
+    // Genera file temporaneo ottimizzato
+    $temp_optimized = wp_tempnam('toro_optimized_');
+    
+    // Salva come JPG con qualità 85
+    $success = imagejpeg($optimized, $temp_optimized, 85);
+    
+    // Cleanup
+    imagedestroy($image);
+    imagedestroy($optimized);
+    
+    if (!$success) {
+        return new WP_Error('optimization_failed', 'Ottimizzazione fallita');
+    }
+    
+    return $temp_optimized;
+}
+
+/**
+ * Import media per singola news
+ */
+function toro_import_news_media($news_data, $images_data, $docs_data, $post_id, $options = []) {
+    $defaults = [
+        'optimize_images' => true,
+        'set_featured' => true,
+        'share_between_translations' => true
+    ];
+    
+    $options = array_merge($defaults, $options);
+    $results = [
+        'images' => [],
+        'documents' => [],
+        'featured_set' => false,
+        'errors' => []
+    ];
+    
+    $news_id = $news_data['news_id'] ?? 0;
+    
+    // 1. Import immagini
+    $related_images = array_filter($images_data, function($img) use ($news_id) {
+        return ($img['news_id'] ?? 0) == $news_id;
+    });
+    
+    foreach ($related_images as $img) {
+        $url = $img['newsfoto_url'] ?? '';
+        if (empty($url)) continue;
+        
+        $title = $news_data['news_titolo'] ?? '';
+        $result = toro_import_media_advanced($url, "Immagine: $title", $post_id, $options['optimize_images']);
+        
+        if (is_wp_error($result)) {
+            $results['errors'][] = "Errore immagine $url: " . $result->get_error_message();
+            continue;
+        }
+        
+        $attachment_id = $result['attachment_id'];
+        $results['images'][] = [
+            'attachment_id' => $attachment_id,
+            'url' => $url,
+            'action' => $result['action'],
+            'optimized' => $result['optimized'] ?? false
+        ];
+        
+        // Imposta come featured image se è la prima
+        if ($options['set_featured'] && !$results['featured_set']) {
+            set_post_thumbnail($post_id, $attachment_id);
+            $results['featured_set'] = true;
+        }
+    }
+    
+    // 2. Import documenti
+    $related_docs = array_filter($docs_data, function($doc) use ($news_id) {
+        return ($doc['news_id'] ?? 0) == $news_id;
+    });
+    
+    $doc_attachments = [];
+    foreach ($related_docs as $doc) {
+        $filename = $doc['newsdoc_file'] ?? '';
+        if (empty($filename)) continue;
+        
+        // Costruisci URL completo
+        $doc_url = 'https://www.toro-ag.it/public/news_documenti/' . $filename;
+        $doc_title = $doc['newsdoc_titolo'] ?? $filename;
+        
+        $result = toro_import_media_advanced($doc_url, "Documento: $doc_title", $post_id, false);
+        
+        if (is_wp_error($result)) {
+            $results['errors'][] = "Errore documento $doc_url: " . $result->get_error_message();
+            continue;
+        }
+        
+        $attachment_id = $result['attachment_id'];
+        $doc_attachments[] = $attachment_id;
+        
+        $results['documents'][] = [
+            'attachment_id' => $attachment_id,
+            'title' => $doc_title,
+            'filename' => $filename,
+            'action' => $result['action']
+        ];
+    }
+    
+    // 3. Salva documenti in PODS
+    if (!empty($doc_attachments) && function_exists('pods')) {
+        $pod = pods('post', $post_id);
+        if ($pod) {
+            $pod->save('news_documenti', $doc_attachments);
+        }
+    }
+    
+    // 4. Salva immagini in PODS
+    if (!empty($results['images']) && function_exists('pods')) {
+        $image_ids = array_column($results['images'], 'attachment_id');
+        $pod = pods('post', $post_id);
+        if ($pod) {
+            $pod->save('news_immagini', $image_ids);
+        }
+    }
+    
+    return $results;
+}
+
+/**
+ * Condividi media tra traduzioni collegate
+ */
+function toro_share_media_between_translations($ita_post_id, $eng_post_id) {
+    if (!function_exists('pods')) {
+        return false;
+    }
+    
+    // Ottieni media del post italiano
+    $ita_pod = pods('post', $ita_post_id);
+    if (!$ita_pod) return false;
+    
+    $featured_image = get_post_thumbnail_id($ita_post_id);
+    $images = $ita_pod->field('news_immagini');
+    $documents = $ita_pod->field('news_documenti');
+    
+    // Applica al post inglese
+    $eng_pod = pods('post', $eng_post_id);
+    if (!$eng_pod) return false;
+    
+    // Featured image
+    if ($featured_image) {
+        set_post_thumbnail($eng_post_id, $featured_image);
+    }
+    
+    // Immagini
+    if (!empty($images)) {
+        $eng_pod->save('news_immagini', $images);
+    }
+    
+    // Documenti  
+    if (!empty($documents)) {
+        $eng_pod->save('news_documenti', $documents);
+    }
+    
+    return true;
+}
+
+/**
+ * Aggiorna la funzione di import singola news per supportare media
+ */
+function toro_import_single_news_with_media($news_data, $all_data, $lang = 'it', $force_update = false, $import_media = false) {
+    // Import base della news
+    $result = toro_import_single_news($news_data, $all_data, $lang, $force_update);
+    
+    if (is_wp_error($result) || $result === 'skipped') {
+        return $result;
+    }
+    
+    $post_id = is_array($result) ? $result['post_id'] : $result;
+    
+    // Import media se richiesto
+    if ($import_media) {
+        $images_data = $all_data['ImgToImport'] ?? [];
+        $docs_data = $all_data['Doc-ToImport'] ?? [];
+        
+        $media_result = toro_import_news_media($news_data, $images_data, $docs_data, $post_id);
+        
+        if (is_array($result)) {
+            $result['media'] = $media_result;
+        }
+    }
+    
+    return $result;
 }

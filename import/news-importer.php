@@ -473,6 +473,16 @@ if (isset($_GET['dry_run'])) {
                 data.translations_errors.forEach(item => addToLog(item, 'warning'));
             }
             
+            if (data.media_imported && data.media_imported.length > 0) {
+                addToLog(`📸 Media importati (${data.media_imported.length}):`, 'info');
+                data.media_imported.forEach(item => addToLog(item, 'success'));
+            }
+            
+            if (data.media_errors && data.media_errors.length > 0) {
+                addToLog(`⚠️ Errori media (${data.media_errors.length}):`, 'info');
+                data.media_errors.forEach(item => addToLog(item, 'warning'));
+            }
+            
             if (data.skipped && data.skipped.length > 0) {
                 addToLog(`⚠️ Saltate ${data.skipped.length} news:`, 'info');
                 data.skipped.forEach(item => addToLog(item, 'warning'));
