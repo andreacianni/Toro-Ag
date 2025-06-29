@@ -459,7 +459,7 @@ function test_toro_debug() {
     exit;
 }
 /**
- * Converte data Excel formato europeo (dd/mm/yyyy) in formato WordPress - DEBUG
+ * Converte data Excel (numero seriale o formato europeo) in formato WordPress
  */
 function toro_parse_excel_date($date_string) {
     error_log("PARSING DATE: input='{$date_string}'");
@@ -477,7 +477,19 @@ function toro_parse_excel_date($date_string) {
         return $result;
     }
     
-    // Converte formato europeo dd/mm/yyyy
+    // 🔧 NUOVO: Gestisce numero seriale Excel
+    if (is_numeric($date_string) && $date_string > 1 && $date_string < 100000) {
+        // Converte da numero seriale Excel a timestamp Unix
+        // Excel conta da 1° gennaio 1900, ma ha un bug per il 1900 (non bisestile)
+        // Quindi sottraiamo 25569 giorni per arrivare al 1° gennaio 1970 (Unix epoch)
+        $unix_timestamp = ($date_string - 25569) * 86400; // 86400 secondi in un giorno
+        
+        $result = date('Y-m-d H:i:s', $unix_timestamp);
+        error_log("PARSING DATE: converted from Excel serial {$date_string} to: {$result}");
+        return $result;
+    }
+    
+    // Converte formato europeo dd/mm/yyyy (fallback)
     if (preg_match('/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/', $date_string, $matches)) {
         $day = str_pad($matches[1], 2, '0', STR_PAD_LEFT);
         $month = str_pad($matches[2], 2, '0', STR_PAD_LEFT);
