@@ -10,57 +10,113 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Legge il file Excel e restituisce i dati strutturati
- * VERSIONE CON DEBUG E FIX
+ * Legge il file Excel usando PhpSpreadsheet o fallback
+ * VERSIONE MULTIPLA LIBRERIA
  */
 function toro_read_excel_data() {
-    // ✅ CORRETTO: usa get_stylesheet_directory() per child theme
     $excel_file = get_stylesheet_directory() . '/import/DB_News_da importare.xlsx';
     
     if (!file_exists($excel_file)) {
         return new WP_Error('file_not_found', 'File Excel non trovato: ' . $excel_file);
     }
     
-    // 🔍 DEBUG: Controlla SimpleXLSX
+    // Prova 1: PhpSpreadsheet (più comune in WordPress)
+    if (class_exists('PhpOffice\PhpSpreadsheet\IOFactory')) {
+        return toro_read_excel_phpspreadsheet($excel_file);
+    }
+    
+    // Prova 2: SimpleXLSX
+    if (toro_load_simplexlsx()) {
+        return toro_read_excel_simplexlsx($excel_file);
+    }
+    
+    // Prova 3: Spout (se disponibile)
+    if (class_exists('Box\Spout\Reader\ReaderFactory')) {
+        return toro_read_excel_spout($excel_file);
+    }
+    
+    return new WP_Error('no_excel_library', 
+        'Nessuna libreria Excel disponibile. Installa PhpSpreadsheet o converti il file in CSV.');
+}
+
+/**
+ * Carica SimpleXLSX con controlli
+ */
+function toro_load_simplexlsx() {
+    if (class_exists('SimpleXLSX')) {
+        return true;
+    }
+    
     $xlsx_path = get_stylesheet_directory() . '/import/SimpleXLSX.php';
     
     if (!file_exists($xlsx_path)) {
-        return new WP_Error('simplexlsx_not_found', 'SimpleXLSX.php non trovato in: ' . $xlsx_path);
-    }
-    
-    // 🔧 FIX: Include con controllo errori
-    if (!class_exists('SimpleXLSX')) {
-        try {
-            require_once $xlsx_path;
-        } catch (Exception $e) {
-            return new WP_Error('simplexlsx_include_error', 'Errore caricamento SimpleXLSX: ' . $e->getMessage());
-        }
-        
-        // Verifica se la classe è stata caricata
-        if (!class_exists('SimpleXLSX')) {
-            return new WP_Error('simplexlsx_class_not_found', 'Classe SimpleXLSX non trovata dopo include');
-        }
+        return false;
     }
     
     try {
-        // 🔧 FIX: Usa il path completo e controlla se il metodo esiste
-        if (!method_exists('SimpleXLSX', 'parse')) {
-            return new WP_Error('simplexlsx_method_error', 'Metodo SimpleXLSX::parse non esistente');
-        }
-        
-        $xlsx = SimpleXLSX::parse($excel_file);
-        
-        if (!$xlsx) {
-            $error_msg = 'Errore sconosciuto';
-            if (method_exists('SimpleXLSX', 'parseError')) {
-                $error_msg = SimpleXLSX::parseError();
-            }
-            return new WP_Error('parse_error', 'Errore lettura Excel: ' . $error_msg);
-        }
+        require_once $xlsx_path;
+        return class_exists('SimpleXLSX');
+    } catch (Exception $e) {
+        error_log('Errore caricamento SimpleXLSX: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Lettura con PhpSpreadsheet
+ */
+function toro_read_excel_phpspreadsheet($excel_file) {
+    try {
+        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
+        $reader->setReadDataOnly(true);
+        $spreadsheet = $reader->load($excel_file);
         
         $data = [];
         
-        // Leggi fogli specifici
+        foreach ($spreadsheet->getWorksheetIterator() as $worksheet) {
+            $sheet_name = $worksheet->getTitle();
+            $sheet_data = [];
+            
+            $rows = $worksheet->toArray();
+            
+            if (empty($rows)) continue;
+            
+            // Prima riga = headers
+            $headers = array_shift($rows);
+            
+            foreach ($rows as $row) {
+                $row_data = [];
+                foreach ($headers as $col_index => $header) {
+                    $row_data[$header] = $row[$col_index] ?? '';
+                }
+                $sheet_data[] = $row_data;
+            }
+            
+            $data[$sheet_name] = $sheet_data;
+        }
+        
+        return $data;
+        
+    } catch (Exception $e) {
+        return new WP_Error('phpspreadsheet_error', 'Errore PhpSpreadsheet: ' . $e->getMessage());
+    }
+}
+
+/**
+ * Lettura con SimpleXLSX
+ */
+function toro_read_excel_simplexlsx($excel_file) {
+    try {
+        $xlsx = SimpleXLSX::parse($excel_file);
+        
+        if (!$xlsx) {
+            $error_msg = method_exists('SimpleXLSX', 'parseError') 
+                ? SimpleXLSX::parseError() 
+                : 'Errore sconosciuto';
+            return new WP_Error('simplexlsx_parse_error', 'Errore SimpleXLSX: ' . $error_msg);
+        }
+        
+        $data = [];
         $sheets = $xlsx->sheetNames();
         
         foreach ($sheets as $index => $name) {
@@ -68,11 +124,9 @@ function toro_read_excel_data() {
             
             if (empty($rows)) continue;
             
-            // Prima riga = header
             $headers = array_shift($rows);
-            
-            // Converti in array associativo
             $sheet_data = [];
+            
             foreach ($rows as $row) {
                 $row_data = [];
                 foreach ($headers as $col_index => $header) {
@@ -87,9 +141,50 @@ function toro_read_excel_data() {
         return $data;
         
     } catch (Exception $e) {
-        return new WP_Error('exception', 'Errore: ' . $e->getMessage());
-    } catch (Error $e) {
-        return new WP_Error('fatal_error', 'Errore fatale: ' . $e->getMessage());
+        return new WP_Error('simplexlsx_exception', 'Errore SimpleXLSX: ' . $e->getMessage());
+    }
+}
+
+/**
+ * Lettura con Spout (fallback)
+ */
+function toro_read_excel_spout($excel_file) {
+    try {
+        $reader = \Box\Spout\Reader\ReaderFactory::create(\Box\Spout\Common\Type::XLSX);
+        $reader->open($excel_file);
+        
+        $data = [];
+        
+        foreach ($reader->getSheetIterator() as $sheet) {
+            $sheet_name = $sheet->getName();
+            $sheet_data = [];
+            $headers = null;
+            
+            foreach ($sheet->getRowIterator() as $row_index => $row) {
+                $row_array = $row->toArray();
+                
+                if ($row_index === 1) {
+                    $headers = $row_array;
+                    continue;
+                }
+                
+                if ($headers) {
+                    $row_data = [];
+                    foreach ($headers as $col_index => $header) {
+                        $row_data[$header] = $row_array[$col_index] ?? '';
+                    }
+                    $sheet_data[] = $row_data;
+                }
+            }
+            
+            $data[$sheet_name] = $sheet_data;
+        }
+        
+        $reader->close();
+        return $data;
+        
+    } catch (Exception $e) {
+        return new WP_Error('spout_error', 'Errore Spout: ' . $e->getMessage());
     }
 }
 
