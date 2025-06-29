@@ -247,31 +247,60 @@ function toro_analyze_excel_data() {
 }
 
 /**
- * Pulisce il contenuto delle news
+ * Pulisce il contenuto delle news - VERSIONE MIGLIORATA
  */
 function toro_clean_news_content($content) {
     if (empty($content)) return '';
     
     $cleaned = $content;
     
-    // Fix escape sequences
+    // 1. Fix escape sequences per newline
     $cleaned = str_replace(['\\r\\n', '\\n'], "\n", $cleaned);
     
-    // Fix multiple newlines
+    // 2. Fix multiple newlines consecutivi
     $cleaned = preg_replace('/\n\s*\n\s*\n+/', "\n\n", $cleaned);
     
-    // Converti URLs in link HTML
+    // 3. 🔧 NUOVO: Converti BBCode in HTML
+    $bbcode_patterns = [
+        '/\[URL=([^\]]+)\]([^\[]+)\[\/URL\]/i' => '<a href="$1" target="_blank">$2</a>',
+        '/\[url=([^\]]+)\]([^\[]+)\[\/url\]/i' => '<a href="$1" target="_blank">$2</a>',
+        '/\[B\]([^\[]+)\[\/B\]/i' => '<strong>$1</strong>',
+        '/\[b\]([^\[]+)\[\/b\]/i' => '<strong>$1</strong>',
+        '/\[I\]([^\[]+)\[\/I\]/i' => '<em>$1</em>',
+        '/\[i\]([^\[]+)\[\/i\]/i' => '<em>$1</em>',
+        '/\[U\]([^\[]+)\[\/U\]/i' => '<u>$1</u>',
+        '/\[u\]([^\[]+)\[\/u\]/i' => '<u>$1</u>',
+    ];
+    
+    foreach ($bbcode_patterns as $pattern => $replacement) {
+        $cleaned = preg_replace($pattern, $replacement, $cleaned);
+    }
+    
+    // 4. Converti URLs normali in link HTML
     $cleaned = preg_replace(
-        '/(https?:\/\/[^\s]+)/',
+        '/(https?:\/\/[^\s<>"]+)/i',
         '<a href="$1" target="_blank">$1</a>',
         $cleaned
     );
     
-    // Fix spacing
+    // 5. Fix spacing multipli
     $cleaned = preg_replace('/[ \t]+/', ' ', $cleaned);
     
-    // Converti in paragrafi WordPress
+    // 6. Converti in paragrafi WordPress
     $cleaned = wpautop(trim($cleaned));
+    
+    // 7. 🔧 NUOVO: Pulizia finale HTML
+    $cleaned = wp_kses($cleaned, [
+        'a' => ['href' => [], 'target' => [], 'title' => []],
+        'strong' => [],
+        'em' => [],
+        'u' => [],
+        'p' => [],
+        'br' => [],
+        'ul' => [],
+        'ol' => [],
+        'li' => []
+    ]);
     
     return $cleaned;
 }
@@ -465,9 +494,17 @@ function toro_dry_run_import() {
 }
 
 /**
- * Importazione vera e propria
+ * Importazione con opzioni - VERSIONE MIGLIORATA
  */
-function toro_run_full_import($progress_callback = null) {
+function toro_run_full_import($options = []) {
+    $defaults = [
+        'force_update' => false,
+        'import_media' => false,
+        'skip_existing' => true
+    ];
+    
+    $options = array_merge($defaults, $options);
+    
     $data = toro_read_excel_data();
     
     if (is_wp_error($data)) {
@@ -476,6 +513,7 @@ function toro_run_full_import($progress_callback = null) {
     
     $results = [
         'created' => [],
+        'updated' => [],
         'skipped' => [],
         'errors' => [],
         'total_processed' => 0
@@ -495,45 +533,38 @@ function toro_run_full_import($progress_callback = null) {
     // Importa news italiane
     if (isset($data['NewsToImport (ITA)'])) {
         foreach ($data['NewsToImport (ITA)'] as $news) {
-            $result = toro_import_single_news($news, $data, 'it');
+            $result = toro_import_single_news($news, $data, 'it', $options['force_update']);
             
             if (is_wp_error($result)) {
-                $results['errors'][] = $result->get_error_message();
+                $results['errors'][] = "News ITA #{$news['news_id']}: " . $result->get_error_message();
             } elseif ($result === 'skipped') {
                 $results['skipped'][] = "News ITA #{$news['news_id']}: già esistente";
-            } else {
-                $results['created'][] = "News ITA #{$news['news_id']} → Post ID: {$result}";
+            } elseif (is_array($result)) {
+                $action = $result['action'];
+                $results[$action][] = "News ITA #{$news['news_id']} → Post ID: {$result['post_id']}";
             }
             
             $processed++;
             $results['total_processed'] = $processed;
-            
-            // Callback per progress
-            if ($progress_callback && is_callable($progress_callback)) {
-                call_user_func($progress_callback, $processed, $total_news, $news['news_titolo'] ?? '');
-            }
         }
     }
     
     // Importa news inglesi
     if (isset($data['NewsToImport (ENG)'])) {
         foreach ($data['NewsToImport (ENG)'] as $news) {
-            $result = toro_import_single_news($news, $data, 'en');
+            $result = toro_import_single_news($news, $data, 'en', $options['force_update']);
             
             if (is_wp_error($result)) {
-                $results['errors'][] = $result->get_error_message();
+                $results['errors'][] = "News ENG #{$news['news_id']}: " . $result->get_error_message();
             } elseif ($result === 'skipped') {
                 $results['skipped'][] = "News ENG #{$news['news_id']}: già esistente";
-            } else {
-                $results['created'][] = "News ENG #{$news['news_id']} → Post ID: {$result}";
+            } elseif (is_array($result)) {
+                $action = $result['action'];
+                $results[$action][] = "News ENG #{$news['news_id']} → Post ID: {$result['post_id']}";
             }
             
             $processed++;
             $results['total_processed'] = $processed;
-            
-            if ($progress_callback && is_callable($progress_callback)) {
-                call_user_func($progress_callback, $processed, $total_news, $news['news_titolo'] ?? '');
-            }
         }
     }
     
@@ -541,9 +572,9 @@ function toro_run_full_import($progress_callback = null) {
 }
 
 /**
- * Importa singola news
+ * Importa singola news - VERSIONE CON UPDATE
  */
-function toro_import_single_news($news_data, $all_data, $lang = 'it') {
+function toro_import_single_news($news_data, $all_data, $lang = 'it', $force_update = false) {
     $news_id = $news_data['news_id'] ?? 0;
     
     // Controlla se esiste già
@@ -560,11 +591,15 @@ function toro_import_single_news($news_data, $all_data, $lang = 'it') {
         'posts_per_page' => 1
     ]);
     
-    if (!empty($existing)) {
+    $is_update = !empty($existing);
+    $post_id = $is_update ? $existing[0]->ID : 0;
+    
+    // 🔧 NUOVO: Gestione modalità update
+    if ($is_update && !$force_update) {
         return 'skipped';
     }
     
-    // Pulisci contenuto
+    // Pulisci contenuto con la nuova funzione
     $content = toro_clean_news_content($news_data['news_contenuto'] ?? '');
     
     // Dati del post
@@ -579,15 +614,29 @@ function toro_import_single_news($news_data, $all_data, $lang = 'it') {
         ]
     ];
     
-    // Crea post
-    $post_id = wp_insert_post($post_data);
-    
-    if (is_wp_error($post_id)) {
-        return new WP_Error('post_creation_failed', 'Creazione post fallita: ' . $post_id->get_error_message());
+    if ($is_update) {
+        // 🔧 AGGIORNA post esistente
+        $post_data['ID'] = $post_id;
+        $result = wp_update_post($post_data);
+        
+        if (is_wp_error($result)) {
+            return new WP_Error('post_update_failed', 'Aggiornamento post fallito: ' . $result->get_error_message());
+        }
+        
+        $action = 'updated';
+    } else {
+        // 🔧 CREA nuovo post
+        $post_id = wp_insert_post($post_data);
+        
+        if (is_wp_error($post_id)) {
+            return new WP_Error('post_creation_failed', 'Creazione post fallita: ' . $post_id->get_error_message());
+        }
+        
+        $action = 'created';
     }
     
-    // Imposta lingua WPML
-    if (function_exists('icl_object_id')) {
+    // Imposta lingua WPML (solo per nuovi post)
+    if (!$is_update && function_exists('icl_object_id')) {
         do_action('wpml_set_element_language_details', [
             'element_id' => $post_id,
             'element_type' => 'post_post',
@@ -595,7 +644,7 @@ function toro_import_single_news($news_data, $all_data, $lang = 'it') {
         ]);
     }
     
-    // Gestisci categoria
+    // Gestisci categoria (sempre, anche per update)
     $category_name = $news_data['newscat_nome'] ?? '';
     if (!empty($category_name)) {
         $category_id = toro_create_news_category($category_name, $lang);
@@ -607,5 +656,8 @@ function toro_import_single_news($news_data, $all_data, $lang = 'it') {
     // TODO: Gestire immagini e documenti
     // (implementeremo nel prossimo step)
     
-    return $post_id;
+    return [
+        'post_id' => $post_id,
+        'action' => $action
+    ];
 }
