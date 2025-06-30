@@ -92,7 +92,7 @@ function ac_carosello_video_pagina_shortcode($atts = []) {
     }
 
     if (!empty($atts['titolo'])) {
-        echo '<h5 class="text-bg-dark text-center py-2 my-4 rounded-2">' . esc_html($atts['titolo']) . '</h5>';
+        echo '<h3 class="text-start fw-bold border-bottom ps-1 py-2 my-4">' . esc_html($atts['titolo']) . '</h3>';
     }
 
     $total_videos = count($video_ids);
