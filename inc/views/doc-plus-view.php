@@ -16,7 +16,8 @@ $layout = isset( $layout ) && in_array( $layout, $allowed_layouts, true ) ? $lay
 
 // Se è stato passato un titolo, lo mostriamo sopra la griglia
 if ( isset( $title ) && trim( $title ) !== '' ) {
-    echo '<h5 class="text-bg-dark text-center py-2 my-4 rounded-2">' . esc_html( $title ) . '</h5>';
+    // classe striscetta nera con testo bianco text-bg-dark text-center py-2 my-4 rounded-2
+    echo '<h5 class="text-start fw-bold border-bottom ps-1 py-2 my-4">' . esc_html( $title ) . '</h5>';
 }
 
 // Se è stato passato un griglia, la usiamo, altrimenti fallback a "row"
