@@ -439,17 +439,17 @@ $brand-red-hover: #b01c22;
           
           &:checked {
             border-color: $brand-red;
-            background-color: $brand-red;
+            background-color: white; // Mantiene sfondo bianco
             
             &::after {
               content: '';
               position: absolute;
               top: 50%;
               left: 50%;
-              width: 6px;
-              height: 6px;
+              width: 8px;  // Puntino leggermente più grande
+              height: 8px;
               border-radius: 50%;
-              background-color: white;
+              background-color: $brand-red; // Puntino rosso su sfondo bianco
               transform: translate(-50%, -50%);
             }
           }
@@ -473,9 +473,9 @@ $brand-red-hover: #b01c22;
           }
         }
         
-        // Quando radio è selezionato, colora anche il label
+        // Quando radio è selezionato, label leggermente più scuro
         input[type="radio"]:checked + .wpcf7-list-item-label {
-          color: $brand-red;
+          color: darken(#495057, 15%); // Grigio più scuro invece di rosso
           font-weight: 600;
         }
       }

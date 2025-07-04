@@ -353,17 +353,17 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 }
 .form-contatti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:checked, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:checked {
   border-color: #cd2027;
-  background-color: #cd2027;
+  background-color: white;
 }
 .form-contatti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:checked::after, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:checked::after {
   content: "";
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background-color: white;
+  background-color: #cd2027;
   transform: translate(-50%, -50%);
 }
 .form-contatti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:focus, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:focus {
@@ -382,7 +382,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   color: #cd2027;
 }
 .form-contatti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:checked + .wpcf7-list-item-label, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:checked + .wpcf7-list-item-label {
-  color: #cd2027;
+  color: #262a2d;
   font-weight: 600;
 }
 @media (max-width: 991px) {
