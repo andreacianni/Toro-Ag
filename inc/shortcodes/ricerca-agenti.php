@@ -270,23 +270,24 @@ add_shortcode('ricerca_agenti', function($atts) {
         <div class="form-row">
             <div class="form-group">
                 <label for="regione-select">Seleziona Regione</label>
-                <select id="regione-select" name="regione" class="form-control" multiple size="8">
-                    <option value="tutte">Tutte</option>
+                <select id="regione-select" name="regione" class="form-control" required>
+                    <option value="" disabled selected>— Scegli la regione —</option>
+                    <option value="tutte">Tutte le regioni</option>
                     <?php foreach (array_keys($regioni_province) as $regione): ?>
                         <option value="<?php echo esc_attr($regione) ?>">
                             <?php echo esc_html($regione) ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
-                <small class="form-text text-muted">Tenere premuto Ctrl (o Cmd su Mac) per selezionare più regioni</small>
+                <small class="form-text text-muted">Seleziona una regione specifica o "Tutte" per visualizzare tutte le province</small>
             </div>
             
             <div class="form-group">
                 <label for="territorio-select">Seleziona Provincia</label>
-                <select id="territorio-select" name="territorio" class="form-control" multiple size="8">
-                    <option value="" disabled>— Seleziona prima una o più regioni —</option>
+                <select id="territorio-select" name="territorio" class="form-control" required disabled>
+                    <option value="" disabled selected>— Prima seleziona la regione —</option>
                 </select>
-                <small class="form-text text-muted">Le province si aggiorneranno in base alle regioni selezionate</small>
+                <small class="form-text text-muted">Le province si aggiorneranno in base alla regione selezionata</small>
             </div>
             
             <div class="form-group">

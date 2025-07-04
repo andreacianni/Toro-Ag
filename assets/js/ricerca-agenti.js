@@ -1,31 +1,29 @@
 (function($){
   
-  // Gestione cambio regione (selezione multipla)
+  // Gestione cambio regione (selezione singola)
   $('#regione-select').on('change', function(e){
-    var regioniSelezionate = $(this).val() || [];
+    var regioneSelezionata = $(this).val();
     var $provinciaSelect = $('#territorio-select');
     var $submitBtn = $('.btn-search');
     
     // Reset provincia select
-    $provinciaSelect.empty();
+    $provinciaSelect.empty().append('<option value="" disabled selected>— Seleziona la provincia —</option>');
     
-    if (regioniSelezionate.length > 0) {
+    if (regioneSelezionata) {
       var tutteLeProvince = [];
       var provinceConAgenti = window.provinceConAgenti || [];
       
-      // Se è selezionato "Tutte"
-      if (regioniSelezionate.includes('tutte')) {
+      // Se è selezionato "tutte"
+      if (regioneSelezionata === 'tutte') {
         // Aggiungi tutte le province di tutte le regioni
         Object.values(window.regioniProvince).forEach(function(province) {
           tutteLeProvince = tutteLeProvince.concat(province);
         });
       } else {
-        // Aggiungi le province delle regioni selezionate
-        regioniSelezionate.forEach(function(regione) {
-          if (window.regioniProvince[regione]) {
-            tutteLeProvince = tutteLeProvince.concat(window.regioniProvince[regione]);
-          }
-        });
+        // Aggiungi solo le province della regione selezionata
+        if (window.regioniProvince[regioneSelezionata]) {
+          tutteLeProvince = window.regioniProvince[regioneSelezionata];
+        }
       }
       
       // Rimuovi duplicati e filtra solo le province che hanno agenti
@@ -34,39 +32,42 @@
         return provinceConAgenti.includes(provincia);
       });
       
-      // Aggiungi opzione "Tutte" per le province
+      // Popola il dropdown delle province
       if (provinceDisponibili.length > 0) {
-        $provinciaSelect.append('<option value="tutte">Tutte le province selezionate</option>');
+        // Aggiungi opzione "Tutte" solo se ci sono più province
+        if (provinceDisponibili.length > 1) {
+          $provinciaSelect.append('<option value="tutte">Tutte le province' + (regioneSelezionata === 'tutte' ? '' : ' di ' + regioneSelezionata) + '</option>');
+        }
+        
         provinceDisponibili.sort().forEach(function(provincia) {
           $provinciaSelect.append('<option value="' + provincia + '">' + provincia + '</option>');
         });
         $provinciaSelect.prop('disabled', false);
       } else {
-        $provinciaSelect.append('<option value="" disabled>— Nessun agente nelle regioni selezionate —</option>');
+        $provinciaSelect.append('<option value="" disabled>— Nessun agente in questa regione —</option>');
         $provinciaSelect.prop('disabled', true);
       }
     } else {
-      $provinciaSelect.append('<option value="" disabled>— Seleziona prima una o più regioni —</option>');
       $provinciaSelect.prop('disabled', true);
     }
     
-    // Disabilita il pulsante finché non viene selezionata almeno una provincia
+    // Disabilita il pulsante finché non viene selezionata una provincia
     $submitBtn.prop('disabled', true);
   });
   
-  // Gestione cambio provincia (selezione multipla)
+  // Gestione cambio provincia (selezione singola)
   $('#territorio-select').on('change', function(e){
-    var provinceSelezionate = $(this).val() || [];
+    var provinciaSelezionata = $(this).val();
     var $submitBtn = $('.btn-search');
     
     // Abilita/disabilita il pulsante in base alla selezione
-    $submitBtn.prop('disabled', provinceSelezionate.length === 0);
+    $submitBtn.prop('disabled', !provinciaSelezionata);
   });
   
   // Gestione submit form
   $('#ricerca-agenti-form').on('submit', function(e){
     e.preventDefault();
-    var provinceSelezionate = $('#territorio-select').val() || [];
+    var provinciaSelezionata = $('#territorio-select').val();
     var $container = $('#risultati-agenti');
     var $submitBtn = $('.btn-search');
     
@@ -74,9 +75,9 @@
     $submitBtn.prop('disabled', true).html('🔄 Ricerca in corso...');
     $container.html('<div class="text-center p-4"><div class="spinner-border text-danger" role="status"><span class="visually-hidden">Caricamento...</span></div><p class="mt-2">Ricerca agenti in corso...</p></div>');
     
-    // Se è selezionato "tutte", ottieni tutte le province disponibili
+    // Se è selezionato "tutte", ottieni tutte le province disponibili del dropdown
     var territoriDaCercare = [];
-    if (provinceSelezionate.includes('tutte')) {
+    if (provinciaSelezionata === 'tutte') {
       // Prendi tutte le opzioni del select tranne "tutte"
       $('#territorio-select option').each(function() {
         var val = $(this).val();
@@ -85,7 +86,7 @@
         }
       });
     } else {
-      territoriDaCercare = provinceSelezionate;
+      territoriDaCercare = [provinciaSelezionata];
     }
     
     // Fai una richiesta per ogni territorio e unisci i risultati
@@ -124,7 +125,7 @@
       });
       
       if (allAgents.length === 0) {
-        var territoriText = provinceSelezionate.includes('tutte') ? 'le aree selezionate' : provinceSelezionate.join(', ');
+        var territoriText = provinciaSelezionata === 'tutte' ? 'le aree selezionate' : provinciaSelezionata;
         $container.html('<div class="alert alert-info"><i class="bi bi-info-circle"></i> Nessun agente attivo trovato per <strong>' + territoriText + '</strong>.</div>');
         return;
       }
@@ -135,7 +136,7 @@
       });
       
       // Costruisci la tabella dei risultati
-      var territoriText = provinceSelezionate.includes('tutte') ? 'tutte le aree selezionate' : provinceSelezionate.join(', ');
+      var territoriText = provinciaSelezionata === 'tutte' ? 'tutte le aree selezionate' : provinciaSelezionata;
       var html = ''
       + '<div class="results-header mb-3">'
       +   '<h4><i class="bi bi-people-fill text-danger"></i> Agenti trovati in <strong>' + territoriText + '</strong> (' + allAgents.length + ')</h4>'
