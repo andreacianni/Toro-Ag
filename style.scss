@@ -378,31 +378,82 @@ $brand-red-hover: #b01c22;
 // ===== FORM CONTATTI - NUOVO LAYOUT =====
 .form-contatti-new {
   
-  // Sezione motivo - Dropdown elegante
+  // Sezione motivo - Radio inline eleganti
   .motivo-section {
     .form-label {
       font-weight: 600;
       color: #495057;
-      margin-bottom: 8px;
+      margin-bottom: 15px;
       font-size: 15px;
+      display: block;
     }
     
-    select.form-control {
-      padding: 12px 16px;
-      border: 2px solid #dee2e6;
-      border-radius: 8px;
-      font-size: 15px;
-      background-color: white;
-      transition: all 0.3s ease;
+    // Radio buttons inline
+    .radio-inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 10px;
       
-      &:focus {
-        border-color: $brand-red;
-        box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
-        outline: none;
+      .wpcf7-list-item {
+        margin: 0;
+        flex: 0 0 auto;
+        
+        input[type="radio"] {
+          display: none; // Nasconde radio default
+        }
+        
+        .wpcf7-list-item-label {
+          display: inline-block;
+          padding: 10px 20px;
+          background-color: white;
+          border: 2px solid #dee2e6;
+          border-radius: 25px; // Pills style
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-weight: 500;
+          font-size: 14px;
+          color: #495057;
+          white-space: nowrap;
+          
+          &:hover {
+            border-color: $brand-red;
+            background-color: #fff5f5;
+            color: #333;
+          }
+        }
+        
+        // Stato selezionato
+        input[type="radio"]:checked + .wpcf7-list-item-label {
+          background-color: $brand-red;
+          color: white;
+          border-color: $brand-red;
+          box-shadow: 0 2px 8px rgba(205, 32, 39, 0.25);
+        }
       }
       
-      option {
-        padding: 8px;
+      // Responsive mobile
+      @media (max-width: 767px) {
+        gap: 12px;
+        justify-content: center;
+        
+        .wpcf7-list-item {
+          flex: 1 1 45%; // 2 per riga su mobile
+          min-width: 120px;
+          
+          .wpcf7-list-item-label {
+            width: 100%;
+            text-align: center;
+            padding: 12px 8px;
+            font-size: 13px;
+          }
+        }
+      }
+      
+      @media (max-width: 480px) {
+        .wpcf7-list-item {
+          flex: 1 1 100%; // 1 per riga su schermi molto piccoli
+        }
       }
     }
   }
@@ -618,28 +669,5 @@ $brand-red-hover: #b01c22;
     background-color: #f8d7da;
     border: 1px solid #f5c6cb;
     color: #721c24;
-  }
-}
-
-// Stili per integrare il form nelle pagine prodotto
-.single-prodotto {
-  .form-prodotti {
-    
-    &::before {
-      content: "Richiedi informazioni su questo prodotto";
-      display: block;
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #495057;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-  }
-}
-
-// Versione inglese
-html:lang(en-US) {
-  .single-prodotto .form-prodotti::before {
-    content: "Request information about this product";
   }
 }
