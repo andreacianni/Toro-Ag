@@ -299,36 +299,36 @@ sup.r {
 }
 
 /* ====================================
-CONTACT FORM 7 STYLES
+FORM CONTATTI - STILI PERSONALIZZATI
 ==================================== */
-.wpcf7-form .form-section {
+.wpcf7-form .form-section, .form-prodotti .form-section {
   background-color: #f8f9fa;
   border: 1px solid #dee2e6;
   border-radius: 8px;
   padding: 25px;
   margin-bottom: 30px;
 }
-.wpcf7-form .form-section .form-label {
+.wpcf7-form .form-section .form-label, .form-prodotti .form-section .form-label {
   font-weight: 600;
   color: #495057;
   margin-bottom: 8px;
   font-size: 15px;
 }
-.wpcf7-form .radio-group {
+.wpcf7-form .radio-group, .form-prodotti .radio-group {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 15px;
 }
-.wpcf7-form .radio-group .wpcf7-list-item {
+.wpcf7-form .radio-group .wpcf7-list-item, .form-prodotti .radio-group .wpcf7-list-item {
   flex: 1;
   min-width: 140px;
   margin: 0;
 }
-.wpcf7-form .radio-group .wpcf7-list-item input[type=radio] {
+.wpcf7-form .radio-group .wpcf7-list-item input[type=radio], .form-prodotti .radio-group .wpcf7-list-item input[type=radio] {
   display: none;
 }
-.wpcf7-form .radio-group .wpcf7-list-item .wpcf7-list-item-label {
+.wpcf7-form .radio-group .wpcf7-list-item .wpcf7-list-item-label, .form-prodotti .radio-group .wpcf7-list-item .wpcf7-list-item-label {
   display: block;
   padding: 12px 16px;
   background-color: white;
@@ -340,38 +340,38 @@ CONTACT FORM 7 STYLES
   font-weight: 500;
   margin-bottom: 0;
 }
-.wpcf7-form .radio-group .wpcf7-list-item .wpcf7-list-item-label:hover {
+.wpcf7-form .radio-group .wpcf7-list-item .wpcf7-list-item-label:hover, .form-prodotti .radio-group .wpcf7-list-item .wpcf7-list-item-label:hover {
   border-color: #cd2027;
   background-color: #fff5f5;
 }
-.wpcf7-form .radio-group .wpcf7-list-item input[type=radio]:checked + .wpcf7-list-item-label {
+.wpcf7-form .radio-group .wpcf7-list-item input[type=radio]:checked + .wpcf7-list-item-label, .form-prodotti .radio-group .wpcf7-list-item input[type=radio]:checked + .wpcf7-list-item-label {
   background-color: #cd2027;
   color: white;
   border-color: #cd2027;
 }
 @media (max-width: 768px) {
-  .wpcf7-form .radio-group {
+  .wpcf7-form .radio-group, .form-prodotti .radio-group {
     flex-direction: column;
   }
-  .wpcf7-form .radio-group .wpcf7-list-item {
+  .wpcf7-form .radio-group .wpcf7-list-item, .form-prodotti .radio-group .wpcf7-list-item {
     min-width: 100%;
   }
 }
-.wpcf7-form .form-control {
+.wpcf7-form .form-control, .form-prodotti .form-control {
   border: 2px solid #dee2e6;
   border-radius: 8px;
   padding: 12px 16px;
   font-size: 15px;
   transition: all 0.3s ease;
 }
-.wpcf7-form .form-control:focus {
+.wpcf7-form .form-control:focus, .form-prodotti .form-control:focus {
   border-color: #cd2027;
   box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
 }
-.wpcf7-form .form-control::placeholder {
+.wpcf7-form .form-control::placeholder, .form-prodotti .form-control::placeholder {
   color: #6c757d;
 }
-.wpcf7-form .privacy-check {
+.wpcf7-form .privacy-check, .form-prodotti .privacy-check {
   margin-top: 25px;
   padding: 20px 20px 0 0;
   background-color: #f8f9fa;
@@ -379,25 +379,25 @@ CONTACT FORM 7 STYLES
   border: 1px solid #dee2e6;
   display: flex;
 }
-.wpcf7-form .privacy-check .wpcf7-list-item-label {
+.wpcf7-form .privacy-check .wpcf7-list-item-label, .form-prodotti .privacy-check .wpcf7-list-item-label {
   display: none;
 }
-.wpcf7-form .privacy-check p.privacy-text {
+.wpcf7-form .privacy-check p.privacy-text, .form-prodotti .privacy-check p.privacy-text {
   margin-left: 7px;
   font-size: 0.9em;
 }
-.wpcf7-form .privacy-check .form-check-label {
+.wpcf7-form .privacy-check .form-check-label, .form-prodotti .privacy-check .form-check-label {
   font-size: 14px;
   line-height: 1.5;
 }
-.wpcf7-form .privacy-check .form-check-label a {
+.wpcf7-form .privacy-check .form-check-label a, .form-prodotti .privacy-check .form-check-label a {
   color: #cd2027;
   text-decoration: none;
 }
-.wpcf7-form .privacy-check .form-check-label a:hover {
+.wpcf7-form .privacy-check .form-check-label a:hover, .form-prodotti .privacy-check .form-check-label a:hover {
   text-decoration: underline;
 }
-.wpcf7-form .btn-submit {
+.wpcf7-form .btn-submit, .form-prodotti .btn-submit {
   background-color: #cd2027;
   color: white;
   border: 2px solid #cd2027;
@@ -409,32 +409,92 @@ CONTACT FORM 7 STYLES
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-.wpcf7-form .btn-submit:hover {
+.wpcf7-form .btn-submit:hover, .form-prodotti .btn-submit:hover {
   background-color: white;
   color: #cd2027;
   border-color: #cd2027;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(205, 32, 39, 0.3);
 }
-.wpcf7-form .btn-submit:focus {
+.wpcf7-form .btn-submit:focus, .form-prodotti .btn-submit:focus {
   outline: none;
   box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
 }
-.wpcf7-form .required {
+.wpcf7-form .required, .form-prodotti .required {
   color: #cd2027;
 }
-.wpcf7-form .wpcf7-response-output {
+.wpcf7-form .wpcf7-response-output, .form-prodotti .wpcf7-response-output {
   border-radius: 8px;
   padding: 15px;
   margin-top: 20px;
 }
-.wpcf7-form .wpcf7-response-output.wpcf7-mail-sent-ok {
+.wpcf7-form .wpcf7-response-output.wpcf7-mail-sent-ok, .form-prodotti .wpcf7-response-output.wpcf7-mail-sent-ok {
   background-color: #d4edda;
   border-color: #c3e6cb;
   color: #155724;
 }
-.wpcf7-form .wpcf7-response-output.wpcf7-validation-errors {
+.wpcf7-form .wpcf7-response-output.wpcf7-validation-errors, .form-prodotti .wpcf7-response-output.wpcf7-validation-errors {
   background-color: #f8d7da;
   border-color: #f5c6cb;
   color: #721c24;
+}
+
+/* ====================================
+FORM PRODOTTI - STILI SPECIFICI
+==================================== */
+.form-prodotti {
+  background-color: #f9f9f9;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 25px;
+  margin: 20px 0;
+}
+.form-prodotti .form-title {
+  color: #cd2027;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.form-prodotti .form-control {
+  background-color: white;
+}
+.form-prodotti .form-control:focus {
+  background-color: white;
+  border-color: #cd2027;
+  box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
+}
+.form-prodotti .btn-submit {
+  background: linear-gradient(135deg, #cd2027 0%, #a1191f 100%);
+  border: 2px solid #cd2027;
+  text-transform: none;
+}
+.form-prodotti .btn-submit:hover {
+  background: white;
+  color: #cd2027;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(205, 32, 39, 0.25);
+}
+@media (max-width: 768px) {
+  .form-prodotti {
+    padding: 20px 15px;
+    margin: 15px 0;
+  }
+}
+
+.single-prodotto .form-prodotti {
+  margin-top: 40px;
+}
+.single-prodotto .form-prodotti::before {
+  content: "Richiedi informazioni su questo prodotto";
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+html:lang(en-US) .single-prodotto .form-prodotti::before {
+  content: "Request information about this product";
 }/*# sourceMappingURL=style.css.map */

@@ -368,7 +368,7 @@ sup.r {
 }
 
 /* ====================================
-CONTACT FORM 7 STYLES
+FORM CONTATTI - STILI PERSONALIZZATI
 ==================================== */
 
 // Variabili
@@ -474,6 +474,7 @@ $brand-red-hover: #b01c22;
     .wpcf7-list-item-label{
       display: none;
     }
+
     p.privacy-text {
       margin-left: 7px;
       font-size: 0.9em;
@@ -543,5 +544,86 @@ $brand-red-hover: #b01c22;
       border-color: #f5c6cb;
       color: #721c24;
     }
+  }
+}
+
+/* ====================================
+FORM PRODOTTI - STILI SPECIFICI
+==================================== */
+
+// Stili per il form prodotti (eredita da .wpcf7-form)
+.form-prodotti {
+  // Eredita tutti gli stili del form contatti
+  @extend .wpcf7-form;
+  
+  // Background più leggero per differenziarlo
+  background-color: #f9f9f9;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 25px;
+  margin: 20px 0;
+  
+  // Titolo del form (se presente)
+  .form-title {
+    color: $brand-red;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  // Personalizzazioni specifiche per form prodotti
+  .form-control {
+    background-color: white;
+    
+    &:focus {
+      background-color: white;
+      border-color: $brand-red;
+      box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
+    }
+  }
+  
+  // Pulsante specifico per prodotti
+  .btn-submit {
+    background: linear-gradient(135deg, $brand-red 0%, darken($brand-red, 10%) 100%);
+    border: 2px solid $brand-red;
+    text-transform: none; // Rimuove uppercase per "Richiedi informazioni"
+    
+    &:hover {
+      background: white;
+      color: $brand-red;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(205, 32, 39, 0.25);
+    }
+  }
+  
+  // Mobile responsive
+  @media (max-width: 768px) {
+    padding: 20px 15px;
+    margin: 15px 0;
+  }
+}
+
+// Stili per integrare il form nelle pagine prodotto
+.single-prodotto {
+  .form-prodotti {
+    margin-top: 40px;
+    
+    &::before {
+      content: "Richiedi informazioni su questo prodotto";
+      display: block;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+  }
+}
+
+// Versione inglese
+html:lang(en-US) {
+  .single-prodotto .form-prodotti::before {
+    content: "Request information about this product";
   }
 }
