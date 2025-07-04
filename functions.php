@@ -67,7 +67,8 @@ function aggiungi_bootstrap_admin() {
 }
 add_action('admin_enqueue_scripts', 'aggiungi_bootstrap_admin');
 
-
+// carica il routing email per CF7
+require_once get_stylesheet_directory() . '/inc/cf7-email-routing.php';
 // carica helpers e shortcodes
 require_once get_stylesheet_directory() . '/inc/helpers/file-icon.php';
 require_once get_stylesheet_directory() . '/inc/helpers/language-flag.php';
