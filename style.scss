@@ -366,3 +366,188 @@ sup.r {
     color: #CD2027 !important;
   }
 }
+
+/* ====================================
+   CONTACT FORM 7 STYLES
+   ==================================== */
+
+// Variabili
+$brand-red: #cd2027;
+$brand-red-hover: #b01c22;
+
+// Stili per Contact Form 7
+.wpcf7-form {
+    
+    // Sezione del settore
+    .form-section {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 25px;
+        margin-bottom: 30px;
+        
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+    }
+    
+    // Radio buttons personalizzati
+    .radio-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 15px;
+        
+        .wpcf7-list-item {
+            flex: 1;
+            min-width: 140px;
+            margin: 0;
+            
+            input[type="radio"] {
+                display: none;
+            }
+            
+            .wpcf7-list-item-label {
+                display: block;
+                padding: 12px 16px;
+                background-color: white;
+                border: 2px solid #dee2e6;
+                border-radius: 6px;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-weight: 500;
+                margin-bottom: 0;
+                
+                &:hover {
+                    border-color: $brand-red;
+                    background-color: #fff5f5;
+                }
+            }
+            
+            input[type="radio"]:checked + .wpcf7-list-item-label {
+                background-color: $brand-red;
+                color: white;
+                border-color: $brand-red;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            flex-direction: column;
+            
+            .wpcf7-list-item {
+                min-width: 100%;
+            }
+        }
+    }
+    
+    // Form controls
+    .form-control {
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        
+        &:focus {
+            border-color: $brand-red;
+            box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
+        }
+        
+        &::placeholder {
+            color: #6c757d;
+        }
+    }
+    
+    // Checkbox privacy
+    .privacy-check {
+        margin-top: 25px;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+        
+        .form-check-input {
+            border: 2px solid #dee2e6;
+            border-radius: 4px;
+            
+            &:checked {
+                background-color: $brand-red;
+                border-color: $brand-red;
+            }
+            
+            &:focus {
+                border-color: $brand-red;
+                box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
+            }
+        }
+        
+        .form-check-label {
+            font-size: 14px;
+            line-height: 1.5;
+            
+            a {
+                color: $brand-red;
+                text-decoration: none;
+                
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+    
+    // Pulsante di invio
+    .btn-submit {
+        background-color: $brand-red;
+        color: white;
+        border: 2px solid $brand-red;
+        padding: 14px 35px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        
+        &:hover {
+            background-color: white;
+            color: $brand-red;
+            border-color: $brand-red;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(205, 32, 39, 0.3);
+        }
+        
+        &:focus {
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
+        }
+    }
+    
+    // Asterischi required
+    .required {
+        color: $brand-red;
+    }
+    
+    // Messaggi di errore/successo
+    .wpcf7-response-output {
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 20px;
+        
+        &.wpcf7-mail-sent-ok {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        
+        &.wpcf7-validation-errors {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+    }
+}

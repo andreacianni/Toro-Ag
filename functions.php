@@ -67,8 +67,19 @@ function aggiungi_bootstrap_admin() {
 }
 add_action('admin_enqueue_scripts', 'aggiungi_bootstrap_admin');
 
-// carica il routing email per CF7
-require_once get_stylesheet_directory() . '/inc/cf7-email-routing.php';
+// Carica il file per il routing delle email
+require_once get_stylesheet_directory() . '/includes/cf7-email-routing.php';
+
+// Configura gli ID dei moduli
+function configure_cf7_routing() {
+    if (class_exists('CF7_Email_Routing')) {
+        $cf7_email_routing = new CF7_Email_Routing();
+        $cf7_email_routing->update_form_ids(123, 124); // I tuoi ID reali
+    }
+}
+add_action('init', 'configure_cf7_routing');
+
+
 // carica helpers e shortcodes
 require_once get_stylesheet_directory() . '/inc/helpers/file-icon.php';
 require_once get_stylesheet_directory() . '/inc/helpers/language-flag.php';
