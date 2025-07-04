@@ -74,7 +74,7 @@ require_once get_stylesheet_directory() . '/inc/cf7-email-routing.php';
 function configure_cf7_routing() {
     if (class_exists('CF7_Email_Routing')) {
         $cf7_email_routing = new CF7_Email_Routing();
-        $cf7_email_routing->update_form_ids(123, 124); // I tuoi ID reali
+        $cf7_email_routing->update_form_ids(5111); // I tuoi ID reali
     }
 }
 add_action('init', 'configure_cf7_routing');

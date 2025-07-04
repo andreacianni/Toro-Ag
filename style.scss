@@ -465,11 +465,11 @@ $brand-red-hover: #b01c22;
     // Checkbox privacy
     .privacy-check {
         margin-top: 25px;
-        padding: 20px;
+        // padding: 20px;
         background-color: #f8f9fa;
         border-radius: 8px;
         border: 1px solid #dee2e6;
-        
+        /*
         .form-check-input {
             border: 2px solid #dee2e6;
             border-radius: 4px;
@@ -484,7 +484,7 @@ $brand-red-hover: #b01c22;
                 box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
             }
         }
-        
+        */
         .form-check-label {
             font-size: 14px;
             line-height: 1.5;
