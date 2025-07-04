@@ -311,59 +311,83 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 .form-contatti-new .motivo-section .radio-inline, .form-prodotti-new .motivo-section .radio-inline {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 25px;
   margin-top: 10px;
+  align-items: center;
 }
 .form-contatti-new .motivo-section .radio-inline .wpcf7-list-item, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item {
   margin: 0;
   flex: 0 0 auto;
+  display: flex;
+  align-items: center;
 }
 .form-contatti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio], .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio] {
-  display: none;
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  cursor: pointer;
+  appearance: none;
+  border: 2px solid #dee2e6;
+  border-radius: 50%;
+  background-color: white;
+  position: relative;
+  transition: all 0.2s ease;
+}
+.form-contatti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:hover, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:hover {
+  border-color: #e86b70;
+}
+.form-contatti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:checked, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:checked {
+  border-color: #cd2027;
+  background-color: #cd2027;
+}
+.form-contatti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:checked::after, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:checked::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: white;
+  transform: translate(-50%, -50%);
+}
+.form-contatti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:focus, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(205, 32, 39, 0.15);
 }
 .form-contatti-new .motivo-section .radio-inline .wpcf7-list-item .wpcf7-list-item-label, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item .wpcf7-list-item-label {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: white;
-  border: 2px solid #dee2e6;
-  border-radius: 25px;
   cursor: pointer;
-  transition: all 0.3s ease;
   font-weight: 500;
-  font-size: 14px;
   color: #495057;
-  white-space: nowrap;
+  font-size: 15px;
+  line-height: 1;
+  user-select: none;
 }
 .form-contatti-new .motivo-section .radio-inline .wpcf7-list-item .wpcf7-list-item-label:hover, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item .wpcf7-list-item-label:hover {
-  border-color: #cd2027;
-  background-color: #fff5f5;
-  color: #333;
+  color: #cd2027;
 }
 .form-contatti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:checked + .wpcf7-list-item-label, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:checked + .wpcf7-list-item-label {
-  background-color: #cd2027;
-  color: white;
-  border-color: #cd2027;
-  box-shadow: 0 2px 8px rgba(205, 32, 39, 0.25);
+  color: #cd2027;
+  font-weight: 600;
 }
 @media (max-width: 767px) {
   .form-contatti-new .motivo-section .radio-inline, .form-prodotti-new .motivo-section .radio-inline {
-    gap: 12px;
-    justify-content: center;
+    gap: 20px;
   }
   .form-contatti-new .motivo-section .radio-inline .wpcf7-list-item, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item {
     flex: 1 1 45%;
     min-width: 120px;
   }
-  .form-contatti-new .motivo-section .radio-inline .wpcf7-list-item .wpcf7-list-item-label, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item .wpcf7-list-item-label {
-    width: 100%;
-    text-align: center;
-    padding: 12px 8px;
-    font-size: 13px;
-  }
 }
 @media (max-width: 480px) {
+  .form-contatti-new .motivo-section .radio-inline, .form-prodotti-new .motivo-section .radio-inline {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
   .form-contatti-new .motivo-section .radio-inline .wpcf7-list-item, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item {
-    flex: 1 1 100%;
+    flex: none;
+    width: 100%;
   }
 }
 .form-contatti-new .row, .form-prodotti-new .row {

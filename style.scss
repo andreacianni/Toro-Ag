@@ -378,7 +378,7 @@ $brand-red-hover: #b01c22;
 // ===== FORM CONTATTI - NUOVO LAYOUT =====
 .form-contatti-new {
   
-  // Sezione motivo - Radio inline eleganti
+  // Sezione motivo - Radio classiche inline
   .motivo-section {
     .form-label {
       font-weight: 600;
@@ -388,71 +388,97 @@ $brand-red-hover: #b01c22;
       display: block;
     }
     
-    // Radio buttons inline
+    // Radio buttons classici inline
     .radio-inline {
       display: flex;
       flex-wrap: wrap;
-      gap: 20px;
+      gap: 25px;
       margin-top: 10px;
+      align-items: center;
       
       .wpcf7-list-item {
         margin: 0;
         flex: 0 0 auto;
+        display: flex;
+        align-items: center;
         
         input[type="radio"] {
-          display: none; // Nasconde radio default
-        }
-        
-        .wpcf7-list-item-label {
-          display: inline-block;
-          padding: 10px 20px;
-          background-color: white;
-          border: 2px solid #dee2e6;
-          border-radius: 25px; // Pills style
+          width: 18px;
+          height: 18px;
+          margin-right: 8px;
           cursor: pointer;
-          transition: all 0.3s ease;
-          font-weight: 500;
-          font-size: 14px;
-          color: #495057;
-          white-space: nowrap;
+          appearance: none;
+          border: 2px solid #dee2e6;
+          border-radius: 50%;
+          background-color: white;
+          position: relative;
+          transition: all 0.2s ease;
           
           &:hover {
+            border-color: lighten($brand-red, 20%);
+          }
+          
+          &:checked {
             border-color: $brand-red;
-            background-color: #fff5f5;
-            color: #333;
+            background-color: $brand-red;
+            
+            &::after {
+              content: '';
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              width: 6px;
+              height: 6px;
+              border-radius: 50%;
+              background-color: white;
+              transform: translate(-50%, -50%);
+            }
+          }
+          
+          &:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(205, 32, 39, 0.15);
           }
         }
         
-        // Stato selezionato
+        .wpcf7-list-item-label {
+          cursor: pointer;
+          font-weight: 500;
+          color: #495057;
+          font-size: 15px;
+          line-height: 1;
+          user-select: none;
+          
+          &:hover {
+            color: $brand-red;
+          }
+        }
+        
+        // Quando radio è selezionato, colora anche il label
         input[type="radio"]:checked + .wpcf7-list-item-label {
-          background-color: $brand-red;
-          color: white;
-          border-color: $brand-red;
-          box-shadow: 0 2px 8px rgba(205, 32, 39, 0.25);
+          color: $brand-red;
+          font-weight: 600;
         }
       }
       
       // Responsive mobile
       @media (max-width: 767px) {
-        gap: 12px;
-        justify-content: center;
+        gap: 20px;
         
         .wpcf7-list-item {
           flex: 1 1 45%; // 2 per riga su mobile
           min-width: 120px;
-          
-          .wpcf7-list-item-label {
-            width: 100%;
-            text-align: center;
-            padding: 12px 8px;
-            font-size: 13px;
-          }
         }
       }
       
       @media (max-width: 480px) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        
         .wpcf7-list-item {
-          flex: 1 1 100%; // 1 per riga su schermi molto piccoli
+          flex: none;
+          width: 100%;
         }
       }
     }
