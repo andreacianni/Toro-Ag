@@ -299,8 +299,8 @@ sup.r {
 }
 
 /* ====================================
-   CONTACT FORM 7 STYLES
-   ==================================== */
+CONTACT FORM 7 STYLES
+==================================== */
 .wpcf7-form .form-section {
   background-color: #f8f9fa;
   border: 1px solid #dee2e6;
@@ -378,25 +378,13 @@ sup.r {
   border-radius: 8px;
   border: 1px solid #dee2e6;
   display: flex;
-  /*
-  .form-check-input {
-      border: 2px solid #dee2e6;
-      border-radius: 4px;
-
-      &:checked {
-          background-color: $brand-red;
-          border-color: $brand-red;
-      }
-
-      &:focus {
-          border-color: $brand-red;
-          box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
-      }
-  }
-  */
 }
 .wpcf7-form .privacy-check .wpcf7-list-item-label {
   display: none;
+}
+.wpcf7-form .privacy-check p.privacy-text {
+  margin-left: 7px;
+  font-size: 0.9em;
 }
 .wpcf7-form .privacy-check .form-check-label {
   font-size: 14px;
