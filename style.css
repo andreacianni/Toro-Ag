@@ -373,7 +373,7 @@ sup.r {
 }
 .wpcf7-form .privacy-check {
   margin-top: 25px;
-  padding: 20px;
+  padding: 20px 20px 20px 0;
   background-color: #f8f9fa;
   border-radius: 8px;
   border: 1px solid #dee2e6;
