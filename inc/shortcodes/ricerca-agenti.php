@@ -190,7 +190,7 @@ add_shortcode('ricerca_agenti', function($atts) {
             
             <div class="form-group">
                 <button type="submit" class="btn-search" disabled>
-                    🔍 Cerca Agenti
+                    Cerca i rivenditori
                 </button>
             </div>
         </div>
