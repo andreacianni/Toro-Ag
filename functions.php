@@ -68,7 +68,7 @@ function aggiungi_bootstrap_admin() {
 add_action('admin_enqueue_scripts', 'aggiungi_bootstrap_admin');
 
 // Carica il file per il routing delle email
-require_once get_stylesheet_directory() . '/includes/cf7-email-routing.php';
+require_once get_stylesheet_directory() . '/inc/cf7-email-routing.php';
 
 // Configura gli ID dei moduli
 function configure_cf7_routing() {
