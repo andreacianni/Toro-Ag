@@ -368,83 +368,83 @@ sup.r {
 }
 
 /* ====================================
-FORM CONTATTI - STILI PERSONALIZZATI
+NUOVO LAYOUT FORMS - 2 COLONNE
 ==================================== */
 
 // Variabili
 $brand-red: #cd2027;
 $brand-red-hover: #b01c22;
 
-// Stili per Contact Form 7
-.wpcf7-form {
+// ===== FORM CONTATTI - NUOVO LAYOUT =====
+.form-contatti-new {
   
-  // Sezione del settore
-  .form-section {
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    padding: 25px;
-    margin-bottom: 30px;
-    
+  // Sezione motivo - Dropdown elegante
+  .motivo-section {
     .form-label {
       font-weight: 600;
       color: #495057;
       margin-bottom: 8px;
       font-size: 15px;
     }
-  }
-  
-  // Radio buttons personalizzati
-  .radio-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 15px;
     
-    .wpcf7-list-item {
-      flex: 1;
-      min-width: 140px;
-      margin: 0;
+    select.form-control {
+      padding: 12px 16px;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      font-size: 15px;
+      background-color: white;
+      transition: all 0.3s ease;
       
-      input[type="radio"] {
-        display: none;
-      }
-      
-      .wpcf7-list-item-label {
-        display: block;
-        padding: 12px 16px;
-        background-color: white;
-        border: 2px solid #dee2e6;
-        border-radius: 6px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-weight: 500;
-        margin-bottom: 0;
-        
-        &:hover {
-          border-color: $brand-red;
-          background-color: #fff5f5;
-        }
-      }
-      
-      input[type="radio"]:checked + .wpcf7-list-item-label {
-        background-color: $brand-red;
-        color: white;
+      &:focus {
         border-color: $brand-red;
+        box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
+        outline: none;
       }
-    }
-    
-    @media (max-width: 768px) {
-      flex-direction: column;
       
-      .wpcf7-list-item {
-        min-width: 100%;
+      option {
+        padding: 8px;
       }
     }
   }
   
-  // Form controls
+  // Layout principale
+  .row {
+    min-height: 300px; // Altezza minima per garantire bilanciamento
+  }
+  
+  // Colonna sinistra - Dati personali
+  .col-md-6:first-child {
+    .d-flex {
+      gap: 0; // Bootstrap gestisce già gli spacing con mb-3
+    }
+  }
+  
+  // Textarea full height
+  .textarea-full-height {
+    height: 100% !important;
+    min-height: 280px;
+    resize: vertical;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 15px;
+    line-height: 1.5;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    
+    &:focus {
+      border-color: $brand-red;
+      box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
+      outline: none;
+    }
+    
+    &::placeholder {
+      color: #6c757d;
+      font-style: italic;
+    }
+  }
+  
+  // Form controls standard
   .form-control {
     border: 2px solid #dee2e6;
     border-radius: 8px;
@@ -462,34 +462,37 @@ $brand-red-hover: #b01c22;
     }
   }
   
-  // Checkbox privacy
-  .privacy-check {
-    margin-top: 25px;
-    padding: 20px 20px 0 0;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #dee2e6;
-    display: flex;
+  // Privacy section
+  .privacy-section {
+    border-top: 1px solid #e9ecef;
+    padding-top: 20px;
     
-    .wpcf7-list-item-label{
-      display: none;
-    }
-
-    p.privacy-text {
-      margin-left: 7px;
-      font-size: 0.9em;
-    }
-
-    .form-check-label {
-      font-size: 14px;
-      line-height: 1.5;
+    .privacy-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+      border: 1px solid #dee2e6;
       
-      a {
-        color: $brand-red;
-        text-decoration: none;
+      .wpcf7-list-item-label {
+        display: none; // Nasconde label "Privacy"
+      }
+      
+      .privacy-text {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #495057;
         
-        &:hover {
-          text-decoration: underline;
+        a {
+          color: $brand-red;
+          text-decoration: none;
+          
+          &:hover {
+            text-decoration: underline;
+          }
         }
       }
     }
@@ -525,89 +528,102 @@ $brand-red-hover: #b01c22;
   // Asterischi required
   .required {
     color: $brand-red;
+    font-weight: bold;
   }
   
-  // Messaggi di errore/successo
-  .wpcf7-response-output {
-    border-radius: 8px;
-    padding: 15px;
-    margin-top: 20px;
+  // Labels
+  .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+    font-size: 15px;
+  }
+}
+
+// ===== FORM PRODOTTI - NUOVO LAYOUT =====
+.form-prodotti-new {
+  // Eredita tutti gli stili del form contatti MA senza background
+  @extend .form-contatti-new;
+  
+  // Rimuove qualsiasi background/border container
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 20px 0;
+  
+  // Privacy section più leggera
+  .privacy-section {
+    border-top: 1px solid #e9ecef;
     
-    &.wpcf7-mail-sent-ok {
-      background-color: #d4edda;
-      border-color: #c3e6cb;
-      color: #155724;
+    .privacy-check {
+      background-color: #f8f9fa;
+      border-color: #e9ecef;
+    }
+  }
+  
+  // Pulsante prodotti leggermente diverso
+  .btn-submit {
+    text-transform: none; // "Richiedi informazioni" senza uppercase
+    background: linear-gradient(135deg, $brand-red 0%, darken($brand-red, 8%) 100%);
+  }
+}
+
+// ===== RESPONSIVE =====
+@media (max-width: 767px) {
+  .form-contatti-new,
+  .form-prodotti-new {
+    
+    // Su mobile le colonne diventano full-width
+    .row {
+      min-height: auto;
     }
     
-    &.wpcf7-validation-errors {
-      background-color: #f8d7da;
-      border-color: #f5c6cb;
-      color: #721c24;
+    // Textarea ridotta su mobile
+    .textarea-full-height {
+      min-height: 150px !important;
+      height: 150px !important;
+    }
+    
+    // Motivo section mobile
+    .motivo-section {
+      margin-bottom: 25px;
+    }
+    
+    // Padding ridotto su mobile
+    .privacy-check {
+      padding: 15px;
+    }
+    
+    .btn-submit {
+      width: 100%;
+      padding: 16px;
     }
   }
 }
 
-/* ====================================
-FORM PRODOTTI - STILI SPECIFICI
-==================================== */
-
-// Stili per il form prodotti (eredita da .wpcf7-form)
-.form-prodotti {
-  // Eredita tutti gli stili del form contatti
-  @extend .wpcf7-form;
+// ===== MESSAGGI CF7 =====
+.wpcf7-response-output {
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 20px;
+  font-weight: 500;
   
-  // Background più leggero per differenziarlo
-  background-color: #f9f9f9;
-  border: 1px solid #e9ecef;
-  border-radius: 12px;
-  padding: 25px;
-  margin: 20px 0;
-  
-  // Titolo del form (se presente)
-  .form-title {
-    color: $brand-red;
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 20px;
-    text-align: center;
+  &.wpcf7-mail-sent-ok {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
   }
   
-  // Personalizzazioni specifiche per form prodotti
-  .form-control {
-    background-color: white;
-    
-    &:focus {
-      background-color: white;
-      border-color: $brand-red;
-      box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
-    }
-  }
-  
-  // Pulsante specifico per prodotti
-  .btn-submit {
-    background: linear-gradient(135deg, $brand-red 0%, darken($brand-red, 10%) 100%);
-    border: 2px solid $brand-red;
-    text-transform: none; // Rimuove uppercase per "Richiedi informazioni"
-    
-    &:hover {
-      background: white;
-      color: $brand-red;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 15px rgba(205, 32, 39, 0.25);
-    }
-  }
-  
-  // Mobile responsive
-  @media (max-width: 768px) {
-    padding: 20px 15px;
-    margin: 15px 0;
+  &.wpcf7-validation-errors {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
   }
 }
 
 // Stili per integrare il form nelle pagine prodotto
 .single-prodotto {
   .form-prodotti {
-    margin-top: 40px;
     
     &::before {
       content: "Richiedi informazioni su questo prodotto";
