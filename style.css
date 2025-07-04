@@ -301,25 +301,39 @@ sup.r {
 /* ====================================
 NUOVO LAYOUT FORMS - 2 COLONNE
 ==================================== */
+.form-contatti-new .motivo-section p, .form-prodotti-new .motivo-section p {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 0;
+}
 .form-contatti-new .motivo-section .form-label, .form-prodotti-new .motivo-section .form-label {
   font-weight: 600;
   color: #495057;
-  margin-bottom: 15px;
   font-size: 15px;
-  display: block;
+  margin: 0;
+  white-space: nowrap;
+}
+.form-contatti-new .motivo-section .wpcf7-form-control-wrap, .form-prodotti-new .motivo-section .wpcf7-form-control-wrap {
+  flex: 1;
+  min-width: 0;
 }
 .form-contatti-new .motivo-section .radio-inline, .form-prodotti-new .motivo-section .radio-inline {
   display: flex;
   flex-wrap: wrap;
   gap: 25px;
-  margin-top: 10px;
   align-items: center;
 }
 .form-contatti-new .motivo-section .radio-inline .wpcf7-list-item, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item {
   margin: 0;
   flex: 0 0 auto;
+}
+.form-contatti-new .motivo-section .radio-inline .wpcf7-list-item label, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item label {
   display: flex;
   align-items: center;
+  cursor: pointer;
+  margin: 0;
 }
 .form-contatti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio], .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio] {
   width: 18px;
@@ -332,6 +346,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   background-color: white;
   position: relative;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 .form-contatti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:hover, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item input[type=radio]:hover {
   border-color: #e86b70;
@@ -356,12 +371,12 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   box-shadow: 0 0 0 3px rgba(205, 32, 39, 0.15);
 }
 .form-contatti-new .motivo-section .radio-inline .wpcf7-list-item .wpcf7-list-item-label, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item .wpcf7-list-item-label {
-  cursor: pointer;
   font-weight: 500;
   color: #495057;
   font-size: 15px;
   line-height: 1;
   user-select: none;
+  white-space: nowrap;
 }
 .form-contatti-new .motivo-section .radio-inline .wpcf7-list-item .wpcf7-list-item-label:hover, .form-prodotti-new .motivo-section .radio-inline .wpcf7-list-item .wpcf7-list-item-label:hover {
   color: #cd2027;
@@ -370,7 +385,15 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   color: #cd2027;
   font-weight: 600;
 }
-@media (max-width: 767px) {
+@media (max-width: 991px) {
+  .form-contatti-new .motivo-section p, .form-prodotti-new .motivo-section p {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  .form-contatti-new .motivo-section .form-label, .form-prodotti-new .motivo-section .form-label {
+    width: 100%;
+  }
   .form-contatti-new .motivo-section .radio-inline, .form-prodotti-new .motivo-section .radio-inline {
     gap: 20px;
   }
