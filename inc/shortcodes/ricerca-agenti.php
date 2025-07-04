@@ -166,106 +166,6 @@ add_shortcode('ricerca_agenti', function($atts) {
     // Costruisci il form e il contenitore risultati
     ob_start(); ?>
     
-    <style>
-    .ricerca-agenti-form {
-        background: #f8f9fa;
-        padding: 2rem;
-        border-radius: 12px;
-        border: 1px solid #e9ecef;
-        margin-bottom: 2rem;
-    }
-    
-    .form-row {
-        display: flex;
-        gap: 1rem;
-        align-items: end;
-        flex-wrap: wrap;
-        margin-bottom: 1rem;
-    }
-    
-    .form-group {
-        flex: 1;
-        min-width: 200px;
-    }
-    
-    .form-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-        color: #495057;
-    }
-    
-    .form-control {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        border: 2px solid #dee2e6;
-        border-radius: 8px;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        background-color: white;
-    }
-    
-    .form-control:focus {
-        outline: none;
-        border-color: #dc3545;
-        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
-    }
-    
-    .form-control:disabled {
-        background-color: #f8f9fa;
-        color: #6c757d;
-        cursor: not-allowed;
-    }
-    
-    .btn-search {
-        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-        color: white;
-        border: none;
-        padding: 0.75rem 2rem;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 6px rgba(220, 53, 69, 0.3);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .btn-search:hover {
-        background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(220, 53, 69, 0.4);
-    }
-    
-    .btn-search:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
-    }
-    
-    .btn-search:disabled {
-        background: #6c757d;
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
-    }
-    
-    @media (max-width: 768px) {
-        .form-row {
-            flex-direction: column;
-        }
-        
-        .form-group {
-            min-width: 100%;
-        }
-        
-        .btn-search {
-            width: 100%;
-            margin-top: 1rem;
-        }
-    }
-    </style>
-    
     <form id="ricerca-agenti-form" class="ricerca-agenti-form">
         <div class="form-row">
             <div class="form-group">
@@ -279,7 +179,6 @@ add_shortcode('ricerca_agenti', function($atts) {
                         </option>
                     <?php endforeach; ?>
                 </select>
-                <small class="form-text text-muted">Seleziona una regione specifica o "Tutte" per visualizzare tutte le province</small>
             </div>
             
             <div class="form-group">
@@ -287,7 +186,6 @@ add_shortcode('ricerca_agenti', function($atts) {
                 <select id="territorio-select" name="territorio" class="form-control" required disabled>
                     <option value="" disabled selected>— Prima seleziona la regione —</option>
                 </select>
-                <small class="form-text text-muted">Le province si aggiorneranno in base alla regione selezionata</small>
             </div>
             
             <div class="form-group">
