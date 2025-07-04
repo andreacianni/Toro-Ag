@@ -754,6 +754,10 @@ $brand-red-hover: #b01c22;
     flex: 1;
     min-width: 200px;
 
+    &:last-child {
+    flex: 0 0 auto;  // ← Il pulsante non si espande
+    }
+
     label {
       display: block;
       margin-bottom: 0.5rem;

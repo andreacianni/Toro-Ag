@@ -594,6 +594,9 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   flex: 1;
   min-width: 200px;
 }
+.ricerca-agenti-form .form-group:last-child {
+  flex: 0 0 auto;
+}
 .ricerca-agenti-form .form-group label {
   display: block;
   margin-bottom: 0.5rem;
