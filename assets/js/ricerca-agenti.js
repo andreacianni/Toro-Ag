@@ -73,7 +73,7 @@
     
     // Feedback visivo durante il caricamento
     $submitBtn.prop('disabled', true).html('🔄 Ricerca in corso...');
-    $container.html('<div class="text-center p-4"><div class="spinner-border text-danger" role="status"><span class="visually-hidden">Caricamento...</span></div><p class="mt-2">Ricerca agenti in corso...</p></div>');
+    $container.html('<div class="text-center p-4"><div class="spinner-border text-danger" role="status"><span class="visually-hidden">Caricamento...</span></div><p class="mt-2">Ricerca rivenditori in corso...</p></div>');
     
     // Se è selezionato "tutte", ottieni tutte le province disponibili del dropdown
     var territoriDaCercare = [];
@@ -104,7 +104,7 @@
     
     $.when.apply($, promiseArray).done(function() {
       // Ripristina il pulsante
-      $submitBtn.prop('disabled', false).html('🔍 Cerca Agenti');
+      $submitBtn.prop('disabled', false).html('Cerca Rivenditori');
       
       var allAgents = [];
       var agentIds = new Set(); // Per evitare duplicati
@@ -198,7 +198,7 @@
       
     }).fail(function(){
       // Ripristina il pulsante
-      $submitBtn.prop('disabled', false).html('🔍 Cerca Agenti');
+      $submitBtn.prop('disabled', false).html('Cerca rivenditori');
       $container.html('<div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> Errore nella richiesta. Verifica la connessione e riprova.</div>');
     });
   });
