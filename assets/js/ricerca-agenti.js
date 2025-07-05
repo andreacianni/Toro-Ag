@@ -139,10 +139,10 @@
       var territoriText = provinciaSelezionata === 'tutte' ? 'tutte le aree selezionate' : provinciaSelezionata;
       var html = ''
       + '<div class="results-header mb-3">'
-      +   '<h4><i class="bi bi-people-fill text-danger"></i> Agenti trovati in <strong>' + territoriText + '</strong> (' + allAgents.length + ')</h4>'
+      +   '<h4><i class="bi bi-people-fill text-danger"></i> Rivenditori trovati in <strong>' + territoriText + '</strong> (' + allAgents.length + ')</h4>'
       + '</div>'
       + '<table id="risultato-ricerca-territorio" class="table align-middle table-striped table-hover shadow-sm">'
-      +   '<thead class="table-dark">'
+      +   '<thead class="table-light">'
       +     '<tr>'
       +       '<th><i class="bi bi-person-badge"></i> Denominazione</th>'
       +       '<th><i class="bi bi-telephone"></i> Contatti</th>'
