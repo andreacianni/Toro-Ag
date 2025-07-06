@@ -5,6 +5,7 @@ $img_field = get_query_var('toro_ag_grid_image_field','featured');
 
 
 <?php if ( is_singular('prodotto') && !empty($items) ) : // solo in singolo prodotto e se ci sono elementi ?>
+    <!-- inc\views\shortcode-grid.php -->
   <h5 class="text-bg-dark px-3 py-2 my-4 rounded-2"><?php _e( 'Applicazioni', 'toro-ag' ); ?></h5>
 <?php endif; ?>
 

@@ -6,6 +6,7 @@ $columns   = get_query_var('toro_ag_grid_columns', 3); // default 3 colonne
 ?>
 
 <?php if (!empty($title)) : ?>
+    <!-- inc\views\shortcode-grid-page.php -->
   <h5 class="text-bg-dark px-3 py-2 my-4 rounded-2"><?php echo esc_html($title); ?></h5>
 <?php endif; ?>
 
