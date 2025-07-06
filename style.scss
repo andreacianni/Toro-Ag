@@ -20,6 +20,10 @@ Template: Divi
   box-shadow: $shadow;
 }
 
+// Variabili
+$brand-red: #cd2027;
+$brand-red-hover: #b01c22;
+
 /* stili menù */
 #menu-principale{
   #menu-header,
@@ -425,9 +429,9 @@ sup.r {
   }
   
   .btn-search {
-    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    background-color: $brand-red;
     color: white;
-    border: none;
+    border: 2px solid $brand-red;
     padding: 0.75rem 2rem;
     border-radius: 8px;
     font-size: 1rem;
@@ -439,7 +443,9 @@ sup.r {
     letter-spacing: 0.5px;
     
     &:hover {
-      background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+      background-color: white;
+      color: $brand-red;
+      border-color: $brand-red;
       //  transform: translateY(-2px);
       //   box-shadow: 0 6px 12px rgba(220, 53, 69, 0.4);
     }
@@ -478,9 +484,7 @@ sup.r {
 NUOVO LAYOUT FORMS - 2 COLONNE
 ==================================== */
 
-// Variabili
-$brand-red: #cd2027;
-$brand-red-hover: #b01c22;
+
 
 // ===== STILI BASE CONDIVISI =====
 .form-contatti-new,
