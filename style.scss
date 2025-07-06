@@ -440,7 +440,7 @@ sup.r {
     
     &:hover {
       background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
-      transform: translateY(-2px);
+      //  transform: translateY(-2px);
       //   box-shadow: 0 6px 12px rgba(220, 53, 69, 0.4);
     }
     
@@ -659,7 +659,7 @@ $brand-red-hover: #b01c22;
       background-color: white;
       color: $brand-red;
       border-color: $brand-red;
-      transform: translateY(-2px);
+      //  transform: translateY(-2px);
       //   box-shadow: 0 6px 20px rgba(205, 32, 39, 0.3);
     }
     

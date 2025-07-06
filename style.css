@@ -358,7 +358,6 @@ sup.r {
 }
 .ricerca-agenti-form .btn-search:hover {
   background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
-  transform: translateY(-2px);
 }
 .ricerca-agenti-form .btn-search:active {
   transform: translateY(0);
@@ -549,7 +548,6 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   background-color: white;
   color: #cd2027;
   border-color: #cd2027;
-  transform: translateY(-2px);
 }
 .form-contatti-new .btn-submit:focus,
 .form-prodotti-new .btn-submit:focus {
