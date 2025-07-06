@@ -367,6 +367,113 @@ sup.r {
   }
 }
 
+// ============================
+// RICERCA AGENTI SHORTCODE
+// ============================
+
+.ricerca-agenti-form {
+  background: #f8f9fa;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  margin-bottom: 2rem;
+  
+  .form-row {
+    display: flex;
+    gap: 1rem;
+    align-items: end;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  
+  .form-group {
+    flex: 1;
+    min-width: 200px;
+    
+    &:last-child {
+      flex: 0 0 auto;  // ← Il pulsante non si espande
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #495057;
+    }
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: white;
+    
+    &:focus {
+      outline: none;
+      border-color: #dc3545;
+      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+    
+    &:disabled {
+      background-color: #f8f9fa;
+      color: #6c757d;
+      cursor: not-allowed;
+    }
+  }
+  
+  .btn-search {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(220, 53, 69, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    
+    &:hover {
+      background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(220, 53, 69, 0.4);
+    }
+    
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+    }
+    
+    &:disabled {
+      background: #cbcbcb;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+  }
+  
+  // Responsive
+  @media (max-width: 768px) {
+    .form-row {
+      flex-direction: column;
+    }
+    
+    .form-group {
+      min-width: 100%;
+    }
+    
+    .btn-search {
+      width: 100%;
+      margin-top: 1rem;
+    }
+  }
+}
+
 /* ====================================
 NUOVO LAYOUT FORMS - 2 COLONNE
 ==================================== */
@@ -375,9 +482,234 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 $brand-red: #cd2027;
 $brand-red-hover: #b01c22;
 
-// ===== FORM CONTATTI - NUOVO LAYOUT =====
-.form-contatti-new {
+// ===== STILI BASE CONDIVISI =====
+.form-contatti-new,
+.form-prodotti-new {
   
+  // Layout principale
+  .row {
+    min-height: 300px;
+  }
+  
+  // Colonna sinistra - Dati personali
+  .col-md-6:first-child {
+    .d-flex {
+      gap: 0;
+    }
+  }
+  
+  // Textarea full height
+  .textarea-full-height {
+    min-height: 256px;
+    resize: vertical;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 15px;
+    line-height: 1.5;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    
+    &:focus {
+      border-color: $brand-red;
+      box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
+      outline: none;
+    }
+  }
+  
+  // Form controls standard
+  .form-control {
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    
+    &:focus {
+      border-color: $brand-red;
+      box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
+    }
+  }
+  
+  // ===== PRIVACY SECTION CONDIVISA =====
+  .privacy-section {
+    border-top: 1px solid #e9ecef;
+    padding-top: 20px;
+    
+    .privacy-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+      border: 1px solid #dee2e6;
+      
+      .wpcf7-list-item-label {
+        display: none;
+      }
+      
+      .privacy-text {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #495057;
+        
+        a {
+          color: $brand-red;
+          text-decoration: none;
+          
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+    
+    // ===== PRIVACY TOGGLE ESPANDIBILE =====
+    .privacy-toggle {
+      color: $brand-red;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        color: darken($brand-red, 10%);
+        text-decoration: underline;
+      }
+      
+      &:focus {
+        outline: 2px solid rgba($brand-red, 0.3);
+        outline-offset: 2px;
+        border-radius: 2px;
+      }
+      
+      .privacy-arrow {
+        font-size: 0.9em;
+        transition: transform 0.2s ease;
+        display: inline-block;
+      }
+      
+      &.expanded .privacy-arrow {
+        transform: rotate(180deg);
+      }
+    }
+    
+    .privacy-details {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.2s ease;
+      
+      &.expanded {
+        max-height: 300px;
+      }
+      
+      .privacy-content {
+        padding: 1rem 0;
+        border-top: 1px solid #e9ecef;
+        margin-top: 0.5rem;
+        
+        h6 {
+          color: $brand-red;
+          font-weight: 600;
+          margin-bottom: 0.75rem;
+          font-size: 1rem;
+        }
+        
+        p {
+          margin-bottom: 0.75rem;
+          font-size: 0.9rem;
+          line-height: 1.5;
+          color: #495057;
+          
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+        
+        a {
+          color: $brand-red;
+          text-decoration: none;
+          
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+  
+  // Pulsante di invio
+  .btn-submit {
+    background-color: $brand-red;
+    color: white;
+    border: 2px solid $brand-red;
+    padding: 14px 35px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    
+    &:hover {
+      background-color: white;
+      color: $brand-red;
+      border-color: $brand-red;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(205, 32, 39, 0.3);
+    }
+    
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
+    }
+  }
+  
+  // Asterischi required
+  .required {
+    color: $brand-red;
+    font-weight: bold;
+  }
+  
+  // Labels
+  .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+    font-size: 15px;
+  }
+  
+  // ===== PLACEHOLDER STYLES UNIFORMI =====
+  input::placeholder,
+  textarea::placeholder,
+  select::placeholder,
+  .form-control::placeholder,
+  .textarea-full-height::placeholder,
+  .wpcf7-form-control::placeholder {
+    color: #6c757d !important;
+    font-style: italic !important;
+    opacity: 1 !important;
+    font-weight: 400 !important;
+    font-size: inherit !important;
+  }
+  
+  // Focus states per placeholder
+  input:focus::placeholder,
+  textarea:focus::placeholder,
+  .form-control:focus::placeholder,
+  .textarea-full-height:focus::placeholder,
+  .wpcf7-form-control:focus::placeholder {
+    opacity: 0.6 !important;
+    transition: opacity 0.3s ease !important;
+  }
+}
+
+// ===== SPECIFICHE PER FORM CONTATTI =====
+.form-contatti-new {
   // Sezione motivo - Label e radio sulla stessa riga
   .motivo-section {
     p {
@@ -439,17 +771,17 @@ $brand-red-hover: #b01c22;
           
           &:checked {
             border-color: $brand-red;
-            background-color: white; // Mantiene sfondo bianco
+            background-color: white;
             
             &::after {
               content: '';
               position: absolute;
               top: 50%;
               left: 50%;
-              width: 8px;  // Puntino leggermente più grande
+              width: 8px;
               height: 8px;
               border-radius: 50%;
-              background-color: $brand-red; // Puntino rosso su sfondo bianco
+              background-color: $brand-red;
               transform: translate(-50%, -50%);
             }
           }
@@ -475,7 +807,7 @@ $brand-red-hover: #b01c22;
         
         // Quando radio è selezionato, label leggermente più scuro
         input[type="radio"]:checked + .wpcf7-list-item-label {
-          color: darken(#495057, 15%); // Grigio più scuro invece di rosso
+          color: darken(#495057, 15%);
           font-weight: 600;
         }
       }
@@ -497,7 +829,7 @@ $brand-red-hover: #b01c22;
         gap: 20px;
         
         .wpcf7-list-item {
-          flex: 1 1 45%; // 2 per riga su tablet
+          flex: 1 1 45%;
           min-width: 120px;
         }
       }
@@ -516,243 +848,47 @@ $brand-red-hover: #b01c22;
       }
     }
   }
-  
-  // Layout principale
-  .row {
-    min-height: 300px; // Altezza minima per garantire bilanciamento
-  }
-  
-  // Colonna sinistra - Dati personali
-  .col-md-6:first-child {
-    .d-flex {
-      gap: 0; // Bootstrap gestisce già gli spacing con mb-3
-    }
-  }
-  
-  // Textarea full height
-  .textarea-full-height {
-    // height: 100% !important;
-    min-height: 256px;
-    resize: vertical;
-    border: 2px solid #dee2e6;
-    border-radius: 8px;
-    padding: 16px;
-    font-size: 15px;
-    line-height: 1.5;
-    font-family: inherit;
-    transition: all 0.3s ease;
-    
-    &:focus {
-      border-color: $brand-red;
-      box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
-      outline: none;
-    }
-    
-    &::placeholder {
-      color: #6c757d;
-      font-style: italic;
-    }
-  }
-  
-  // Form controls standard
-  .form-control {
-    border: 2px solid #dee2e6;
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 15px;
-    transition: all 0.3s ease;
-    
-    &:focus {
-      border-color: $brand-red;
-      box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
-    }
-    
-    &::placeholder {
-      color: #6c757d;
-      font-style: italic;
-    }
-  }
-  
-  // Privacy section
-  .privacy-section {
-    border-top: 1px solid #e9ecef;
-    padding-top: 20px;
-    
-    .privacy-check {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      background-color: #f8f9fa;
-      border-radius: 8px;
-      padding: 20px;
-      border: 1px solid #dee2e6;
-      
-      .wpcf7-list-item-label {
-        display: none; // Nasconde label "Privacy"
-      }
-      
-      .privacy-text {
-        margin: 0;
-        font-size: 14px;
-        line-height: 1.5;
-        color: #495057;
-        
-        a {
-          color: $brand-red;
-          text-decoration: none;
-          
-          &:hover {
-            text-decoration: underline;
-          }
-        }
-      }
-    }
-  }
-  
-  // Pulsante di invio
-  .btn-submit {
-    background-color: $brand-red;
-    color: white;
-    border: 2px solid $brand-red;
-    padding: 14px 35px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    
-    &:hover {
-      background-color: white;
-      color: $brand-red;
-      border-color: $brand-red;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(205, 32, 39, 0.3);
-    }
-    
-    &:focus {
-      outline: none;
-      box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
-    }
-  }
-  
-  // Asterischi required
-  .required {
-    color: $brand-red;
-    font-weight: bold;
-  }
-  
-  // Labels
-  .form-label {
-    font-weight: 600;
-    color: #495057;
-    margin-bottom: 8px;
-    font-size: 15px;
-  }
 }
 
-// ===== FORM PRODOTTI - NUOVO LAYOUT =====
+// ===== SPECIFICHE PER FORM PRODOTTI =====
 .form-prodotti-new {
-  // Eredita tutti gli stili del form contatti MA senza background
-  @extend .form-contatti-new;
-  
-  // Rimuove qualsiasi background/border container
+  // Rimuove background/border container
   background: none !important;
   border: none !important;
   padding: 0 !important;
   margin: 20px 0;
   
-  // Privacy section più leggera
-  .privacy-section {
-    border-top: 1px solid #e9ecef;
-    
-    .privacy-check {
-      background-color: #f8f9fa;
-      border-color: #e9ecef;
-    }
-  }
-  // ===== PRIVACY TOGGLE ESPANDIBILE =====
-.privacy-section {
-  .privacy-toggle {
-    color: $brand-red;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    
-    &:hover {
-      color: darken($brand-red, 10%);
-      text-decoration: underline;
-    }
-    
-    &:focus {
-      outline: 2px solid rgba($brand-red, 0.3);
-      outline-offset: 2px;
-      border-radius: 2px;
-    }
-    
-    .privacy-arrow {
-      font-size: 0.9em;
-      transition: transform 0.2s ease;
-      display: inline-block;
-    }
-    
-    &.expanded .privacy-arrow {
-      transform: rotate(180deg);
-    }
-  }
-  
-  .privacy-details {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.2s ease;
-    
-    &.expanded {
-      max-height: 300px; // Valore sicuro per il contenuto
-    }
-    
-    .privacy-content {
-      padding: 1rem 0;
-      border-top: 1px solid #e9ecef;
-      margin-top: 0.5rem;
-      
-      h6 {
-        color: $brand-red;
-        font-weight: 600;
-        margin-bottom: 0.75rem;
-        font-size: 1rem;
-      }
-      
-      p {
-        margin-bottom: 0.75rem;
-        font-size: 0.9rem;
-        line-height: 1.5;
-        color: #495057;
-        
-        &:last-child {
-          margin-bottom: 0;
-        }
-      }
-      
-      a {
-        color: $brand-red;
-        text-decoration: none;
-        
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-    }
+  // Pulsante prodotti senza uppercase
+  .btn-submit {
+    text-transform: none;
+    background: linear-gradient(135deg, $brand-red 0%, darken($brand-red, 8%) 100%);
   }
 }
 
-// Responsive per privacy
+// ===== RESPONSIVE GLOBALE =====
 @media (max-width: 767px) {
-  .privacy-section {
+  .form-contatti-new,
+  .form-prodotti-new {
+    
+    .row {
+      min-height: auto;
+    }
+    
+    .textarea-full-height {
+      min-height: 150px !important;
+      height: 150px !important;
+    }
+    
+    .motivo-section {
+      margin-bottom: 25px;
+    }
+    
+    .privacy-check {
+      padding: 15px;
+    }
+    
     .privacy-details.expanded {
-      max-height: 400px; // Più spazio su mobile
+      max-height: 400px;
     }
     
     .privacy-content {
@@ -766,45 +902,19 @@ $brand-red-hover: #b01c22;
         font-size: 0.85rem;
       }
     }
-  }
-}
-  
-  // Pulsante prodotti leggermente diverso
-  .btn-submit {
-    text-transform: none; // "Richiedi informazioni" senza uppercase
-    background: linear-gradient(135deg, $brand-red 0%, darken($brand-red, 8%) 100%);
-  }
-}
-
-// ===== RESPONSIVE =====
-@media (max-width: 767px) {
-  .form-contatti-new,
-  .form-prodotti-new {
-    
-    // Su mobile le colonne diventano full-width
-    .row {
-      min-height: auto;
-    }
-    
-    // Textarea ridotta su mobile
-    .textarea-full-height {
-      min-height: 150px !important;
-      height: 150px !important;
-    }
-    
-    // Motivo section mobile
-    .motivo-section {
-      margin-bottom: 25px;
-    }
-    
-    // Padding ridotto su mobile
-    .privacy-check {
-      padding: 15px;
-    }
     
     .btn-submit {
       width: 100%;
       padding: 16px;
+    }
+    
+    // Placeholder più piccolo su mobile
+    input::placeholder,
+    textarea::placeholder,
+    .form-control::placeholder,
+    .textarea-full-height::placeholder,
+    .wpcf7-form-control::placeholder {
+      font-size: 0.9em !important;
     }
   }
 }
@@ -826,227 +936,5 @@ $brand-red-hover: #b01c22;
     background-color: #f8d7da;
     border: 1px solid #f5c6cb;
     color: #721c24;
-  }
-}
-
-// ===== PLACEHOLDER STYLES UNIFORMI =====
-// Stile base per tutti i placeholder nei form
-.form-contatti-new,
-.form-prodotti-new {
-  
-  // Tutti i campi input, textarea e select
-  input::placeholder,
-  textarea::placeholder,
-  select::placeholder {
-    color: #6c757d !important;
-    font-style: italic !important;
-    opacity: 1 !important; // Firefox fix
-    font-weight: 400 !important;
-    font-size: inherit !important;
-  }
-  
-  // Form controls standard
-  .form-control {
-    &::placeholder {
-      color: #6c757d !important;
-      font-style: italic !important;
-      opacity: 1 !important;
-      font-weight: 400 !important;
-      font-size: inherit !important;
-    }
-  }
-  
-  // Textarea full height
-  .textarea-full-height {
-    &::placeholder {
-      color: #6c757d !important;
-      font-style: italic !important;
-      opacity: 1 !important;
-      font-weight: 400 !important;
-      font-size: inherit !important;
-    }
-  }
-  
-  // Campi CF7 specifici
-  .wpcf7-form-control {
-    &::placeholder {
-      color: #6c757d !important;
-      font-style: italic !important;
-      opacity: 1 !important;
-      font-weight: 400 !important;
-      font-size: inherit !important;
-    }
-  }
-  
-  // Override per tutti i tipi di input
-  input[type="text"]::placeholder,
-  input[type="email"]::placeholder,
-  input[type="tel"]::placeholder,
-  input[type="password"]::placeholder,
-  input[type="number"]::placeholder,
-  input[type="url"]::placeholder,
-  input[type="search"]::placeholder {
-    color: #6c757d !important;
-    font-style: italic !important;
-    opacity: 1 !important;
-    font-weight: 400 !important;
-    font-size: inherit !important;
-  }
-}
-
-// ===== VARIANTE: Se vuoi un colore diverso o stile più marcato =====
-/*
-.form-contatti-new,
-.form-prodotti-new {
-  
-  input::placeholder,
-  textarea::placeholder,
-  .form-control::placeholder,
-  .textarea-full-height::placeholder,
-  .wpcf7-form-control::placeholder {
-    color: #999999 !important;           // Grigio più chiaro
-    font-style: italic !important;
-    opacity: 1 !important;
-    font-weight: 300 !important;        // Più leggero
-    font-size: 0.95em !important;       // Leggermente più piccolo
-    letter-spacing: 0.3px !important;   // Spaziatura tra lettere
-  }
-}
-*/
-
-// ===== FOCUS STATES =====
-// Quando il campo è in focus, il placeholder diventa più trasparente
-.form-contatti-new,
-.form-prodotti-new {
-  
-  input:focus::placeholder,
-  textarea:focus::placeholder,
-  .form-control:focus::placeholder,
-  .textarea-full-height:focus::placeholder,
-  .wpcf7-form-control:focus::placeholder {
-    opacity: 0.6 !important;
-    transition: opacity 0.3s ease !important;
-  }
-}
-
-// ===== RESPONSIVE ADJUSTMENTS =====
-@media (max-width: 767px) {
-  .form-contatti-new,
-  .form-prodotti-new {
-    
-    input::placeholder,
-    textarea::placeholder,
-    .form-control::placeholder,
-    .textarea-full-height::placeholder,
-    .wpcf7-form-control::placeholder {
-      font-size: 0.9em !important; // Leggermente più piccolo su mobile
-    }
-  }
-}
-
-// ============================
-// RICERCA AGENTI SHORTCODE
-// ============================
-
-.ricerca-agenti-form {
-  background: #f8f9fa;
-  padding: 2rem;
-  border-radius: 12px;
-  border: 1px solid #e9ecef;
-  margin-bottom: 2rem;
-
-  .form-row {
-    display: flex;
-    gap: 1rem;
-    align-items: end;
-    flex-wrap: wrap;
-    margin-bottom: 1rem;
-  }
-
-  .form-group {
-    flex: 1;
-    min-width: 200px;
-
-    &:last-child {
-    flex: 0 0 auto;  // ← Il pulsante non si espande
-    }
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      color: #495057;
-    }
-  }
-
-  .form-control {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid #dee2e6;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    background-color: white;
-
-    &:focus {
-      outline: none;
-      border-color: #dc3545;
-      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
-    }
-
-    &:disabled {
-      background-color: #f8f9fa;
-      color: #6c757d;
-      cursor: not-allowed;
-    }
-  }
-
-  .btn-search {
-    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-    color: white;
-    border: none;
-    padding: 0.75rem 2rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(220, 53, 69, 0.3);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-
-    &:hover {
-      background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(220, 53, 69, 0.4);
-    }
-
-    &:active {
-      transform: translateY(0);
-      box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
-    }
-
-    &:disabled {
-      background: #cbcbcb;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-  }
-
-  // Responsive
-  @media (max-width: 768px) {
-    .form-row {
-      flex-direction: column;
-    }
-
-    .form-group {
-      min-width: 100%;
-    }
-
-    .btn-search {
-      width: 100%;
-      margin-top: 1rem;
-    }
   }
 }
