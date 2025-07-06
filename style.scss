@@ -671,6 +671,103 @@ $brand-red-hover: #b01c22;
       border-color: #e9ecef;
     }
   }
+  // ===== PRIVACY TOGGLE ESPANDIBILE =====
+.privacy-section {
+  .privacy-toggle {
+    color: $brand-red;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      color: darken($brand-red, 10%);
+      text-decoration: underline;
+    }
+    
+    &:focus {
+      outline: 2px solid rgba($brand-red, 0.3);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+    
+    .privacy-arrow {
+      font-size: 0.9em;
+      transition: transform 0.2s ease;
+      display: inline-block;
+    }
+    
+    &.expanded .privacy-arrow {
+      transform: rotate(180deg);
+    }
+  }
+  
+  .privacy-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease;
+    
+    &.expanded {
+      max-height: 300px; // Valore sicuro per il contenuto
+    }
+    
+    .privacy-content {
+      padding: 1rem 0;
+      border-top: 1px solid #e9ecef;
+      margin-top: 0.5rem;
+      
+      h6 {
+        color: $brand-red;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+      }
+      
+      p {
+        margin-bottom: 0.75rem;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: #495057;
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+      
+      a {
+        color: $brand-red;
+        text-decoration: none;
+        
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
+// Responsive per privacy
+@media (max-width: 767px) {
+  .privacy-section {
+    .privacy-details.expanded {
+      max-height: 400px; // Più spazio su mobile
+    }
+    
+    .privacy-content {
+      padding: 0.75rem 0;
+      
+      h6 {
+        font-size: 0.95rem;
+      }
+      
+      p {
+        font-size: 0.85rem;
+      }
+    }
+  }
+}
   
   // Pulsante prodotti leggermente diverso
   .btn-submit {

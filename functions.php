@@ -83,6 +83,18 @@ function configure_cf7_routing() {
 }
 add_action('init', 'configure_cf7_routing');
 
+// Carica script privacy toggle per form prodotti
+function enqueue_privacy_toggle_script() {
+    wp_enqueue_script(
+        'privacy-toggle',
+        get_stylesheet_directory_uri() . '/assets/js/privacy-toggle.js',
+        [],
+        '1.0.0',
+        true
+    );
+}
+add_action('wp_enqueue_scripts', 'enqueue_privacy_toggle_script');
+
 
 // carica helpers e shortcodes
 require_once get_stylesheet_directory() . '/inc/helpers/file-icon.php';

@@ -530,6 +530,81 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   background-color: #f8f9fa;
   border-color: #e9ecef;
 }
+.form-prodotti-new .privacy-section .privacy-toggle {
+  color: #cd2027;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.form-prodotti-new .privacy-section .privacy-toggle:hover {
+  color: #a1191f;
+  text-decoration: underline;
+}
+.form-prodotti-new .privacy-section .privacy-toggle:focus {
+  outline: 2px solid rgba(205, 32, 39, 0.3);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.form-prodotti-new .privacy-section .privacy-toggle .privacy-arrow {
+  font-size: 0.9em;
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+.form-prodotti-new .privacy-section .privacy-toggle.expanded .privacy-arrow {
+  transform: rotate(180deg);
+}
+.form-prodotti-new .privacy-section .privacy-details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease;
+}
+.form-prodotti-new .privacy-section .privacy-details.expanded {
+  max-height: 300px;
+}
+.form-prodotti-new .privacy-section .privacy-details .privacy-content {
+  padding: 1rem 0;
+  border-top: 1px solid #e9ecef;
+  margin-top: 0.5rem;
+}
+.form-prodotti-new .privacy-section .privacy-details .privacy-content h6 {
+  color: #cd2027;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+.form-prodotti-new .privacy-section .privacy-details .privacy-content p {
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #495057;
+}
+.form-prodotti-new .privacy-section .privacy-details .privacy-content p:last-child {
+  margin-bottom: 0;
+}
+.form-prodotti-new .privacy-section .privacy-details .privacy-content a {
+  color: #cd2027;
+  text-decoration: none;
+}
+.form-prodotti-new .privacy-section .privacy-details .privacy-content a:hover {
+  text-decoration: underline;
+}
+@media (max-width: 767px) {
+  .form-prodotti-new .privacy-section .privacy-details.expanded {
+    max-height: 400px;
+  }
+  .form-prodotti-new .privacy-section .privacy-content {
+    padding: 0.75rem 0;
+  }
+  .form-prodotti-new .privacy-section .privacy-content h6 {
+    font-size: 0.95rem;
+  }
+  .form-prodotti-new .privacy-section .privacy-content p {
+    font-size: 0.85rem;
+  }
+}
 .form-prodotti-new .btn-submit {
   text-transform: none;
   background: linear-gradient(135deg, #cd2027 0%, #aa1a20 100%);
