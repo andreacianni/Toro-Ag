@@ -149,8 +149,8 @@ function toro_grid_tipi_per_coltura_shortcode() {
 }
 
 /**
- * [toro_prodotti_page title="Titolo" columns="4"]
- * Recupera il meta 'prodotti', normalizza anche un singolo ID in array,
+ * [toro_prodotti_page title="Titolo" columns="4" debug="true"]
+ * Recupera il meta 'prodotti_pagina', normalizza anche un singolo ID in array,
  * e mostra la grid dei prodotti selezionati.
  */
 function toro_grid_prodotti_page_shortcode($atts) {
@@ -162,27 +162,44 @@ function toro_grid_prodotti_page_shortcode($atts) {
     $atts = shortcode_atts( array(
         'title'   => '',
         'columns' => 3,
+        'debug'   => 'false',
     ), $atts, 'toro_prodotti_page' );
 
     // Sanitize
     $title = sanitize_text_field($atts['title']);
     $columns = intval($atts['columns']);
+    $debug = $atts['debug'] === 'true';
     if ($columns < 1 || $columns > 6) $columns = 3; // limitiamo tra 1 e 6
 
-    // DEBUG: prendo tutti i meta 'prodotti'
-    $ids_raw = get_post_meta( get_the_ID(), 'prodotti', false );
-    echo "<!-- DEBUG: get_post_meta(false) prodotti = ";
-    echo is_array($ids_raw) ? implode(',', $ids_raw) : var_export($ids_raw, true);
-    echo " -->\n";
+    $output = '';
+
+    if ($debug) {
+        $output .= "<!-- DEBUG: shortcode toro_prodotti_page iniziato -->\n";
+        $output .= "<!-- DEBUG: Page ID = " . get_the_ID() . " -->\n";
+    }
+
+    // prendo tutti i meta 'prodotti_pagina'
+    $ids_raw = get_post_meta( get_the_ID(), 'prodotti_pagina', false );
+    
+    if ($debug) {
+        $output .= "<!-- DEBUG: get_post_meta(false) prodotti_pagina = ";
+        $output .= is_array($ids_raw) ? implode(',', $ids_raw) : var_export($ids_raw, true);
+        $output .= " -->\n";
+    }
 
     if ( empty( $ids_raw ) ) {
-        echo "<!-- DEBUG: nessun meta 'prodotti' trovato, esco -->\n";
-        return '';
+        if ($debug) {
+            $output .= "<!-- DEBUG: nessun meta 'prodotti_pagina' trovato, esco -->\n";
+        }
+        return $output;
     }
 
     // cast a interi
     $ids = array_map( 'intval', $ids_raw );
-    echo "<!-- DEBUG: parsed prodotti IDs = " . implode( ',', $ids ) . " -->\n";
+    
+    if ($debug) {
+        $output .= "<!-- DEBUG: parsed prodotti_pagina IDs = " . implode( ',', $ids ) . " -->\n";
+    }
 
     $products = get_posts( array(
         'post_type'      => 'prodotto',
@@ -191,25 +208,35 @@ function toro_grid_prodotti_page_shortcode($atts) {
         'orderby'        => 'post__in',
     ) );
 
-    echo "<!-- DEBUG: recuperati prodotti post IDs = " . implode( ',', wp_list_pluck( $products, 'ID' ) ) . " -->\n";
-
-    if ( empty( $products ) ) {
-        echo "<!-- DEBUG: get_posts non ha trovato nulla, esco -->\n";
-        return '';
+    if ($debug) {
+        $output .= "<!-- DEBUG: recuperati prodotti post IDs = " . implode( ',', wp_list_pluck( $products, 'ID' ) ) . " -->\n";
     }
 
-    return toro_ag_render_grid_page_view(
+    if ( empty( $products ) ) {
+        if ($debug) {
+            $output .= "<!-- DEBUG: get_posts non ha trovato nulla, esco -->\n";
+        }
+        return $output;
+    }
+
+    if ($debug) {
+        $output .= "<!-- DEBUG: rendering grid con " . count($products) . " prodotti -->\n";
+    }
+
+    $output .= toro_ag_render_grid_page_view(
         $products,
         'featured',
         'toro-grid--prodotti-page',
         $title,
         $columns
     );
+
+    return $output;
 }
 
 /**
- * [toro_colture_page title="Titolo" columns="4"]
- * Recupera il meta 'applicazioni', normalizza anche un singolo ID in array,
+ * [toro_colture_page title="Titolo" columns="4" debug="true"]
+ * Recupera il meta 'applicazioni_pagina', normalizza anche un singolo ID in array,
  * e mostra la grid delle colture selezionate.
  */
 function toro_grid_colture_page_shortcode($atts) {
@@ -221,23 +248,50 @@ function toro_grid_colture_page_shortcode($atts) {
     $atts = shortcode_atts( array(
         'title'   => '',
         'columns' => 3,
+        'debug'   => 'false',
     ), $atts, 'toro_colture_page' );
 
     // Sanitize
     $title = sanitize_text_field($atts['title']);
     $columns = intval($atts['columns']);
+    $debug = $atts['debug'] === 'true';
     if ($columns < 1 || $columns > 6) $columns = 3; // limitiamo tra 1 e 6
 
-    // prendo tutti i meta 'applicazioni'
-    $term_ids_raw = get_post_meta( get_the_ID(), 'applicazioni', false );
+    $output = '';
+
+    if ($debug) {
+        $output .= "<!-- DEBUG: shortcode toro_colture_page iniziato -->\n";
+        $output .= "<!-- DEBUG: Page ID = " . get_the_ID() . " -->\n";
+    }
+
+    // prendo tutti i meta 'applicazioni_pagina'
+    $term_ids_raw = get_post_meta( get_the_ID(), 'applicazioni_pagina', false );
+    
+    if ($debug) {
+        $output .= "<!-- DEBUG: get_post_meta(false) applicazioni_pagina = ";
+        $output .= is_array($term_ids_raw) ? implode(',', $term_ids_raw) : var_export($term_ids_raw, true);
+        $output .= " -->\n";
+    }
+
     if ( empty( $term_ids_raw ) ) {
-        return '';
+        if ($debug) {
+            $output .= "<!-- DEBUG: nessun meta 'applicazioni_pagina' trovato, esco -->\n";
+        }
+        return $output;
     }
 
     // cast a interi
     $term_ids = array_map( 'intval', $term_ids_raw );
+    
+    if ($debug) {
+        $output .= "<!-- DEBUG: parsed applicazioni_pagina IDs = " . implode( ',', $term_ids ) . " -->\n";
+    }
+
     if ( empty( $term_ids ) ) {
-        return '';
+        if ($debug) {
+            $output .= "<!-- DEBUG: array term_ids vuoto dopo cast, esco -->\n";
+        }
+        return $output;
     }
 
     // recupero i termini (l'ordine restituito può non rispettare quello di include)
@@ -247,8 +301,21 @@ function toro_grid_colture_page_shortcode($atts) {
         'include'    => $term_ids,
     ) );
 
+    if ($debug) {
+        $output .= "<!-- DEBUG: get_terms restituito: ";
+        if (is_wp_error($terms)) {
+            $output .= "WP_Error: " . $terms->get_error_message();
+        } else {
+            $output .= count($terms) . " termini trovati";
+        }
+        $output .= " -->\n";
+    }
+
     if ( is_wp_error( $terms ) || empty( $terms ) ) {
-        return '';
+        if ($debug) {
+            $output .= "<!-- DEBUG: get_terms fallito o vuoto, esco -->\n";
+        }
+        return $output;
     }
 
     // riordino esplicitamente secondo $term_ids
@@ -263,11 +330,17 @@ function toro_grid_colture_page_shortcode($atts) {
         }
     }
 
-    return toro_ag_render_grid_page_view(
+    if ($debug) {
+        $output .= "<!-- DEBUG: rendering grid con " . count($ordered) . " colture ordinate -->\n";
+    }
+
+    $output .= toro_ag_render_grid_page_view(
         $ordered,
         'col_thumb',
         'toro-grid--colture-page',
         $title,
         $columns
     );
+
+    return $output;
 }
