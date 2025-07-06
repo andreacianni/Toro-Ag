@@ -732,6 +732,121 @@ $brand-red-hover: #b01c22;
   }
 }
 
+// ===== PLACEHOLDER STYLES UNIFORMI =====
+// Stile base per tutti i placeholder nei form
+.form-contatti-new,
+.form-prodotti-new {
+  
+  // Tutti i campi input, textarea e select
+  input::placeholder,
+  textarea::placeholder,
+  select::placeholder {
+    color: #6c757d !important;
+    font-style: italic !important;
+    opacity: 1 !important; // Firefox fix
+    font-weight: 400 !important;
+    font-size: inherit !important;
+  }
+  
+  // Form controls standard
+  .form-control {
+    &::placeholder {
+      color: #6c757d !important;
+      font-style: italic !important;
+      opacity: 1 !important;
+      font-weight: 400 !important;
+      font-size: inherit !important;
+    }
+  }
+  
+  // Textarea full height
+  .textarea-full-height {
+    &::placeholder {
+      color: #6c757d !important;
+      font-style: italic !important;
+      opacity: 1 !important;
+      font-weight: 400 !important;
+      font-size: inherit !important;
+    }
+  }
+  
+  // Campi CF7 specifici
+  .wpcf7-form-control {
+    &::placeholder {
+      color: #6c757d !important;
+      font-style: italic !important;
+      opacity: 1 !important;
+      font-weight: 400 !important;
+      font-size: inherit !important;
+    }
+  }
+  
+  // Override per tutti i tipi di input
+  input[type="text"]::placeholder,
+  input[type="email"]::placeholder,
+  input[type="tel"]::placeholder,
+  input[type="password"]::placeholder,
+  input[type="number"]::placeholder,
+  input[type="url"]::placeholder,
+  input[type="search"]::placeholder {
+    color: #6c757d !important;
+    font-style: italic !important;
+    opacity: 1 !important;
+    font-weight: 400 !important;
+    font-size: inherit !important;
+  }
+}
+
+// ===== VARIANTE: Se vuoi un colore diverso o stile più marcato =====
+/*
+.form-contatti-new,
+.form-prodotti-new {
+  
+  input::placeholder,
+  textarea::placeholder,
+  .form-control::placeholder,
+  .textarea-full-height::placeholder,
+  .wpcf7-form-control::placeholder {
+    color: #999999 !important;           // Grigio più chiaro
+    font-style: italic !important;
+    opacity: 1 !important;
+    font-weight: 300 !important;        // Più leggero
+    font-size: 0.95em !important;       // Leggermente più piccolo
+    letter-spacing: 0.3px !important;   // Spaziatura tra lettere
+  }
+}
+*/
+
+// ===== FOCUS STATES =====
+// Quando il campo è in focus, il placeholder diventa più trasparente
+.form-contatti-new,
+.form-prodotti-new {
+  
+  input:focus::placeholder,
+  textarea:focus::placeholder,
+  .form-control:focus::placeholder,
+  .textarea-full-height:focus::placeholder,
+  .wpcf7-form-control:focus::placeholder {
+    opacity: 0.6 !important;
+    transition: opacity 0.3s ease !important;
+  }
+}
+
+// ===== RESPONSIVE ADJUSTMENTS =====
+@media (max-width: 767px) {
+  .form-contatti-new,
+  .form-prodotti-new {
+    
+    input::placeholder,
+    textarea::placeholder,
+    .form-control::placeholder,
+    .textarea-full-height::placeholder,
+    .wpcf7-form-control::placeholder {
+      font-size: 0.9em !important; // Leggermente più piccolo su mobile
+    }
+  }
+}
+
 // ============================
 // RICERCA AGENTI SHORTCODE
 // ============================
