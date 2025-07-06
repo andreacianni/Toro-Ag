@@ -414,7 +414,7 @@ sup.r {
     &:focus {
       outline: none;
       border-color: #dc3545;
-      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+      //   box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
     }
     
     &:disabled {
@@ -434,19 +434,19 @@ sup.r {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(220, 53, 69, 0.3);
+    //   box-shadow: 0 4px 6px rgba(220, 53, 69, 0.3);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     
     &:hover {
       background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
       transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(220, 53, 69, 0.4);
+      //   box-shadow: 0 6px 12px rgba(220, 53, 69, 0.4);
     }
     
     &:active {
       transform: translateY(0);
-      box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+      //   box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
     }
     
     &:disabled {
@@ -512,7 +512,7 @@ $brand-red-hover: #b01c22;
     
     &:focus {
       border-color: $brand-red;
-      box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
+      // box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
       outline: none;
     }
   }
@@ -527,7 +527,7 @@ $brand-red-hover: #b01c22;
     
     &:focus {
       border-color: $brand-red;
-      box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
+      // box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
     }
   }
   
@@ -660,12 +660,12 @@ $brand-red-hover: #b01c22;
       color: $brand-red;
       border-color: $brand-red;
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(205, 32, 39, 0.3);
+      //   box-shadow: 0 6px 20px rgba(205, 32, 39, 0.3);
     }
     
     &:focus {
       outline: none;
-      box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
+      //   box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
     }
   }
   
@@ -705,6 +705,15 @@ $brand-red-hover: #b01c22;
   .wpcf7-form-control:focus::placeholder {
     opacity: 0.6 !important;
     transition: opacity 0.3s ease !important;
+  }
+
+    // Tutti i messaggi di errore dei singoli campi
+  .wpcf7-not-valid-tip {
+    margin-top: 8px;
+    color: #dc3545;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.3;
   }
 }
 
@@ -791,7 +800,7 @@ $brand-red-hover: #b01c22;
             
             &:focus {
               outline: none;
-              box-shadow: 0 0 0 3px rgba(205, 32, 39, 0.15);
+              //   box-shadow: 0 0 0 3px rgba(205, 32, 39, 0.15);
             }
           }
           

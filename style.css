@@ -337,7 +337,6 @@ sup.r {
 .ricerca-agenti-form .form-control:focus {
   outline: none;
   border-color: #dc3545;
-  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
 .ricerca-agenti-form .form-control:disabled {
   background-color: #f8f9fa;
@@ -354,18 +353,15 @@ sup.r {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(220, 53, 69, 0.3);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 .ricerca-agenti-form .btn-search:hover {
   background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(220, 53, 69, 0.4);
 }
 .ricerca-agenti-form .btn-search:active {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
 }
 .ricerca-agenti-form .btn-search:disabled {
   background: #cbcbcb;
@@ -412,7 +408,6 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 .form-contatti-new .textarea-full-height:focus,
 .form-prodotti-new .textarea-full-height:focus {
   border-color: #cd2027;
-  box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
   outline: none;
 }
 .form-contatti-new .form-control,
@@ -426,7 +421,6 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 .form-contatti-new .form-control:focus,
 .form-prodotti-new .form-control:focus {
   border-color: #cd2027;
-  box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
 }
 .form-contatti-new .privacy-section,
 .form-prodotti-new .privacy-section {
@@ -556,12 +550,10 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   color: #cd2027;
   border-color: #cd2027;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(205, 32, 39, 0.3);
 }
 .form-contatti-new .btn-submit:focus,
 .form-prodotti-new .btn-submit:focus {
   outline: none;
-  box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.15);
 }
 .form-contatti-new .required,
 .form-prodotti-new .required {
@@ -605,6 +597,14 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 .form-prodotti-new .wpcf7-form-control:focus::placeholder {
   opacity: 0.6 !important;
   transition: opacity 0.3s ease !important;
+}
+.form-contatti-new .wpcf7-not-valid-tip,
+.form-prodotti-new .wpcf7-not-valid-tip {
+  margin-top: 8px;
+  color: #dc3545;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.3;
 }
 
 .form-contatti-new .motivo-section p {
@@ -677,7 +677,6 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 }
 .form-contatti-new .motivo-section .wpcf7-form-control-wrap .wpcf7-form-control .wpcf7-list-item input[type=radio]:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(205, 32, 39, 0.15);
 }
 .form-contatti-new .motivo-section .wpcf7-form-control-wrap .wpcf7-form-control .wpcf7-list-item .wpcf7-list-item-label {
   font-weight: 500;
