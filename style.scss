@@ -456,10 +456,15 @@ sup.r {
     }
     
     &:disabled {
-      background: #cbcbcb;
       cursor: not-allowed;
       transform: none;
       box-shadow: none;
+      opacity: 0.4;
+      &:hover{
+        background-color: $brand-red;
+        color: white;
+        border: 2px solid $brand-red;
+      }
     }
   }
   

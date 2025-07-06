@@ -365,10 +365,15 @@ sup.r {
   transform: translateY(0);
 }
 .ricerca-agenti-form .btn-search:disabled {
-  background: #cbcbcb;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+  opacity: 0.4;
+}
+.ricerca-agenti-form .btn-search:disabled:hover {
+  background-color: #cd2027;
+  color: white;
+  border: 2px solid #cd2027;
 }
 @media (max-width: 768px) {
   .ricerca-agenti-form .form-row {
