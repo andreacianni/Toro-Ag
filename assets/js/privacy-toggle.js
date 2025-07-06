@@ -15,15 +15,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.classList.toggle('expanded');
                 targetElement.classList.toggle('expanded');
                 
-                // Cambia icona Bootstrap
-                const arrow = this.querySelector('.privacy-arrow');
-                if (arrow) {
-                    if (this.classList.contains('expanded')) {
-                        arrow.className = 'bi bi-chevron-up privacy-arrow';
-                    } else {
-                        arrow.className = 'bi bi-chevron-down privacy-arrow';
-                    }
-                }
             }
         });
     });
