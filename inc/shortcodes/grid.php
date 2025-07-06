@@ -152,6 +152,7 @@ function toro_grid_tipi_per_coltura_shortcode() {
  * [toro_prodotti_page title="Titolo" columns="4" debug="true"]
  * Recupera il meta 'prodotti_pagina', normalizza anche un singolo ID in array,
  * e mostra la grid dei prodotti selezionati.
+ * Compatibile con WPML - fallback alla lingua principale se necessario.
  */
 function toro_grid_prodotti_page_shortcode($atts) {
     if ( ! is_page() ) {
@@ -172,19 +173,40 @@ function toro_grid_prodotti_page_shortcode($atts) {
     if ($columns < 1 || $columns > 6) $columns = 3; // limitiamo tra 1 e 6
 
     $output = '';
+    $current_page_id = get_the_ID();
 
     if ($debug) {
         $output .= "<!-- DEBUG: shortcode toro_prodotti_page iniziato -->\n";
-        $output .= "<!-- DEBUG: Page ID = " . get_the_ID() . " -->\n";
+        $output .= "<!-- DEBUG: Current Page ID = " . $current_page_id . " -->\n";
     }
 
-    // prendo tutti i meta 'prodotti_pagina'
-    $ids_raw = get_post_meta( get_the_ID(), 'prodotti_pagina', false );
+    // WPML: prova prima la pagina corrente, poi fallback alla versione principale
+    $ids_raw = get_post_meta( $current_page_id, 'prodotti_pagina', false );
     
     if ($debug) {
-        $output .= "<!-- DEBUG: get_post_meta(false) prodotti_pagina = ";
+        $output .= "<!-- DEBUG: get_post_meta(current) prodotti_pagina = ";
         $output .= is_array($ids_raw) ? implode(',', $ids_raw) : var_export($ids_raw, true);
         $output .= " -->\n";
+    }
+
+    // Se vuoto e WPML è attivo, prova la versione principale
+    if ( empty( $ids_raw ) && function_exists('icl_object_id') ) {
+        $default_lang = apply_filters('wpml_default_language', NULL);
+        $original_page_id = apply_filters('wpml_object_id', $current_page_id, 'page', false, $default_lang);
+        
+        if ($debug) {
+            $output .= "<!-- DEBUG: WPML fallback - Original Page ID = " . $original_page_id . " -->\n";
+        }
+        
+        if ($original_page_id && $original_page_id != $current_page_id) {
+            $ids_raw = get_post_meta( $original_page_id, 'prodotti_pagina', false );
+            
+            if ($debug) {
+                $output .= "<!-- DEBUG: get_post_meta(original) prodotti_pagina = ";
+                $output .= is_array($ids_raw) ? implode(',', $ids_raw) : var_export($ids_raw, true);
+                $output .= " -->\n";
+            }
+        }
     }
 
     if ( empty( $ids_raw ) ) {
@@ -199,6 +221,32 @@ function toro_grid_prodotti_page_shortcode($atts) {
     
     if ($debug) {
         $output .= "<!-- DEBUG: parsed prodotti_pagina IDs = " . implode( ',', $ids ) . " -->\n";
+    }
+
+    // WPML: traduci gli ID dei prodotti nella lingua corrente
+    if ( function_exists('icl_object_id') ) {
+        $current_lang = apply_filters('wpml_current_language', NULL);
+        $translated_ids = array();
+        
+        foreach ($ids as $id) {
+            $translated_id = apply_filters('wpml_object_id', $id, 'prodotto', false, $current_lang);
+            if ($translated_id) {
+                $translated_ids[] = $translated_id;
+            }
+        }
+        
+        if ($debug) {
+            $output .= "<!-- DEBUG: WPML translated IDs = " . implode( ',', $translated_ids ) . " -->\n";
+        }
+        
+        $ids = $translated_ids;
+    }
+
+    if ( empty( $ids ) ) {
+        if ($debug) {
+            $output .= "<!-- DEBUG: nessun ID valido dopo traduzione WPML, esco -->\n";
+        }
+        return $output;
     }
 
     $products = get_posts( array(
@@ -238,6 +286,7 @@ function toro_grid_prodotti_page_shortcode($atts) {
  * [toro_colture_page title="Titolo" columns="4" debug="true"]
  * Recupera il meta 'applicazioni_pagina', normalizza anche un singolo ID in array,
  * e mostra la grid delle colture selezionate.
+ * Compatibile con WPML - fallback alla lingua principale se necessario.
  */
 function toro_grid_colture_page_shortcode($atts) {
     if ( ! is_page() ) {
@@ -258,19 +307,40 @@ function toro_grid_colture_page_shortcode($atts) {
     if ($columns < 1 || $columns > 6) $columns = 3; // limitiamo tra 1 e 6
 
     $output = '';
+    $current_page_id = get_the_ID();
 
     if ($debug) {
         $output .= "<!-- DEBUG: shortcode toro_colture_page iniziato -->\n";
-        $output .= "<!-- DEBUG: Page ID = " . get_the_ID() . " -->\n";
+        $output .= "<!-- DEBUG: Current Page ID = " . $current_page_id . " -->\n";
     }
 
-    // prendo tutti i meta 'applicazioni_pagina'
-    $term_ids_raw = get_post_meta( get_the_ID(), 'applicazioni_pagina', false );
+    // WPML: prova prima la pagina corrente, poi fallback alla versione principale
+    $term_ids_raw = get_post_meta( $current_page_id, 'applicazioni_pagina', false );
     
     if ($debug) {
-        $output .= "<!-- DEBUG: get_post_meta(false) applicazioni_pagina = ";
+        $output .= "<!-- DEBUG: get_post_meta(current) applicazioni_pagina = ";
         $output .= is_array($term_ids_raw) ? implode(',', $term_ids_raw) : var_export($term_ids_raw, true);
         $output .= " -->\n";
+    }
+
+    // Se vuoto e WPML è attivo, prova la versione principale
+    if ( empty( $term_ids_raw ) && function_exists('icl_object_id') ) {
+        $default_lang = apply_filters('wpml_default_language', NULL);
+        $original_page_id = apply_filters('wpml_object_id', $current_page_id, 'page', false, $default_lang);
+        
+        if ($debug) {
+            $output .= "<!-- DEBUG: WPML fallback - Original Page ID = " . $original_page_id . " -->\n";
+        }
+        
+        if ($original_page_id && $original_page_id != $current_page_id) {
+            $term_ids_raw = get_post_meta( $original_page_id, 'applicazioni_pagina', false );
+            
+            if ($debug) {
+                $output .= "<!-- DEBUG: get_post_meta(original) applicazioni_pagina = ";
+                $output .= is_array($term_ids_raw) ? implode(',', $term_ids_raw) : var_export($term_ids_raw, true);
+                $output .= " -->\n";
+            }
+        }
     }
 
     if ( empty( $term_ids_raw ) ) {
@@ -294,6 +364,32 @@ function toro_grid_colture_page_shortcode($atts) {
         return $output;
     }
 
+    // WPML: traduci i term IDs nella lingua corrente
+    if ( function_exists('icl_object_id') ) {
+        $current_lang = apply_filters('wpml_current_language', NULL);
+        $translated_term_ids = array();
+        
+        foreach ($term_ids as $term_id) {
+            $translated_term_id = apply_filters('wpml_object_id', $term_id, 'coltura', false, $current_lang);
+            if ($translated_term_id) {
+                $translated_term_ids[] = $translated_term_id;
+            }
+        }
+        
+        if ($debug) {
+            $output .= "<!-- DEBUG: WPML translated term IDs = " . implode( ',', $translated_term_ids ) . " -->\n";
+        }
+        
+        $term_ids = $translated_term_ids;
+    }
+
+    if ( empty( $term_ids ) ) {
+        if ($debug) {
+            $output .= "<!-- DEBUG: nessun term ID valido dopo traduzione WPML, esco -->\n";
+        }
+        return $output;
+    }
+
     // recupero i termini (l'ordine restituito può non rispettare quello di include)
     $terms = get_terms( array(
         'taxonomy'   => 'coltura',
@@ -306,7 +402,7 @@ function toro_grid_colture_page_shortcode($atts) {
         if (is_wp_error($terms)) {
             $output .= "WP_Error: " . $terms->get_error_message();
         } else {
-            $output .= count($terms) . " termini trovati";
+            $output .= count($terms) . " termini trovati (IDs: " . implode(',', wp_list_pluck($terms, 'term_id')) . ")";
         }
         $output .= " -->\n";
     }
