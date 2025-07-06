@@ -420,8 +420,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   gap: 0;
 }
 .form-contatti-new .textarea-full-height, .form-prodotti-new .textarea-full-height {
-  height: 100% !important;
-  min-height: 280px;
+  min-height: 256px;
   resize: vertical;
   border: 2px solid #dee2e6;
   border-radius: 8px;
@@ -453,6 +452,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 }
 .form-contatti-new .form-control::placeholder, .form-prodotti-new .form-control::placeholder {
   color: #6c757d;
+  font-style: italic;
 }
 .form-contatti-new .privacy-section, .form-prodotti-new .privacy-section {
   border-top: 1px solid #e9ecef;
