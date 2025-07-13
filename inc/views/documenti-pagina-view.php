@@ -45,19 +45,19 @@ if ( $current_lang === 'it' ) {
     } );
     
     if ( ! empty( $filtered_attachments ) ) {
-        echo '<ul class="list-unstyled">';
+        echo '<div class="documents-list">';
         foreach ( $filtered_attachments as $att ) {
             $doc_title = esc_html( $att['title'] );
             $url = esc_url( $att['url'] );
             $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $url ) : 'bi-file-earmark-pdf';
             
-            echo '<li class="mb-2">';
+            echo '<div class="mb-2">';
             echo '<a href="' . $url . '" target="_blank" class="text-decoration-none">';
             echo $doc_title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
             echo '</a>';
-            echo '</li>';
+            echo '</div>';
         }
-        echo '</ul>';
+        echo '</div>';
     }
 } else {
     // Per le altre lingue, raggruppiamo per lingua
@@ -71,23 +71,32 @@ if ( $current_lang === 'it' ) {
     
     if ( ! empty( $by_language ) ) {
         foreach ( $by_language as $lang_slug => $documents ) {
-            // Titolo della sezione lingua
-            $lang_name = ! empty( $documents[0]['lang']['name'] ) ? $documents[0]['lang']['name'] : ucfirst( $lang_slug );
-            echo '<h4 class="mt-4 mb-3">' . esc_html( $lang_name ) . '</h4>';
+            // Titolo della sezione con bandiera
+            $flag_html = function_exists('toroag_get_flag_html') ? toroag_get_flag_html( $lang_slug ) : '';
+            $lang_names = [
+                'inglese' => 'Download English',
+                'francese' => 'Download French', 
+                'spagnolo' => 'Download Spanish',
+                'tedesco' => 'Download German',
+                'portoghese' => 'Download Portuguese'
+            ];
+            $lang_display = $lang_names[ $lang_slug ] ?? 'Download ' . ucfirst( $lang_slug );
             
-            echo '<ul class="list-unstyled">';
+            echo '<h4 class="mt-4 mb-3">' . $flag_html . ' ' . esc_html( $lang_display ) . '</h4>';
+            
+            echo '<div class="documents-list">';
             foreach ( $documents as $att ) {
                 $doc_title = esc_html( $att['title'] );
                 $url = esc_url( $att['url'] );
                 $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $url ) : 'bi-file-earmark-pdf';
                 
-                echo '<li class="mb-2">';
+                echo '<div class="mb-2">';
                 echo '<a href="' . $url . '" target="_blank" class="text-decoration-none">';
                 echo $doc_title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
                 echo '</a>';
-                echo '</li>';
+                echo '</div>';
             }
-            echo '</ul>';
+            echo '</div>';
         }
     }
 }
