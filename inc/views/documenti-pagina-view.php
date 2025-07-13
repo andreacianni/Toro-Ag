@@ -60,7 +60,7 @@ if ( $current_lang === 'it' ) {
         echo '</div>';
     }
 } else {
-    // Per le altre lingue, raggruppiamo per lingua
+    // Per le altre lingue, raggruppiamo per lingua e mostriamo in card a 3 colonne
     $by_language = [];
     foreach ( $all_attachments as $att ) {
         $lang_slug = $att['lang']['slug'];
@@ -70,21 +70,29 @@ if ( $current_lang === 'it' ) {
     }
     
     if ( ! empty( $by_language ) ) {
+        echo '<div class="row">';
         foreach ( $by_language as $lang_slug => $documents ) {
-            // Titolo della sezione con bandiera
-            $flag_html = function_exists('toroag_get_flag_html') ? toroag_get_flag_html( $lang_slug ) : '';
+            // Mappa dei nomi delle lingue in inglese
             $lang_names = [
-                'inglese' => 'Download English',
-                'francese' => 'Download French', 
-                'spagnolo' => 'Download Spanish',
-                'tedesco' => 'Download German',
-                'portoghese' => 'Download Portuguese'
+                'inglese' => 'English',
+                'francese' => 'French', 
+                'spagnolo' => 'Spanish',
+                'tedesco' => 'German',
+                'portoghese' => 'Portuguese'
             ];
-            $lang_display = $lang_names[ $lang_slug ] ?? 'Download ' . ucfirst( $lang_slug );
+            $lang_display = $lang_names[ $lang_slug ] ?? ucfirst( $lang_slug );
+            $flag_html = function_exists('toroag_get_flag_html') ? toroag_get_flag_html( $lang_slug ) : '';
             
-            echo '<h4 class="mt-4 mb-3">' . $flag_html . ' ' . esc_html( $lang_display ) . '</h4>';
+            echo '<div class="col-md-4 mb-4">';
+            echo '<div class="card shadow-sm h-100">';
             
-            echo '<div class="documents-list">';
+            // Header con bandiera
+            echo '<div class="card-header d-flex align-items-center">';
+            echo $flag_html . ' <span class="ms-2 fw-bold">' . esc_html( $lang_display ) . '</span>';
+            echo '</div>';
+            
+            // Body con documenti
+            echo '<div class="card-body small">';
             foreach ( $documents as $att ) {
                 $doc_title = esc_html( $att['title'] );
                 $url = esc_url( $att['url'] );
@@ -96,8 +104,11 @@ if ( $current_lang === 'it' ) {
                 echo '</a>';
                 echo '</div>';
             }
-            echo '</div>';
+            echo '</div>'; // card-body
+            echo '</div>'; // card
+            echo '</div>'; // col-md-4
         }
+        echo '</div>'; // row
     }
 }
 ?>
