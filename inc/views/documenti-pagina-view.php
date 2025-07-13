@@ -19,7 +19,7 @@ $current_lang = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : apply_filters
 // Recuperiamo la mappa di priorità lingue
 $order_map = function_exists('toroag_get_language_order') ? toroag_get_language_order() : [];
 
-// Raccogliamo tutti gli allegati e li ordiniamo
+// Raccogliamo tutti gli allegati
 $all_attachments = [];
 foreach ( $doc_plus_data as $doc ) {
     $attachments = $doc['attachments'];
@@ -31,38 +31,64 @@ foreach ( $doc_plus_data as $doc ) {
         return $pr_a <=> $pr_b;
     } );
     
-    // Filtriamo per lingua corrente
-    $filtered = array_filter( $attachments, function( $att ) use ( $current_lang ) {
-        return $current_lang === 'it'
-            ? ( $att['lang']['slug'] === 'italiano' )
-            : ( $att['lang']['slug'] !== 'italiano' );
-    } );
-    
-    $all_attachments = array_merge( $all_attachments, $filtered );
+    $all_attachments = array_merge( $all_attachments, $attachments );
 }
 
 if ( empty( $all_attachments ) ) {
     return;
 }
-?>
 
-<ul class="list-unstyled">
-    <?php foreach ( $all_attachments as $att ) : 
-        $title = esc_html( $att['title'] );
-        $url   = esc_url( $att['url'] );
-        $slug  = $att['lang']['slug'];
-        $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $url ) : 'bi-download';
-    ?>
-        <li class="mb-2">
-            <a href="<?php echo $url; ?>" target="_blank" class="text-decoration-none">
-                <i class="<?php echo esc_attr( $icon_class ); ?> me-2"></i>
-                <?php 
-                if ( $slug !== 'italiano' && function_exists('toroag_get_flag_html') ) {
-                    echo toroag_get_flag_html( $slug ) . ' ';
-                }
-                echo $title; 
-                ?>
-            </a>
-        </li>
-    <?php endforeach; ?>
-</ul>
+// Se siamo in italiano, mostriamo solo i documenti italiani
+if ( $current_lang === 'it' ) {
+    $filtered_attachments = array_filter( $all_attachments, function( $att ) {
+        return $att['lang']['slug'] === 'italiano';
+    } );
+    
+    if ( ! empty( $filtered_attachments ) ) {
+        echo '<ul class="list-unstyled">';
+        foreach ( $filtered_attachments as $att ) {
+            $doc_title = esc_html( $att['title'] );
+            $url = esc_url( $att['url'] );
+            $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $url ) : 'bi-file-earmark-pdf';
+            
+            echo '<li class="mb-2">';
+            echo '<a href="' . $url . '" target="_blank" class="text-decoration-none">';
+            echo $doc_title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
+            echo '</a>';
+            echo '</li>';
+        }
+        echo '</ul>';
+    }
+} else {
+    // Per le altre lingue, raggruppiamo per lingua
+    $by_language = [];
+    foreach ( $all_attachments as $att ) {
+        $lang_slug = $att['lang']['slug'];
+        if ( $lang_slug !== 'italiano' ) {
+            $by_language[ $lang_slug ][] = $att;
+        }
+    }
+    
+    if ( ! empty( $by_language ) ) {
+        foreach ( $by_language as $lang_slug => $documents ) {
+            // Titolo della sezione lingua
+            $lang_name = ! empty( $documents[0]['lang']['name'] ) ? $documents[0]['lang']['name'] : ucfirst( $lang_slug );
+            echo '<h4 class="mt-4 mb-3">' . esc_html( $lang_name ) . '</h4>';
+            
+            echo '<ul class="list-unstyled">';
+            foreach ( $documents as $att ) {
+                $doc_title = esc_html( $att['title'] );
+                $url = esc_url( $att['url'] );
+                $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $url ) : 'bi-file-earmark-pdf';
+                
+                echo '<li class="mb-2">';
+                echo '<a href="' . $url . '" target="_blank" class="text-decoration-none">';
+                echo $doc_title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
+                echo '</a>';
+                echo '</li>';
+            }
+            echo '</ul>';
+        }
+    }
+}
+?>
