@@ -155,18 +155,18 @@ add_shortcode( 'doc_plus', 'doc_plus_debug_shortcode' );
 
 /**
  * Shortcode [documenti_pagina] – per documenti associati alle pagine
+ * Layout compatto come lista semplice
  * 
  * Esempi d'uso:
- * [documenti_pagina]                                    // Layout default
- * [documenti_pagina layout="clean" title="Documenti"]   // Layout pulito con titolo
- * [documenti_pagina layout="single" griglia="row row-cols-1 row-cols-md-2 g-3"] // Griglia custom
+ * [documenti_pagina title="Download"]
+ * [documenti_pagina title="Documenti tecnici"]
+ * [documenti_pagina] // Senza titolo
  */
 function documenti_pagina_shortcode( $atts ) {
     // 1) Parsing attributi
     $atts = shortcode_atts( array(
-        'layout' => 'single',
         'title'  => '',
-        'griglia' => 'row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3',
+        'layout' => 'list', // Solo layout lista per ora
     ), $atts, 'documenti_pagina' );
 
     if ( ! is_page() ) {
@@ -221,20 +221,12 @@ function documenti_pagina_shortcode( $atts ) {
         $lang_name = ! empty( $langs ) ? $langs[0]['name'] : '';
         $flag_html = function_exists('toroag_get_flag_html') ? toroag_get_flag_html( $lang_slug ) : '';
 
-        // Filtro per lingua (stesso sistema di doc_plus)
-        $show_doc = false;
-        if ( $current_lang === 'it' ) {
-            $show_doc = ( $lang_slug === 'italiano' );
-        } else {
-            $show_doc = ( $lang_slug !== 'italiano' );
-        }
-
-        if ( $show_doc && ! empty( $file_url ) ) {
+        if ( ! empty( $file_url ) ) {
             $data[] = [
                 'id'          => $pod->ID(),
                 'title'       => get_the_title( $pod->ID() ),
-                'cover_id'    => null,     // Documenti senza cover
-                'cover_url'   => '',       // Sempre vuoto
+                'cover_id'    => null,
+                'cover_url'   => '',
                 'attachments' => [[
                     'id'       => $pod->ID(),
                     'title'    => get_the_title( $pod->ID() ),
@@ -246,13 +238,11 @@ function documenti_pagina_shortcode( $atts ) {
         }
     }
 
-    // 5) Include view template – solo se ho dati
+    // 5) Include view template compatto
     if ( ! empty( $data ) ) {
-        return toroag_load_view( 'doc-plus-view', [
+        return toroag_load_view( 'documenti-pagina-view', [
             'doc_plus_data' => $data,
-            'layout'        => $atts['layout'],
             'title'         => $atts['title'],
-            'griglia'       => $atts['griglia'],
         ] );
     }
 
