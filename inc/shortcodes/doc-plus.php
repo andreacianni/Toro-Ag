@@ -152,3 +152,110 @@ function doc_plus_debug_shortcode( $atts ) {
     return '';
 }
 add_shortcode( 'doc_plus', 'doc_plus_debug_shortcode' );
+
+/**
+ * Shortcode [documenti_pagina] – per documenti associati alle pagine
+ * 
+ * Esempi d'uso:
+ * [documenti_pagina]                                    // Layout default
+ * [documenti_pagina layout="clean" title="Documenti"]   // Layout pulito con titolo
+ * [documenti_pagina layout="single" griglia="row row-cols-1 row-cols-md-2 g-3"] // Griglia custom
+ */
+function documenti_pagina_shortcode( $atts ) {
+    // 1) Parsing attributi
+    $atts = shortcode_atts( array(
+        'layout' => 'single',
+        'title'  => '',
+        'griglia' => 'row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3',
+    ), $atts, 'documenti_pagina' );
+
+    if ( ! is_page() ) {
+        return '';
+    }
+
+    // 2) Lingua corrente e default
+    $current_lang = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : apply_filters('wpml_current_language', null);
+    $default_lang = apply_filters('wpml_default_language', null);
+
+    // 3) Recupero documenti dal campo documenti_pagina
+    $page_id = get_the_ID();
+    $raw_list = get_post_meta( $page_id, 'documenti_pagina', false );
+    
+    // Fallback WPML se campo vuoto
+    if ( empty( $raw_list ) && function_exists('icl_object_id') ) {
+        $original_page_id = apply_filters('wpml_object_id', $page_id, 'page', false, $default_lang);
+        if ( $original_page_id && $original_page_id != $page_id ) {
+            $raw_list = get_post_meta( $original_page_id, 'documenti_pagina', false );
+        }
+    }
+
+    $related = [];
+    foreach ( $raw_list as $entry ) {
+        if ( is_numeric( $entry ) ) {
+            $related[] = intval( $entry );
+        }
+    }
+
+    if ( empty( $related ) ) {
+        return '';
+    }
+
+    // 4) Build data array
+    $data = [];
+    foreach ( $related as $doc_id ) {
+        $pod = pods( 'documenti_prodotto', $doc_id, array( 'lang' => $current_lang ) );
+        
+        if ( ! $pod->exists() ) {
+            $fb = apply_filters('wpml_object_id', $doc_id, 'documenti_prodotto', true, $default_lang) ?: $doc_id;
+            $pod = pods( 'documenti_prodotto', $fb, array( 'lang' => $default_lang ) );
+        }
+
+        if ( ! $pod->exists() ) {
+            continue;
+        }
+
+        $file_id = $pod->field('documento-prodotto.ID');
+        $file_url = $file_id ? wp_get_attachment_url( $file_id ) : '';
+        $langs = $pod->field('lingua_aggiuntiva');
+        $lang_slug = ! empty( $langs ) ? $langs[0]['slug'] : '';
+        $lang_name = ! empty( $langs ) ? $langs[0]['name'] : '';
+        $flag_html = function_exists('toroag_get_flag_html') ? toroag_get_flag_html( $lang_slug ) : '';
+
+        // Filtro per lingua (stesso sistema di doc_plus)
+        $show_doc = false;
+        if ( $current_lang === 'it' ) {
+            $show_doc = ( $lang_slug === 'italiano' );
+        } else {
+            $show_doc = ( $lang_slug !== 'italiano' );
+        }
+
+        if ( $show_doc && ! empty( $file_url ) ) {
+            $data[] = [
+                'id'          => $pod->ID(),
+                'title'       => get_the_title( $pod->ID() ),
+                'cover_id'    => null,     // Documenti senza cover
+                'cover_url'   => '',       // Sempre vuoto
+                'attachments' => [[
+                    'id'       => $pod->ID(),
+                    'title'    => get_the_title( $pod->ID() ),
+                    'url'      => $file_url,
+                    'lang'     => [ 'slug' => $lang_slug, 'name' => $lang_name ],
+                    'flag'     => $flag_html,
+                ]]
+            ];
+        }
+    }
+
+    // 5) Include view template – solo se ho dati
+    if ( ! empty( $data ) ) {
+        return toroag_load_view( 'doc-plus-view', [
+            'doc_plus_data' => $data,
+            'layout'        => $atts['layout'],
+            'title'         => $atts['title'],
+            'griglia'       => $atts['griglia'],
+        ] );
+    }
+
+    return '';
+}
+add_shortcode( 'documenti_pagina', 'documenti_pagina_shortcode' );
