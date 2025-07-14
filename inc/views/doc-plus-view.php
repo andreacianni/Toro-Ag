@@ -68,6 +68,11 @@ foreach ( $doc_plus_data as $index => $doc ):
         continue;
     }
 
+    // Determiniamo se c'è un solo link
+    $single_link = count( $filtered ) === 1;
+    $first_attachment = reset( $filtered );
+    $single_url = $single_link ? esc_url( $first_attachment['url'] ) : '';
+
     // Rendering in base al layout selezionato
     switch ( $layout ) {
         case 'clean':
@@ -99,6 +104,7 @@ foreach ( $doc_plus_data as $index => $doc ):
                 echo '</div>';
             echo '</div>';
             break;
+        /*
         case 'card-imgsup':
             // Layout clean: card pulita con link anche nell'immagine
             // echo '<!-- Layout clean -->';
@@ -190,7 +196,175 @@ foreach ( $doc_plus_data as $index => $doc ):
                 echo '</div>';
             echo '</div></div></div>';
             break;
+        */
+        case 'card-imgsup':
+            echo '<div class="col mb-4 layout-card-imgsup">';
+            
+            if ( $single_link ) {
+                // Card completamente cliccabile per singolo link
+                echo '<a href="' . $single_url . '" target="_blank" class="text-decoration-none text-reset">';
+                echo '<div class="card h-100">';
+                if ( ! empty( $doc['cover_url'] ) ) {
+                    echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top img-fluid w-100" alt="Cover">';
+                }
+                echo '<div class="card-body pt-4 text-center">';
+                $att = $first_attachment;
+                $title = esc_html( $att['title'] );
+                $slug  = $att['lang']['slug'];
+                $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $att['url'] ) : 'bi-file-earmark-text';
+                echo '<p class="mb-3">';
+                if ( $slug !== 'italiano' ) {
+                    echo toroag_get_flag_html( $slug ) . ' ';
+                }
+                echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
+                echo '</p>';
+                echo '</div></div></a>';
+            } else {
+                // Card normale con link individuali
+                echo '<div class="card h-100">';
+                if ( ! empty( $doc['cover_url'] ) ) {
+                    echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top img-fluid w-100" alt="Cover">';
+                }
+                echo '<div class="card-body pt-4 text-center">';
+                foreach ( $filtered as $att ) {
+                    $title = esc_html( $att['title'] );
+                    $url   = esc_url( $att['url'] );
+                    $slug  = $att['lang']['slug'];
+                    $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $url ) : 'bi-file-earmark-text';
+                    echo '<p class="mb-3"><a href="' . $url . '" target="_blank" class="text-decoration-none">';
+                    if ( $slug !== 'italiano' ) {
+                        echo toroag_get_flag_html( $slug ) . ' ';
+                    }
+                    echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
+                    echo '</a></p>';
+                }
+                echo '</div></div>';
+            }
+            echo '</div>';
+            break;
 
+        case 'card-imgsx':
+            echo '<div class="col mb-4 layout-card-imgsx">';
+            
+            if ( $single_link ) {
+                // Card completamente cliccabile per singolo link
+                echo '<a href="' . $single_url . '" target="_blank" class="text-decoration-none text-reset">';
+                echo '<div class="card h-100">';
+                echo '<div class="row g-0 align-items-stretch">';
+                    // Colonna immagine a sinistra
+                    echo '<div class="col-md-4">';
+                        if ( ! empty( $doc['cover_url'] ) ) {
+                            echo '<img src="' . esc_url( $doc['cover_url'] ) . '" '
+                            . 'class="img-fluid h-100" style="object-fit:cover;" alt="Cover">';
+                        }
+                    echo '</div>';
+                    // Colonna testo a destra
+                    echo '<div class="col-md-8 d-flex align-items-center">';
+                    echo '<div class="card-body">';
+                        $att = $first_attachment;
+                        $title = esc_html( $att['title'] );
+                        $slug  = $att['lang']['slug'];
+                        $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $att['url'] ) : 'bi-file-earmark-text';
+                        echo "<p class=\"\">";
+                        if ( $slug !== 'italiano' ) {
+                            echo toroag_get_flag_html( $slug ) . ' ';
+                        }
+                        echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
+                        echo "</p>";
+                    echo '</div></div>';
+                echo '</div></div></a>';
+            } else {
+                // Card normale con link individuali
+                echo '<div class="card h-100">';
+                echo '<div class="row g-0 align-items-stretch">';
+                    // Colonna immagine a sinistra
+                    echo '<div class="col-md-4">';
+                        if ( ! empty( $doc['cover_url'] ) ) {
+                            echo '<img src="' . esc_url( $doc['cover_url'] ) . '" '
+                            . 'class="img-fluid h-100" style="object-fit:cover;" alt="Cover">';
+                        }
+                    echo '</div>';
+                    // Colonna testo a destra
+                    echo '<div class="col-md-8 d-flex align-items-center">';
+                    echo '<div class="card-body">';
+                        foreach ( $filtered as $att ) {
+                            $title = esc_html( $att['title'] );
+                            $url   = esc_url( $att['url'] );
+                            $slug  = $att['lang']['slug'];
+                            $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $url ) : 'bi-file-earmark-text';
+                            echo "<p class=\"\">";
+                            echo "<a href=\"{$url}\" target=\"_blank\">";
+                            if ( $slug !== 'italiano' ) {
+                                echo toroag_get_flag_html( $slug ) . ' ';
+                            }
+                            echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
+                            echo "</a></p>";
+                        }
+                    echo '</div></div>';
+                echo '</div></div>';
+            }
+            echo '</div>';
+            break;
+
+        case 'card-imgdx':
+            echo '<div class="col mb-4 layout-card-imgdx">';
+            
+            if ( $single_link ) {
+                // Card completamente cliccabile per singolo link
+                echo '<a href="' . $single_url . '" target="_blank" class="text-decoration-none text-reset">';
+                echo '<div class="card h-100">';
+                echo '<div class="row g-0 align-items-stretch">';
+                    // Colonna testo a sinistra
+                    echo '<div class="col-md-8 d-flex align-items-center"><div class="card-body">';
+                        $att = $first_attachment;
+                        $title = esc_html( $att['title'] );
+                        $slug  = $att['lang']['slug'];
+                        $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $att['url'] ) : 'bi-file-earmark-text';
+                        echo "<p>";
+                        if ( $slug !== 'italiano' ) {
+                            echo toroag_get_flag_html( $slug ) . ' ';
+                        }
+                        echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
+                        echo '</p>';
+                    echo '</div></div>';
+                    // Colonna immagine a destra
+                    echo '<div class="col-md-4">';
+                        if ( ! empty( $doc['cover_url'] ) ) {
+                            echo '<img src="' . esc_url( $doc['cover_url'] ) . '" '
+                            . 'class="img-fluid h-100" style="object-fit:cover;" alt="Cover">';
+                        }
+                    echo '</div>';
+                echo '</div></div></a>';
+            } else {
+                // Card normale con link individuali
+                echo '<div class="card h-100">';
+                echo '<div class="row g-0 align-items-stretch">';
+                    // Colonna testo a sinistra
+                    echo '<div class="col-md-8 d-flex align-items-center"><div class="card-body">';
+                        foreach ( $filtered as $att ) {
+                            $title = esc_html( $att['title'] );
+                            $url   = esc_url( $att['url'] );
+                            $slug  = $att['lang']['slug'];
+                            $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $url ) : 'bi-file-earmark-text';
+                            echo "<p><a href=\"{$url}\" target=\"_blank\">";
+                            if ( $slug !== 'italiano' ) {
+                                echo toroag_get_flag_html( $slug ) . ' ';
+                            }
+                            echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
+                            echo '</a></p>';
+                        }
+                    echo '</div></div>';
+                    // Colonna immagine a destra
+                    echo '<div class="col-md-4">';
+                        if ( ! empty( $doc['cover_url'] ) ) {
+                            echo '<img src="' . esc_url( $doc['cover_url'] ) . '" '
+                            . 'class="img-fluid h-100" style="object-fit:cover;" alt="Cover">';
+                        }
+                    echo '</div>';
+                echo '</div></div>';
+            }
+            echo '</div>';
+            break;
         case 'modern':
             // Layout moderno: card con immagine di copertura e titolo centrato
             echo '<div class="col mb-4 layout-modern">';
