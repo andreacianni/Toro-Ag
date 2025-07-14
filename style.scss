@@ -122,7 +122,11 @@ $brand-red-hover: #b01c22;
   }
 }
 // Add these classes alongside .toro-grid in the wrapper markup (e.g. <div class="toro-grid toro-grid--tipi-prod">)
-// .toro-grid--tipi-prod { }
+ .toro-grid--tipi-prod { 
+  h4 {
+    text-transform: uppercase;
+  }
+ }
 // .toro-grid--colture { }
 // .toro-grid--prodotti-tipo { }
 // .toro-grid--culture-prodotto { }

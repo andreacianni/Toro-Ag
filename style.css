@@ -102,6 +102,10 @@ Template: Divi
   flex-grow: 1;
 }
 
+.toro-grid--tipi-prod h4 {
+  text-transform: uppercase;
+}
+
 .toro-grid--prodotti-tipo img,
 .toro-grid--tipi-per-coltura img {
   padding: 25px 50px;
