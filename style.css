@@ -823,4 +823,11 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   background-color: #f8d7da;
   border: 1px solid #f5c6cb;
   color: #721c24;
+}
+
+.layout-card.imgsx .card-body p,
+.layout-card.imgsx .card-body i, .layout-card.imgdx .card-body p,
+.layout-card.imgdx .card-body i, .layout-card.imgup .card-body p,
+.layout-card.imgup .card-body i {
+  color: #cd2027;
 }/*# sourceMappingURL=style.css.map */

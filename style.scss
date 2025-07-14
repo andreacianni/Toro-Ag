@@ -988,3 +988,16 @@ NUOVO LAYOUT FORMS - 2 COLONNE
     color: #721c24;
   }
 }
+.layout-card{
+  &.imgsx,
+  &.imgdx,
+  &.imgup{
+    .card-body{
+      p,
+      i{
+        color:$brand-red;
+      }
+    }
+
+  }
+}

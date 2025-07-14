@@ -198,7 +198,7 @@ foreach ( $doc_plus_data as $index => $doc ):
             break;
         */
         case 'card-imgsup':
-            echo '<div class="col mb-4 layout-card-imgsup">';
+            echo '<div class="col mb-4 layout-card imgsup">';
             
             if ( $single_link ) {
                 // Card completamente cliccabile per singolo link
@@ -244,7 +244,7 @@ foreach ( $doc_plus_data as $index => $doc ):
             break;
 
         case 'card-imgsx':
-            echo '<div class="col mb-4 layout-card-imgsx">';
+            echo '<div class="col mb-4 layout-card imgsx">';
             
             if ( $single_link ) {
                 // Card completamente cliccabile per singolo link
@@ -307,7 +307,7 @@ foreach ( $doc_plus_data as $index => $doc ):
             break;
 
         case 'card-imgdx':
-            echo '<div class="col mb-4 layout-card-imgdx">';
+            echo '<div class="col mb-4 layout-card imgdx">';
             
             if ( $single_link ) {
                 // Card completamente cliccabile per singolo link
