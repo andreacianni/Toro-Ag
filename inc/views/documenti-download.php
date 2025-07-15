@@ -40,7 +40,8 @@ asort( $filter_langs );
 ?>
 
 <?php if ( $lang !== 'it' ) : // Filtro globale sticky ?>
-  <div id="global-filter" class="documenti-filter position-sticky fixed-top bg-white d-flex justify-content-end mb-3">
+  <div id="global-filter" class="documenti-filter position-sticky fixed-top bg-white d-flex justify-content-start mb-3">
+    <div class="info">scegli la lingua:</div>
     <?php foreach ( $filter_langs as $lang_slug => $prio ) : ?>
       <button type="button"
               data-lang="<?php echo esc_attr( $lang_slug ); ?>"
