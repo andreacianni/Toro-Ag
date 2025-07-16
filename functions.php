@@ -117,6 +117,7 @@ require_once get_stylesheet_directory() . '/inc/shortcodes/grid.php';
 require_once get_stylesheet_directory() . '/inc/shortcodes/video-card.php';
 require_once get_stylesheet_directory() . '/inc/shortcodes/prodotto-video.php';
 require_once get_stylesheet_directory() . '/inc/shortcodes/tipo-prodotto-video.php';
+require_once get_stylesheet_directory() . '/inc/shortcodes/brochure-coltura.php';
 require_once get_stylesheet_directory() . '/inc/shortcodes/scheda-prodotto-dettaglio.php';
 require_once get_stylesheet_directory() . '/inc/helpers/sup.php';
 require_once get_stylesheet_directory() . '/inc/helpers/breadcrumbs.php';
