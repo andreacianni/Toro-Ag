@@ -8,6 +8,7 @@
  * Shortcode [my_breadcrumbs]: 
  * - Se siamo in un singolo 'prodotto': Home » Prodotti » Termine » Titolo Prodotto.
  * - Se siamo in un termine di 'tipo_di_prodotto' o 'coltura': Home » Archivio » Termine.
+ * - Se siamo in una pagina figlia: Home » Pagina Genitore » Pagina Corrente.
  * - Altrimenti: fallback a Yoast SEO breadcrumb.
  */
 function toro_ag_divi_breadcrumb_shortcode() {
@@ -80,7 +81,48 @@ function toro_ag_divi_breadcrumb_shortcode() {
         return $breadcrumbs;
     }
 
-    // 3) Fallback: Briciola generata da Yoast SEO
+    // 3) NUOVO: Caso per pagine figlie
+    if ( is_page() ) {
+        global $post;
+        
+        // Se la pagina ha un parent (è una pagina figlia)
+        if ( $post->post_parent > 0 ) {
+            $breadcrumbs = '<p id="breadcrumbs">';
+            $breadcrumbs .= '<a href="' . home_url() . '">' . esc_html__( 'Home', 'toro-ag' ) . '</a>';
+            
+            // Costruisci la gerarchia delle pagine parent
+            $parents = array();
+            $parent_id = $post->post_parent;
+            
+            // Raccogli tutti i parent fino alla radice
+            while ( $parent_id ) {
+                $parent = get_post( $parent_id );
+                if ( $parent ) {
+                    $parents[] = $parent;
+                    $parent_id = $parent->post_parent;
+                } else {
+                    break;
+                }
+            }
+            
+            // Inverti l'array per avere l'ordine corretto (dalla radice alla foglia)
+            $parents = array_reverse( $parents );
+            
+            // Aggiungi ogni parent alla breadcrumb
+            foreach ( $parents as $parent ) {
+                $breadcrumbs .= ' &raquo; <a href="' . esc_url( get_permalink( $parent->ID ) ) . '">' 
+                              . esc_html( get_the_title( $parent->ID ) ) . '</a>';
+            }
+            
+            // Aggiungi la pagina corrente (senza link)
+            $breadcrumbs .= ' &raquo; ' . get_the_title( $post->ID );
+            $breadcrumbs .= '</p>';
+            
+            return $breadcrumbs;
+        }
+    }
+
+    // 4) Fallback: Briciola generata da Yoast SEO
     return yoast_breadcrumb( '<p id="breadcrumbs">', '</p>', false );
 }
 remove_shortcode( 'my_breadcrumbs' );
@@ -123,3 +165,4 @@ add_action( 'init', function() {
         'top'
     );
 }, 10 );
+?>
