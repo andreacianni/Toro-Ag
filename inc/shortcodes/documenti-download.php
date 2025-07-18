@@ -384,7 +384,7 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
         // Aggiungi la sezione "Altra Documentazione" solo se ci sono documenti
         if ( ! empty( $altra_documentazione_products ) ) {
             $terms_data[] = [
-                'term_name' => 'Altra Documentazione',
+                'term_name' => __( 'Altra Documentazione', 'toro-ag' ),
                 'products' => $altra_documentazione_products,
             ];
         }
