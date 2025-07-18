@@ -255,6 +255,8 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
             'order' => 'ASC'
         ]);
 
+        $altra_documentazione_products = [];
+        
         if ( $pages_query->have_posts() ) {
             while ( $pages_query->have_posts() ) {
                 $pages_query->the_post();
@@ -282,14 +284,11 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
                     $page_title = ( is_front_page() && $page_id == get_option('page_on_front') ) ? 
                                   'Cataloghi' : get_the_title( $page_id );
                     
-                    $terms_data[] = [
-                        'term_name' => $page_title,
-                        'products' => [[
-                            'ID' => $page_id,
-                            'title' => $page_title,
-                            'schede' => [],
-                            'docs' => $all_docs,
-                        ]],
+                    $altra_documentazione_products[] = [
+                        'ID' => $page_id,
+                        'title' => $page_title,
+                        'schede' => [],
+                        'docs' => $all_docs,
                     ];
                 }
             }
@@ -362,16 +361,21 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
             return $pA <=> $pB;
         });
         
-        // Aggiungi scheda Applicazioni solo se ci sono brochure
+        // Aggiungi le brochure applicazioni ai prodotti della sezione "Altra Documentazione"
         if ( ! empty( $brochure_applicazioni ) ) {
+            $altra_documentazione_products[] = [
+                'ID' => 0,
+                'title' => 'Applicazioni',
+                'schede' => [],
+                'docs' => $brochure_applicazioni,
+            ];
+        }
+
+        // Aggiungi la sezione "Altra Documentazione" solo se ci sono documenti
+        if ( ! empty( $altra_documentazione_products ) ) {
             $terms_data[] = [
-                'term_name' => 'Applicazioni',
-                'products' => [[
-                    'ID' => 0,
-                    'title' => 'Applicazioni',
-                    'schede' => [],
-                    'docs' => $brochure_applicazioni,
-                ]],
+                'term_name' => 'Altra Documentazione',
+                'products' => $altra_documentazione_products,
             ];
         }
 
