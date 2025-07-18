@@ -276,7 +276,17 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
                 $doc_plus_pagina = $collect_doc_plus( $page_id );
                 
                 // Unisci tutti i documenti
-                $all_docs = array_merge( $schede_pagina, $documenti_pagina, $doc_plus_pagina );
+                $all_docs_raw = array_merge( $schede_pagina, $documenti_pagina, $doc_plus_pagina );
+                
+                // Deduplifica per URL per evitare documenti doppi
+                $all_docs = [];
+                $seen_urls = [];
+                foreach ( $all_docs_raw as $doc ) {
+                    if ( ! in_array( $doc['url'], $seen_urls, true ) ) {
+                        $all_docs[] = $doc;
+                        $seen_urls[] = $doc['url'];
+                    }
+                }
                 
                 // Solo se ci sono documenti, aggiungi la pagina
                 if ( ! empty( $all_docs ) ) {
