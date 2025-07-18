@@ -120,13 +120,13 @@ asort( $filter_langs );
       ?>
 
       <section id="<?php echo esc_attr( $section_id ); ?>" class="documenti-section">
-        <h5 class="text-bg-dark text-center py-2 my-4 rounded-2">
+        <h4 class="text-bg-white text-start ps-2 py-2 my-4 border-bottom">
           <?php if ( $t_link ) : ?>
-            <a href="<?php echo esc_url( $t_link ); ?>" class="term-link text-white text-decoration-none"><?php echo esc_html( $term['term_name'] ); ?></a>
+            <a href="<?php echo esc_url( $t_link ); ?>" class="text-decoration-none"><?php echo esc_html( $term['term_name'] ); ?></a>
           <?php else : ?>
             <?php echo esc_html( $term['term_name'] ); ?>
           <?php endif; ?>
-        </h5>
+        </h4>
 
         <?php if ( empty( $term['products'] ) ) : ?>
           <p class="text-center"><?php echo esc_html__( 'Non ci sono prodotti con Schede o Documenti da visualizzare', 'toro-ag' ); ?></p>
@@ -279,80 +279,6 @@ asort( $filter_langs );
   </div>
 </div>
 
-<!-- CSS e JavaScript per la sidebar -->
-<style>
-.documenti-sidebar {
-  max-height: calc(100vh - 160px); /* 140px top + 20px bottom margin */
-  overflow-y: auto;
-  overflow-x: hidden; /* Evita scroll orizzontale anni 90 */
-  width: 100%;
-}
-
-.nav-link-section {
-  color: #6c757d;
-  transition: all 0.2s ease;
-  font-size: 0.875rem;
-  line-height: 1.3;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
-}
-
-.nav-link-section:hover,
-.nav-link-section.active {
-  color: #495057;
-  background-color: #f8f9fa;
-  transform: translateX(3px);
-}
-
-.documenti-section {
-  scroll-margin-top: 140px; /* 120px menu + 20px extra margin */
-}
-
-.documenti-filter .btn {
-  font-size: 0.75rem;
-  background-color: white !important;
-  border: 1px solid #dee2e6; /* Stesso colore bordo delle card */
-  color: #6c757d;
-}
-
-.documenti-filter .btn:hover {
-  border-color: #adb5bd;
-}
-
-.documenti-filter .btn.active {
-  border: 2px solid #cd2027 !important;
-  background-color: white !important;
-}
-
-.documenti-filter .btn:focus {
-  box-shadow: none;
-}
-
-.nav-sections {
-  max-width: 100%;
-}
-
-.nav-section-item {
-  max-width: 100%;
-}
-
-/* Responsive: cards layout per sidebar */
-@media (min-width: 992px) {
-  .documenti-download-grid .col-xl-4 {
-    flex: 0 0 50% !important;
-    max-width: 50% !important;
-  }
-}
-
-@media (min-width: 1200px) {
-  .documenti-download-grid .col-xl-4 {
-    flex: 0 0 33.333333% !important;
-    max-width: 33.333333% !important;
-  }
-}
-</style>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   // Smooth scroll per i link della sidebar
@@ -365,9 +291,10 @@ document.addEventListener('DOMContentLoaded', function() {
       const targetElement = document.getElementById(targetId);
       
       if (targetElement) {
-        targetElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
+        // Smooth scroll più immediato e fluido
+        window.scrollTo({
+          top: targetElement.offsetTop - 140,
+          behavior: 'smooth'
         });
         
         // Aggiorna stato attivo
