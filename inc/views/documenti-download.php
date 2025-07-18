@@ -311,6 +311,22 @@ asort( $filter_langs );
 
 .documenti-filter .btn {
   font-size: 0.75rem;
+  background-color: white !important;
+  border: 1px solid #dee2e6; /* Stesso colore bordo delle card */
+  color: #6c757d;
+}
+
+.documenti-filter .btn:hover {
+  border-color: #adb5bd;
+}
+
+.documenti-filter .btn.active {
+  border: 2px solid #cd2027 !important;
+  background-color: white !important;
+}
+
+.documenti-filter .btn:focus {
+  box-shadow: none;
 }
 
 .nav-sections {
@@ -384,5 +400,61 @@ document.addEventListener('DOMContentLoaded', function() {
   }, observerOptions);
   
   sections.forEach(section => observer.observe(section));
+  
+  // Gestione filtro lingue
+  const filterButtons = document.querySelectorAll('.filter-flag');
+  const navigationItems = document.querySelectorAll('.nav-section-item');
+  
+  filterButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const selectedLang = this.getAttribute('data-lang');
+      
+      // Aggiorna stato attivo bottoni
+      filterButtons.forEach(btn => btn.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Filtra le voci della navigazione
+      filterNavigationByLanguage(selectedLang);
+      
+      // Filtra anche il contenuto (se esiste già questa funzionalità)
+      if (typeof filterDocumentsByLanguage === 'function') {
+        filterDocumentsByLanguage(selectedLang);
+      }
+    });
+  });
+  
+  function filterNavigationByLanguage(selectedLang) {
+    navigationItems.forEach(navItem => {
+      const link = navItem.querySelector('.nav-link-section');
+      const sectionId = link.getAttribute('href').substring(1);
+      const section = document.getElementById(sectionId);
+      
+      if (!section) {
+        navItem.style.display = 'none';
+        return;
+      }
+      
+      // Se nessuna lingua selezionata o "tutte le lingue" (data-lang="")
+      if (!selectedLang || selectedLang === '') {
+        navItem.style.display = 'block';
+        return;
+      }
+      
+      // Controlla se la sezione ha documenti nella lingua selezionata
+      const hasLanguageContent = section.querySelector(`.gruppo-lingua-${selectedLang}`) !== null;
+      
+      if (hasLanguageContent) {
+        navItem.style.display = 'block';
+      } else {
+        navItem.style.display = 'none';
+      }
+    });
+  }
+  
+  // Inizializza con "tutte le lingue" selezionato
+  const allLanguagesButton = document.querySelector('.filter-flag[data-lang=""]');
+  if (allLanguagesButton) {
+    allLanguagesButton.classList.add('active');
+  }
 });
 </script>
