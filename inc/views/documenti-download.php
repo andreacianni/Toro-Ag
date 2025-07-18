@@ -43,23 +43,23 @@ asort( $filter_langs );
 <div class="row">
   <!-- SIDEBAR SINISTRA -->
   <div class="col-lg-3 d-none d-lg-block">
-    <div class="documenti-sidebar position-sticky" style="top: 2rem;">
+    <div class="documenti-sidebar position-sticky" style="top: 140px;">
       
       <?php if ( $lang !== 'it' ) : // Filtro lingue solo per inglese in desktop ?>
-        <div class="documenti-filter mb-4">
-          <h6 class="fw-bold mb-3"><?php esc_html_e( 'Choose language:', 'toro-ag' ); ?></h6>
-          <div class="d-flex flex-wrap gap-2">
+        <div class="documenti-filter mb-3">
+          <h6 class="fw-bold mb-2 small"><?php esc_html_e( 'Choose language:', 'toro-ag' ); ?></h6>
+          <div class="d-flex flex-wrap gap-1">
             <?php foreach ( $filter_langs as $lang_slug => $prio ) : ?>
               <button type="button"
                       data-lang="<?php echo esc_attr( $lang_slug ); ?>"
-                      class="filter-flag btn btn-sm btn-outline-secondary"
+                      class="filter-flag btn btn-sm btn-outline-secondary p-1"
                       title="<?php echo esc_attr( toroag_get_language_label( $lang_slug ) . ' (' . ( $lang_counts[ $lang_slug ] ?? 0 ) . ')' ); ?>">
                 <?php echo toroag_get_flag_html( $lang_slug ); ?>
               </button>
             <?php endforeach; ?>
             <button type="button"
                     data-lang=""
-                    class="filter-flag btn btn-sm btn-outline-secondary"
+                    class="filter-flag btn btn-sm btn-outline-secondary p-1"
                     title="<?php esc_attr_e( 'All languages', 'toro-ag' ); ?>">
               <i class="bi bi-globe2"></i>
             </button>
@@ -69,13 +69,13 @@ asort( $filter_langs );
 
       <!-- Menu navigazione sezioni -->
       <nav class="documenti-nav">
-        <h6 class="fw-bold mb-3"><?php esc_html_e( 'Navigation', 'toro-ag' ); ?></h6>
+        <h6 class="fw-bold mb-2 small"><?php esc_html_e( 'Navigation', 'toro-ag' ); ?></h6>
         <div class="nav-sections">
           <?php foreach ( $terms_data as $term ) : ?>
             <?php $section_id = 'section-' . sanitize_title( $term['term_name'] ); ?>
-            <div class="nav-section-item mb-2">
+            <div class="nav-section-item mb-1">
               <a href="#<?php echo esc_attr( $section_id ); ?>" 
-                 class="nav-link-section text-decoration-none d-block py-2 px-3 rounded">
+                 class="nav-link-section text-decoration-none d-block py-1 px-2 rounded small">
                 <?php echo esc_html( $term['term_name'] ); ?>
               </a>
             </div>
@@ -282,24 +282,43 @@ asort( $filter_langs );
 <!-- CSS e JavaScript per la sidebar -->
 <style>
 .documenti-sidebar {
-  max-height: calc(100vh - 4rem);
+  max-height: calc(100vh - 160px); /* 140px top + 20px bottom margin */
   overflow-y: auto;
+  overflow-x: hidden; /* Evita scroll orizzontale anni 90 */
+  width: 100%;
 }
 
 .nav-link-section {
   color: #6c757d;
   transition: all 0.2s ease;
+  font-size: 0.875rem;
+  line-height: 1.3;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .nav-link-section:hover,
 .nav-link-section.active {
   color: #495057;
   background-color: #f8f9fa;
-  transform: translateX(5px);
+  transform: translateX(3px);
 }
 
 .documenti-section {
   scroll-margin-top: 140px; /* 120px menu + 20px extra margin */
+}
+
+.documenti-filter .btn {
+  font-size: 0.75rem;
+}
+
+.nav-sections {
+  max-width: 100%;
+}
+
+.nav-section-item {
+  max-width: 100%;
 }
 
 /* Responsive: cards layout per sidebar */
