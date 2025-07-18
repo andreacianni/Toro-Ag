@@ -69,18 +69,18 @@ asort( $filter_langs );
 
       <!-- Menu navigazione sezioni -->
       <nav class="documenti-nav">
-        <h6 class="fw-bold mb-3"><?php esc_html_e( 'Sections', 'toro-ag' ); ?></h6>
-        <ul class="list-unstyled">
+        <h6 class="fw-bold mb-3"><?php esc_html_e( 'Navigation', 'toro-ag' ); ?></h6>
+        <div class="nav-sections">
           <?php foreach ( $terms_data as $term ) : ?>
             <?php $section_id = 'section-' . sanitize_title( $term['term_name'] ); ?>
-            <li class="mb-2">
+            <div class="nav-section-item mb-2">
               <a href="#<?php echo esc_attr( $section_id ); ?>" 
-                 class="nav-link-section text-decoration-none d-block py-1 px-2 rounded">
+                 class="nav-link-section text-decoration-none d-block py-2 px-3 rounded">
                 <?php echo esc_html( $term['term_name'] ); ?>
               </a>
-            </li>
+            </div>
           <?php endforeach; ?>
-        </ul>
+        </div>
       </nav>
     </div>
   </div>
@@ -299,7 +299,7 @@ asort( $filter_langs );
 }
 
 .documenti-section {
-  scroll-margin-top: 2rem;
+  scroll-margin-top: 140px; /* 120px menu + 20px extra margin */
 }
 
 /* Responsive: cards layout per sidebar */
@@ -346,7 +346,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const sections = document.querySelectorAll('.documenti-section');
   const observerOptions = {
     root: null,
-    rootMargin: '-20% 0px -70% 0px',
+    rootMargin: '-140px 0px -70% 0px', // Aggiustato per menu sticky 120px + margin
     threshold: 0
   };
   
