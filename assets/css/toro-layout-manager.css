@@ -1,0 +1,249 @@
+/**
+ * TORO AG Layout Manager Styles
+ * CSS per layout intelligenti che eliminano colonne vuote
+ */
+
+/* ================================
+   CONTAINER BASE E DEBUG
+   ================================ */
+
+.toro-layout-container {
+    margin: 2rem 0;
+    width: 100%;
+}
+
+.toro-debug-output {
+    background: #f8f9fa !important;
+    border: 2px solid #28a745 !important;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    color: #212529;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.1);
+}
+
+.toro-layout-empty {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    color: #6c757d;
+    font-size: 1.1rem;
+}
+
+/* ================================
+   SEZIONI LAYOUT PRODOTTO
+   ================================ */
+
+.toro-layout-prodotto .toro-layout-image-section {
+    margin-bottom: 2rem;
+}
+
+.toro-layout-prodotto .toro-layout-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.toro-layout-prodotto .toro-layout-content-section {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #333;
+}
+
+.toro-layout-prodotto .toro-layout-content-section h1,
+.toro-layout-prodotto .toro-layout-content-section h2,
+.toro-layout-prodotto .toro-layout-content-section h3 {
+    color: #2c5530;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.toro-layout-prodotto .toro-layout-content-section p {
+    margin-bottom: 1rem;
+}
+
+/* ================================
+   SIDEBAR E DOCUMENTI
+   ================================ */
+
+.toro-layout-documents-section {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.toro-layout-documents-section h3,
+.toro-layout-documents-section h4 {
+    color: #2c5530;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.toro-layout-videos-section {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.toro-layout-cultures-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #f8f9fa;
+}
+
+.toro-layout-form-section {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+/* ================================
+   RESPONSIVE DESIGN
+   ================================ */
+
+@media (max-width: 991.98px) {
+    .toro-layout-container .row [class*="col-lg-"] {
+        margin-bottom: 2rem;
+    }
+    
+    .toro-layout-prodotto .toro-layout-image-section {
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    
+    .toro-layout-documents-section,
+    .toro-layout-videos-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .toro-layout-container {
+        margin: 1rem 0;
+    }
+    
+    .toro-layout-form-section {
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+    }
+    
+    .toro-debug-output {
+        font-size: 11px;
+        padding: 10px;
+        margin: 10px 0;
+    }
+}
+
+/* ================================
+   STATI E ANIMAZIONI
+   ================================ */
+
+.toro-layout-container .toro-layout-image {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.toro-layout-container .toro-layout-image:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.toro-layout-documents-section,
+.toro-layout-videos-section {
+    transition: box-shadow 0.3s ease;
+}
+
+.toro-layout-documents-section:hover,
+.toro-layout-videos-section:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ================================
+   UTILITY CLASSES
+   ================================ */
+
+.toro-layout-hidden {
+    display: none !important;
+}
+
+.toro-layout-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.toro-layout-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #333;
+    border-radius: 50%;
+    animation: toro-spin 1s linear infinite;
+}
+
+@keyframes toro-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ================================
+   PERSONALIZZAZIONE BRAND TORO
+   ================================ */
+
+.toro-layout-container h1,
+.toro-layout-container h2,
+.toro-layout-container h3 {
+    font-family: inherit;
+    font-weight: 600;
+}
+
+.toro-layout-prodotto .toro-layout-content-section a {
+    color: #2c5530;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s ease;
+}
+
+.toro-layout-prodotto .toro-layout-content-section a:hover {
+    border-bottom-color: #2c5530;
+}
+
+/* ================================
+   INTEGRAZIONE CON SHORTCODE ESISTENTI
+   ================================ */
+
+/* Assicura che i shortcode esistenti si adattino bene */
+.toro-layout-documents-section .grid-container,
+.toro-layout-videos-section .grid-container {
+    margin: 0;
+}
+
+.toro-layout-documents-section .card,
+.toro-layout-videos-section .card {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+}
+
+.toro-layout-cultures-section .grid-container {
+    margin-top: 1rem;
+}

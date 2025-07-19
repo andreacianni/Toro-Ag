@@ -79,6 +79,20 @@ function enqueue_privacy_toggle_script() {
 }
 add_action('wp_enqueue_scripts', 'enqueue_privacy_toggle_script');
 
+// Carica CSS per Layout Manager
+function enqueue_toro_layout_manager_styles() {
+    wp_enqueue_style(
+        'toro-layout-manager',
+        get_stylesheet_directory_uri() . '/assets/css/toro-layout-manager.css',
+        ['bootstrap-css'],
+        '1.0.0'
+    );
+}
+add_action('wp_enqueue_scripts', 'enqueue_toro_layout_manager_styles');
+
+
+// carica Layout Manager intelligente
+require_once get_stylesheet_directory() . '/inc/classes/ToroLayoutManager.php';
 
 // carica helpers e shortcodes
 require_once get_stylesheet_directory() . '/inc/helpers/file-icon.php';
