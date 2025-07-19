@@ -15,7 +15,11 @@ $sections = get_query_var('toro_sections', []);
 
 <?php if (isset($sections['image'])): ?>
 <div class="toro-layout-image-section mb-4">
-    <?php echo $sections['image']; ?>
+    <div class="text-center">
+        <div class="d-inline-block" style="max-width: 400px;">
+            <?php echo $sections['image']; ?>
+        </div>
+    </div>
 </div>
 <?php endif; ?>
 

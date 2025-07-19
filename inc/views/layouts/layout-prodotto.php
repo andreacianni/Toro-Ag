@@ -45,6 +45,11 @@ $container_classes = [
     'toro-layout-sidebar-' . esc_attr($sidebar_position)
 ];
 
+// Aggiungi classe compatta per sidebar ristrette  
+if ($has_sidebar_content && in_array($sidebar_position, ['left', 'right'])) {
+    $container_classes[] = 'toro-layout-sidebar-compact';
+}
+
 if (empty($sections)) {
     echo '<div class="toro-layout-empty">Nessun contenuto disponibile</div>';
     return;
@@ -75,16 +80,16 @@ if (empty($sections)) {
             
             <?php if ($sidebar_position === 'left'): ?>
                 
-                <!-- Sidebar a Sinistra -->
-                <div class="col-lg-4 col-md-12 order-lg-1 order-2">
+                <!-- Sidebar a Sinistra - Ristretta -->
+                <div class="col-lg-3 col-md-12 order-lg-1 order-2">
                     <?php 
                     set_query_var('toro_sections', $sections);
                     get_template_part('inc/views/layouts/partials/sidebar-content'); 
                     ?>
                 </div>
                 
-                <!-- Contenuto Principale -->
-                <div class="col-lg-8 col-md-12 order-lg-2 order-1">
+                <!-- Contenuto Principale - Più Largo -->
+                <div class="col-lg-9 col-md-12 order-lg-2 order-1">
                     <?php 
                     set_query_var('toro_sections', $sections);
                     get_template_part('inc/views/layouts/partials/main-content'); 
@@ -94,15 +99,15 @@ if (empty($sections)) {
             <?php else: ?>
                 
                 <!-- Contenuto Principale -->
-                <div class="col-lg-8 col-md-12">
+                <div class="col-lg-9 col-md-12">
                     <?php 
                     set_query_var('toro_sections', $sections);
                     get_template_part('inc/views/layouts/partials/main-content'); 
                     ?>
                 </div>
                 
-                <!-- Sidebar a Destra -->
-                <div class="col-lg-4 col-md-12">
+                <!-- Sidebar a Destra - Ristretta -->
+                <div class="col-lg-3 col-md-12">
                     <?php 
                     set_query_var('toro_sections', $sections);
                     get_template_part('inc/views/layouts/partials/sidebar-content'); 
