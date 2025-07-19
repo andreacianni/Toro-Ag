@@ -161,7 +161,7 @@ class ToroLayoutManager {
             'has_main_content' => !empty(get_post_field('post_content', $product_id)),
             'has_documents' => !empty(get_post_meta($product_id, 'scheda_prodotto', true)),
             'has_videos' => !empty(get_post_meta($product_id, 'video_prodotto', true)),
-            'has_cultures' => wp_get_post_terms($product_id, 'coltura', ['fields' => 'count']) > 0,
+            'has_cultures' => !empty(get_the_terms($product_id, 'coltura')),
             'has_featured_image' => has_post_thumbnail($product_id),
             'has_form_data' => !empty(get_post_meta($product_id, 'form_data', true)) // Placeholder per form
         ];
