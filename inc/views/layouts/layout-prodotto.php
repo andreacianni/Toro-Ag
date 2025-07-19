@@ -67,7 +67,7 @@ if (empty($sections)) {
                 <?php 
                 // Carica partial per contenuto principale full-width
                 set_query_var('toro_sections', $sections);
-                get_template_part('inc/views/layouts/partials/main-content-full'); 
+                include locate_template('inc/views/layouts/partials/main-content-full.php'); 
                 ?>
                 
             </div>
@@ -84,7 +84,7 @@ if (empty($sections)) {
                 <div class="col-lg-3 col-md-12 order-lg-1 order-2">
                     <?php 
                     set_query_var('toro_sections', $sections);
-                    get_template_part('inc/views/layouts/partials/sidebar-content'); 
+                    include locate_template('inc/views/layouts/partials/sidebar-content.php'); 
                     ?>
                 </div>
                 
@@ -92,7 +92,7 @@ if (empty($sections)) {
                 <div class="col-lg-9 col-md-12 order-lg-2 order-1">
                     <?php 
                     set_query_var('toro_sections', $sections);
-                    get_template_part('inc/views/layouts/partials/main-content'); 
+                    include locate_template('inc/views/layouts/partials/main-content.php'); 
                     ?>
                 </div>
                 
@@ -102,7 +102,7 @@ if (empty($sections)) {
                 <div class="col-lg-9 col-md-12">
                     <?php 
                     set_query_var('toro_sections', $sections);
-                    get_template_part('inc/views/layouts/partials/main-content'); 
+                    include locate_template('inc/views/layouts/partials/main-content.php'); 
                     ?>
                 </div>
                 
@@ -110,7 +110,7 @@ if (empty($sections)) {
                 <div class="col-lg-3 col-md-12">
                     <?php 
                     set_query_var('toro_sections', $sections);
-                    get_template_part('inc/views/layouts/partials/sidebar-content'); 
+                    include locate_template('inc/views/layouts/partials/sidebar-content.php'); 
                     ?>
                 </div>
                 

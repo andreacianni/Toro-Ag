@@ -281,7 +281,12 @@ class ToroLayoutManager {
         
         // Rendering con template
         ob_start();
-        $template_path = get_template_part('inc/views/layouts/' . $template_name);
+        $template_file = locate_template('inc/views/layouts/' . $template_name . '.php');
+        if ($template_file) {
+            include $template_file;
+        } else {
+            echo '<div class="toro-layout-error">Template non trovato: ' . esc_html($template_name) . '</div>';
+        }
         $output = ob_get_clean();
         
         // Pulizia variabili
