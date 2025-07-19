@@ -75,7 +75,7 @@
     height: auto;
     max-width: 100%;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    /* box-shadow rimosso per look più pulito */
 }
 
 /* Layout bilanciato: immagine più contenuta quando c'è sidebar */
@@ -118,7 +118,7 @@
     border-radius: 8px;
     padding: 1rem; /* Ridotto da 1.5rem */
     margin-bottom: 1rem; /* Ridotto da 1.5rem */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    /* box-shadow rimosso */
 }
 
 .toro-layout-documents-section h3,
@@ -134,7 +134,7 @@
     border-radius: 8px;
     padding: 1rem; /* Ridotto da 1.5rem */
     margin-bottom: 1rem; /* Ridotto da 1.5rem */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    /* box-shadow rimosso */
 }
 
 .toro-layout-cultures-section {
@@ -200,22 +200,17 @@
    ================================ */
 
 .toro-layout-container .toro-layout-image {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease;
 }
 
 .toro-layout-container .toro-layout-image:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    transform: scale(1.02); /* Leggero zoom invece di elevazione */
 }
 
+/* Sidebar sections ora senza effetti hover */
 .toro-layout-documents-section,
 .toro-layout-videos-section {
-    transition: box-shadow 0.3s ease;
-}
-
-.toro-layout-documents-section:hover,
-.toro-layout-videos-section:hover {
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    /* transizioni rimosse */
 }
 
 /* ================================

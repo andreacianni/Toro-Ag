@@ -34,7 +34,7 @@ $sections = get_query_var('toro_sections', []);
 
 <?php if (isset($sections['documents'])): ?>
 <div class="toro-layout-documents-section mt-4">
-    <h3><i class="bi bi-file-earmark-text"></i> Documentazione Tecnica</h3>
+    <h3>Documentazione Tecnica</h3>
     <div class="row">
         <div class="col-12">
             <?php echo $sections['documents']; ?>
@@ -45,7 +45,7 @@ $sections = get_query_var('toro_sections', []);
 
 <?php if (isset($sections['videos'])): ?>
 <div class="toro-layout-videos-section mt-4">
-    <h3><i class="bi bi-play-circle"></i> Video e Contenuti Multimediali</h3>
+    <h3>Video e Contenuti Multimediali</h3>
     <div class="row">
         <div class="col-12">
             <?php echo $sections['videos']; ?>
@@ -56,7 +56,7 @@ $sections = get_query_var('toro_sections', []);
 
 <?php if (isset($sections['cultures'])): ?>
 <div class="toro-layout-cultures-section mt-4">
-    <h3><i class="bi bi-grid-3x3-gap"></i> Applicazioni e Colture</h3>
+    <h3>Applicazioni e Colture</h3>
     <?php echo $sections['cultures']; ?>
 </div>
 <?php endif; ?>

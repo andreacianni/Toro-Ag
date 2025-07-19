@@ -47,7 +47,7 @@ class ToroLayoutManager {
         
         // Debug mode se WP_DEBUG è attivo
         if (defined('WP_DEBUG') && WP_DEBUG) {
-            self::$debug_mode = true;
+            self::$debug_mode = false; // Disabilitato anche in WP_DEBUG
         }
     }
     

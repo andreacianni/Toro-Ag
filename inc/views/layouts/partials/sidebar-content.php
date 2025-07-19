@@ -15,14 +15,14 @@ $sections = get_query_var('toro_sections', []);
 
 <?php if (isset($sections['documents'])): ?>
 <div class="toro-layout-documents-section mb-4">
-    <h4><i class="bi bi-file-earmark-text"></i> Schede Tecniche</h4>
+    <h4>Schede Tecniche</h4>
     <?php echo $sections['documents']; ?>
 </div>
 <?php endif; ?>
 
 <?php if (isset($sections['videos'])): ?>
 <div class="toro-layout-videos-section mb-4">
-    <h4><i class="bi bi-play-circle"></i> Video Prodotto</h4>
+    <h4>Video Prodotto</h4>
     <?php echo $sections['videos']; ?>
 </div>
 <?php endif; ?>
