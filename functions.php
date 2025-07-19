@@ -69,21 +69,13 @@ add_action('admin_enqueue_scripts', 'aggiungi_bootstrap_admin');
 
 // Carica JavaScript per Privacy Toggle
 function enqueue_privacy_toggle_script() {
-    // DEBUG: Log per verificare se la funzione viene chiamata
-    error_log('PRIVACY TOGGLE: Funzione enqueue chiamata');
-    
-    $js_path = get_stylesheet_directory_uri() . '/assets/js/privacy-toggle.js';
-    error_log('PRIVACY TOGGLE: Path file: ' . $js_path);
-    
     wp_enqueue_script(
         'toro-privacy-toggle',
-        $js_path,
+        get_stylesheet_directory_uri() . '/assets/js/privacy-toggle.js',
         [],
         '1.0.0',
         true
     );
-    
-    error_log('PRIVACY TOGGLE: Script enqueue completato');
 }
 add_action('wp_enqueue_scripts', 'enqueue_privacy_toggle_script');
 
@@ -534,6 +526,3 @@ function toro_parse_excel_date($date_string) {
     error_log("PARSING DATE: last resort current date: {$result}");
     return $result;
 }
-
-// 🧪 TEST MODIFICA - Privacy Toggle Debug
-// Aggiunto per verificare che le modifiche funzionino
