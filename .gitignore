@@ -3,4 +3,5 @@
 # Escludi file app per il form
 appo-form/
 # Escludi file di log
+debug-log/
 *.log

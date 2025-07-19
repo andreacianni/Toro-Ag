@@ -259,7 +259,7 @@ class ToroLayoutManager {
     }
     
     /**
-     * Renderizza layout adattivo HTML
+     * Renderizza layout adattivo usando template system
      * 
      * @param array $sections Sezioni caricate con contenuto
      * @param array $atts Attributi shortcode
@@ -271,118 +271,41 @@ class ToroLayoutManager {
             return '<div class="toro-layout-empty">Nessun contenuto disponibile</div>';
         }
         
-        $has_sidebar_content = isset($sections['documents']) || isset($sections['videos']) || isset($sections['form']);
-        $sidebar_position = $atts['sidebar_position'];
+        // Imposta variabili per template
+        set_query_var('toro_layout_sections', $sections);
+        set_query_var('toro_layout_atts', $atts);
+        set_query_var('toro_layout_type', $layout_type);
         
-        // Auto-hide sidebar se non c'è contenuto
-        if ($sidebar_position === 'auto') {
-            $sidebar_position = $has_sidebar_content ? 'left' : 'hide';
-        }
+        // Determina template da usare
+        $template_name = self::get_layout_template($layout_type);
         
-        $html = '<div class="toro-layout-container toro-layout-' . esc_attr($layout_type) . '">';
+        // Rendering con template
+        ob_start();
+        $template_path = get_template_part('inc/views/layouts/' . $template_name);
+        $output = ob_get_clean();
         
-        if ($sidebar_position === 'hide' || !$has_sidebar_content) {
-            // Layout full-width senza sidebar
-            $html .= '<div class="row">';
-            $html .= '<div class="col-12">';
-            
-            // Contenuto principale
-            if (isset($sections['image'])) {
-                $html .= '<div class="toro-layout-image-section mb-4">' . $sections['image'] . '</div>';
-            }
-            
-            if (isset($sections['content'])) {
-                $html .= '<div class="toro-layout-content-section">' . $sections['content'] . '</div>';
-            }
-            
-            if (isset($sections['cultures'])) {
-                $html .= '<div class="toro-layout-cultures-section mt-4">' . $sections['cultures'] . '</div>';
-            }
-            
-            $html .= '</div></div>';
-            
-        } else {
-            // Layout con sidebar
-            $main_cols = 8;
-            $sidebar_cols = 4;
-            
-            $html .= '<div class="row">';
-            
-            // Sidebar a sinistra
-            if ($sidebar_position === 'left') {
-                $html .= '<div class="col-lg-' . $sidebar_cols . ' col-md-12 order-lg-1 order-2">';
-                $html .= self::render_sidebar_content($sections);
-                $html .= '</div>';
-                
-                $html .= '<div class="col-lg-' . $main_cols . ' col-md-12 order-lg-2 order-1">';
-                $html .= self::render_main_content($sections);
-                $html .= '</div>';
-            } else {
-                // Sidebar a destra
-                $html .= '<div class="col-lg-' . $main_cols . ' col-md-12">';
-                $html .= self::render_main_content($sections);
-                $html .= '</div>';
-                
-                $html .= '<div class="col-lg-' . $sidebar_cols . ' col-md-12">';
-                $html .= self::render_sidebar_content($sections);
-                $html .= '</div>';
-            }
-            
-            $html .= '</div>';
-        }
+        // Pulizia variabili
+        set_query_var('toro_layout_sections', null);
+        set_query_var('toro_layout_atts', null);
+        set_query_var('toro_layout_type', null);
         
-        // Form in fondo se richiesto
-        if (isset($sections['form']) && $atts['form_position'] === 'bottom') {
-            $html .= '<div class="row mt-4"><div class="col-12">';
-            $html .= '<div class="toro-layout-form-section">' . $sections['form'] . '</div>';
-            $html .= '</div></div>';
-        }
-        
-        $html .= '</div>';
-        
-        return $html;
+        return $output;
     }
     
     /**
-     * Renderizza contenuto principale
+     * Determina quale template usare per il layout type
+     * 
+     * @param string $layout_type
+     * @return string Nome template
      */
-    private static function render_main_content($sections) {
-        $html = '';
+    private static function get_layout_template($layout_type) {
+        $templates = [
+            'prodotto' => 'layout-prodotto',
+            'tipo_prodotto' => 'layout-tipo-prodotto', 
+            'coltura' => 'layout-coltura'
+        ];
         
-        if (isset($sections['image'])) {
-            $html .= '<div class="toro-layout-image-section mb-4">' . $sections['image'] . '</div>';
-        }
-        
-        if (isset($sections['content'])) {
-            $html .= '<div class="toro-layout-content-section">' . $sections['content'] . '</div>';
-        }
-        
-        if (isset($sections['cultures'])) {
-            $html .= '<div class="toro-layout-cultures-section mt-4">' . $sections['cultures'] . '</div>';
-        }
-        
-        return $html;
-    }
-    
-    /**
-     * Renderizza contenuto sidebar
-     */
-    private static function render_sidebar_content($sections) {
-        $html = '';
-        
-        if (isset($sections['documents'])) {
-            $html .= '<div class="toro-layout-documents-section mb-4">' . $sections['documents'] . '</div>';
-        }
-        
-        if (isset($sections['videos'])) {
-            $html .= '<div class="toro-layout-videos-section mb-4">' . $sections['videos'] . '</div>';
-        }
-        
-        if (isset($sections['form']) && !empty($sections['form'])) {
-            $html .= '<div class="toro-layout-form-section">' . $sections['form'] . '</div>';
-        }
-        
-        return $html;
+        return $templates[$layout_type] ?? 'layout-prodotto';
     }
     
     /**
