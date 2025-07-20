@@ -501,7 +501,7 @@ class ToroLayoutManager {
     }
     
     /**
-     * Genera HTML per carousel Swiper V2 con thumbs sotto
+     * Genera HTML per carousel Swiper V2 con thumbs sotto e frecce dinamiche
      * 
      * @param array $images Array di immagini
      * @param int $product_id ID prodotto per ID univoci
@@ -511,40 +511,58 @@ class ToroLayoutManager {
         $gallery_id = 'toro-gallery-' . $product_id;
         $thumbs_id = 'toro-thumbs-' . $product_id;
         
-        $html = '<div class="toro-product-gallery-v2">';
+        $html = '<div class="toro-product-gallery-v2" data-gallery-id="' . $gallery_id . '">';
         
-        // Main carousel full-width sopra
+        // Container principale con overflow visible per frecce
         $html .= '<div class="toro-gallery-main-container">';
+        
+        // Viewport con overflow hidden per nascondere immagini laterali
+        $html .= '<div class="toro-gallery-viewport">';
         $html .= sprintf('<div class="swiper toro-gallery-main" id="%s">', $gallery_id);
         $html .= '<div class="swiper-wrapper">';
         
-        // Slide immagini principali
-        foreach ($images as $image) {
+        // Slide immagini principali con aspect ratio data
+        foreach ($images as $index => $image) {
+            // Ottieni dimensioni reali immagine per aspect ratio
+            $image_meta = wp_get_attachment_metadata($image['id']);
+            $aspect_ratio = 1; // default square
+            if (!empty($image_meta['width']) && !empty($image_meta['height'])) {
+                $aspect_ratio = $image_meta['width'] / $image_meta['height'];
+            }
+            
             $html .= sprintf(
-                '<div class="swiper-slide"><img src="%s" alt="%s" class="img-fluid"></div>',
+                '<div class="swiper-slide" data-aspect-ratio="%.3f"><img src="%s" alt="%s" class="img-fluid toro-main-image"></div>',
+                $aspect_ratio,
                 esc_url($image['url']),
                 esc_attr($image['alt'])
             );
         }
         
         $html .= '</div>'; // swiper-wrapper
-        
-        // Controlli carousel - frecce ai lati dell'immagine
-        $html .= '<div class="swiper-button-next"></div>';
-        $html .= '<div class="swiper-button-prev"></div>';
-        
         $html .= '</div>'; // swiper main
+        $html .= '</div>'; // viewport
+        
+        // Frecce posizionate dinamicamente via JavaScript
+        $html .= '<div class="toro-gallery-arrows">';
+        $html .= '<button class="swiper-button-prev toro-arrow-prev" type="button"><i class="fas fa-chevron-left"></i></button>';
+        $html .= '<button class="swiper-button-next toro-arrow-next" type="button"><i class="fas fa-chevron-right"></i></button>';
+        $html .= '</div>';
+        
+        // Overlay bianchi per mascheramento immagini laterali
+        $html .= '<div class="toro-gallery-mask-left"></div>';
+        $html .= '<div class="toro-gallery-mask-right"></div>';
+        
         $html .= '</div>'; // main container
         
-        // Thumbs orizzontali sotto sempre 50px
+        // Thumbs orizzontali sotto con crop centrale
         $html .= '<div class="toro-gallery-thumbs-container">';
         $html .= sprintf('<div class="swiper toro-gallery-thumbs" id="%s">', $thumbs_id);
         $html .= '<div class="swiper-wrapper">';
         
-        // Thumbs orizzontali
+        // Thumbs quadrate con crop centrale
         foreach ($images as $image) {
             $html .= sprintf(
-                '<div class="swiper-slide"><img src="%s" alt="%s" class="img-fluid"></div>',
+                '<div class="swiper-slide toro-thumb-slide"><div class="toro-thumb-wrapper"><img src="%s" alt="%s" class="img-fluid toro-thumb-image"></div></div>',
                 esc_url($image['thumb']),
                 esc_attr($image['alt'])
             );
@@ -556,14 +574,14 @@ class ToroLayoutManager {
         
         $html .= '</div>'; // toro-product-gallery-v2
         
-        // JavaScript per inizializzare Swiper V2
+        // JavaScript per inizializzare Swiper V2 con frecce dinamiche
         $html .= self::generate_swiper_javascript($gallery_id, $thumbs_id);
         
         return $html;
     }
     
     /**
-     * Genera JavaScript per inizializzare carousel Swiper V2
+     * Genera JavaScript per inizializzare carousel Swiper V2 con frecce dinamiche
      * 
      * @param string $gallery_id ID carousel principale
      * @param string $thumbs_id ID carousel thumbs
@@ -574,6 +592,64 @@ class ToroLayoutManager {
         <script>
         document.addEventListener("DOMContentLoaded", function() {
             if (typeof Swiper !== "undefined") {
+                const galleryContainer = document.querySelector(`[data-gallery-id="%s"]`);
+                if (!galleryContainer) return;
+                
+                // Funzione per calcolare distanza frecce responsive
+                function getArrowDistance() {
+                    const width = window.innerWidth;
+                    if (width >= 992) return 45; // Desktop
+                    if (width >= 768) return 40; // Tablet
+                    return 36; // Mobile
+                }
+                
+                // Funzione per posizionare frecce dinamicamente
+                function positionArrows(swiper) {
+                    const activeSlide = swiper.slides[swiper.activeIndex];
+                    if (!activeSlide) return;
+                    
+                    const img = activeSlide.querySelector(".toro-main-image");
+                    const aspectRatio = parseFloat(activeSlide.dataset.aspectRatio) || 1;
+                    
+                    if (img && img.complete) {
+                        // Calcola dimensioni effettive immagine
+                        const containerHeight = img.offsetHeight;
+                        const imageWidth = containerHeight * aspectRatio;
+                        
+                        // Calcola posizione frecce
+                        const arrowDistance = getArrowDistance();
+                        const containerCenter = galleryContainer.querySelector(".toro-gallery-viewport").offsetWidth / 2;
+                        const leftPos = containerCenter - (imageWidth / 2) - arrowDistance;
+                        const rightPos = containerCenter + (imageWidth / 2) + arrowDistance;
+                        
+                        // Applica posizioni
+                        const prevBtn = galleryContainer.querySelector(".toro-arrow-prev");
+                        const nextBtn = galleryContainer.querySelector(".toro-arrow-next");
+                        
+                        if (prevBtn && nextBtn) {
+                            prevBtn.style.left = Math.max(10, leftPos) + "px"; // Min 10px dal bordo
+                            nextBtn.style.right = Math.max(10, galleryContainer.offsetWidth - rightPos) + "px";
+                        }
+                        
+                        // Aggiorna mask overlay
+                        updateMaskOverlays(imageWidth, containerCenter);
+                    }
+                }
+                
+                // Funzione per aggiornare overlay mascheramento
+                function updateMaskOverlays(imageWidth, containerCenter) {
+                    const maskLeft = galleryContainer.querySelector(".toro-gallery-mask-left");
+                    const maskRight = galleryContainer.querySelector(".toro-gallery-mask-right");
+                    
+                    if (maskLeft && maskRight) {
+                        const leftMaskWidth = Math.max(0, containerCenter - (imageWidth / 2));
+                        const rightMaskWidth = Math.max(0, containerCenter - (imageWidth / 2));
+                        
+                        maskLeft.style.width = leftMaskWidth + "px";
+                        maskRight.style.width = rightMaskWidth + "px";
+                    }
+                }
+                
                 // Inizializza thumbs carousel V2 - orizzontale sotto
                 const thumbsSwiper = new Swiper("#%s", {
                     direction: "horizontal",
@@ -586,12 +662,12 @@ class ToroLayoutManager {
                     centeredSlides: false
                 });
                 
-                // Inizializza main carousel V2
+                // Inizializza main carousel V2 con frecce personalizzate
                 const mainSwiper = new Swiper("#%s", {
                     spaceBetween: 0,
                     navigation: {
-                        nextEl: ".swiper-button-next",
-                        prevEl: ".swiper-button-prev"
+                        nextEl: galleryContainer.querySelector(".toro-arrow-next"),
+                        prevEl: galleryContainer.querySelector(".toro-arrow-prev")
                     },
                     thumbs: {
                         swiper: thumbsSwiper
@@ -603,13 +679,40 @@ class ToroLayoutManager {
                     loop: true,
                     effect: "slide",
                     speed: 400,
-                    autoHeight: false
+                    autoHeight: false,
+                    on: {
+                        init: function() {
+                            // Posiziona frecce al caricamento
+                            setTimeout(() => positionArrows(this), 100);
+                        },
+                        slideChange: function() {
+                            // Riposiziona frecce quando cambia slide
+                            positionArrows(this);
+                        },
+                        imagesReady: function() {
+                            // Riposiziona quando tutte le immagini sono caricate
+                            positionArrows(this);
+                        }
+                    }
                 });
+                
+                // Riposiziona frecce su resize finestra
+                let resizeTimeout;
+                window.addEventListener("resize", function() {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(() => {
+                        if (mainSwiper && !mainSwiper.destroyed) {
+                            positionArrows(mainSwiper);
+                        }
+                    }, 150);
+                });
+                
             } else {
                 console.warn("Swiper.js non caricato - galleria prodotto V2 non disponibile");
             }
         });
         </script>',
+            $gallery_id,
             $thumbs_id,
             $gallery_id
         );

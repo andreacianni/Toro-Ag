@@ -304,7 +304,7 @@ html {
 }
 
 /* ================================
-   GALLERIA PRODOTTO V2 - LAYOUT STACK VERTICALE
+   GALLERIA PRODOTTO V2 - LAYOUT STACK VERTICALE CON FRECCE DINAMICHE
    ================================ */
 
 /* Container galleria V2 - Stack verticale */
@@ -318,12 +318,21 @@ html {
     width: 40%;
 }
 
-/* Container main carousel - Full width sopra */
+/* Container principale - Overflow visible per frecce esterne */
 .toro-gallery-main-container {
     width: 100%;
     margin-bottom: 12px;
     position: relative;
-    padding: 0 50px; /* Spazio per frecce laterali */
+    overflow: visible; /* Permette frecce esterne */
+    z-index: 1;
+}
+
+/* Viewport - Overflow hidden per nascondere immagini laterali */
+.toro-gallery-viewport {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    background: #ffffff;
 }
 
 /* Container thumbs - Sotto sempre 50px */
@@ -350,13 +359,37 @@ html {
 }
 
 /* ================================
-   LAYOUT GALLERIA PRINCIPALE - NO HOVER
+   MASK OVERLAY - NASCONDIMENTO IMMAGINI LATERALI
    ================================ */
 
-/* Main carousel - Dimensioni controllate, no effetti */
+.toro-gallery-mask-left,
+.toro-gallery-mask-right {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: #ffffff;
+    z-index: 10;
+    pointer-events: none;
+    width: 0; /* Dinamico via JavaScript */
+    transition: width 0.3s ease;
+}
+
+.toro-gallery-mask-left {
+    left: 0;
+}
+
+.toro-gallery-mask-right {
+    right: 0;
+}
+
+/* ================================
+   LAYOUT GALLERIA PRINCIPALE - ALTEZZA FISSA, LARGHEZZA DINAMICA
+   ================================ */
+
+/* Main carousel - Overflow visible per frecce esterne */
 .toro-gallery-main {
     border-radius: 0;
-    overflow: hidden;
+    overflow: visible; /* Cambiato da hidden per frecce esterne */
     position: relative;
     background: transparent;
     width: 100%;
@@ -369,19 +402,21 @@ html {
     justify-content: center;
     background: #ffffff;
     position: relative;
-    height: auto;
+    height: 50px; /* Altezza fissa = altezza thumb */
 }
 
-.toro-gallery-main .swiper-slide img {
-    width: 100%;
-    height: auto;
-    max-height: 400px;
+.toro-gallery-main .swiper-slide img.toro-main-image {
+    height: 50px; /* Altezza fissa = altezza thumb */
+    width: auto; /* Larghezza proporzionale */
+    max-width: none; /* Permetti qualsiasi larghezza */
     object-fit: contain;
     border-radius: 0;
+    display: block;
+    margin: 0 auto;
 }
 
 /* ================================
-   THUMBS V2 - CENTRATE CON BORDI SEMPLICI
+   THUMBS V2 - QUADRATE CON CROP CENTRALE
    ================================ */
 
 .toro-gallery-thumbs {
@@ -401,7 +436,7 @@ html {
     display: flex;
 }
 
-.toro-gallery-thumbs .swiper-slide {
+.toro-gallery-thumbs .swiper-slide.toro-thumb-slide {
     width: 50px !important;
     height: 50px !important;
     flex-shrink: 0;
@@ -414,17 +449,28 @@ html {
     position: relative;
 }
 
-.toro-gallery-thumbs .swiper-slide:hover {
+.toro-gallery-thumbs .swiper-slide.toro-thumb-slide:hover {
     border-color: #cd2027;
     z-index: 10;
 }
 
-.toro-gallery-thumbs .swiper-slide img {
+/* Wrapper per crop centrale */
+.toro-thumb-wrapper {
     width: 50px;
     height: 50px;
-    object-fit: contain;
+    overflow: hidden;
+    position: relative;
     border-radius: 3px;
     background: #f8f9fa;
+}
+
+.toro-thumb-wrapper img.toro-thumb-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Crop centrale per quadrato perfetto */
+    object-position: center center;
+    border-radius: 0;
+    background: transparent;
 }
 
 .toro-gallery-thumbs .swiper-slide-thumb-active {
@@ -433,11 +479,25 @@ html {
 }
 
 /* ================================
-   CONTROLLI CAROUSEL V2 - FRECCE ESTERNE
+   CONTROLLI CAROUSEL V2 - FRECCE POSIZIONATE DINAMICAMENTE
    ================================ */
 
-.toro-gallery-main .swiper-button-next,
-.toro-gallery-main .swiper-button-prev {
+/* Container frecce - Posizionate via JavaScript */
+.toro-gallery-arrows {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none; /* Permetti click solo sui pulsanti */
+    z-index: 20;
+}
+
+.toro-gallery-arrows .toro-arrow-prev,
+.toro-gallery-arrows .toro-arrow-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     color: #cd2027;
     background: rgba(255, 255, 255, 0.95);
     width: 40px;
@@ -446,53 +506,73 @@ html {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     border: 1px solid #e9ecef;
     opacity: 1;
-    margin-top: 0;
-    top: 50%;
-    transform: translateY(-50%);
+    pointer-events: auto; /* Riattiva click */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    z-index: 21;
 }
 
-.toro-gallery-main .swiper-button-next {
-    right: -45px; /* Fuori dal container */
+.toro-gallery-arrows .toro-arrow-prev {
+    left: 10px; /* Fallback CSS - sovrascritta da JS */
 }
 
-.toro-gallery-main .swiper-button-prev {
-    left: -45px; /* Fuori dal container */
+.toro-gallery-arrows .toro-arrow-next {
+    right: 10px; /* Fallback CSS - sovrascritta da JS */
 }
 
-.toro-gallery-main .swiper-button-next:hover,
-.toro-gallery-main .swiper-button-prev:hover {
+.toro-gallery-arrows .toro-arrow-prev:hover,
+.toro-gallery-arrows .toro-arrow-next:hover {
     background: #cd2027;
     color: white;
     border-color: #cd2027;
+    transform: translateY(-50%) scale(1.05);
 }
 
-.toro-gallery-main .swiper-button-next::after,
-.toro-gallery-main .swiper-button-prev::after {
-    font-size: 16px;
-    font-weight: 600;
+.toro-gallery-arrows .toro-arrow-prev:focus,
+.toro-gallery-arrows .toro-arrow-next:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.25);
+}
+
+/* FontAwesome icons per frecce */
+.toro-gallery-arrows .toro-arrow-prev i,
+.toro-gallery-arrows .toro-arrow-next i {
+    font-size: 14px;
+    line-height: 1;
 }
 
 /* ================================
-   RESPONSIVE GALLERIA V2 - STACK VERTICALE
+   RESPONSIVE GALLERIA V2 - ALTEZZA FISSA, FRECCE DINAMICHE
    ================================ */
 
-/* Desktop: Layout V2 stack verticale */
+/* Desktop: Layout V2 stack verticale - 45px frecce */
 @media (min-width: 992px) {
     .toro-product-gallery-v2 {
         max-width: 40%;
         width: 40%;
     }
     
-    .toro-gallery-main {
-        max-height: 350px;
+    .toro-gallery-main .swiper-slide {
+        height: 50px; /* Altezza fissa = thumb */
     }
     
-    .toro-gallery-main .swiper-slide img {
-        max-height: 350px;
+    .toro-gallery-main .swiper-slide img.toro-main-image {
+        height: 50px;
+    }
+    
+    .toro-gallery-arrows .toro-arrow-prev,
+    .toro-gallery-arrows .toro-arrow-next {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
     }
 }
 
-/* Tablet: Dimensioni maggiori mantenendo stack + frecce esterne */
+/* Tablet: Dimensioni maggiori - 40px frecce */
 @media (max-width: 991.98px) {
     .toro-product-gallery-v2 {
         max-width: 60%;
@@ -500,25 +580,19 @@ html {
         margin: 0 auto;
     }
     
-    /* Container con padding per frecce */
-    .toro-gallery-main-container {
-        padding: 0 45px;
+    .toro-gallery-main .swiper-slide {
+        height: 50px;
     }
     
-    .toro-gallery-main {
-        max-height: 300px;
+    .toro-gallery-main .swiper-slide img.toro-main-image {
+        height: 50px;
     }
     
-    .toro-gallery-main .swiper-slide img {
-        max-height: 300px;
-    }
-    
-    .toro-gallery-main .swiper-button-next {
-        right: -40px;
-    }
-    
-    .toro-gallery-main .swiper-button-prev {
-        left: -40px;
+    .toro-gallery-arrows .toro-arrow-prev,
+    .toro-gallery-arrows .toro-arrow-next {
+        width: 38px;
+        height: 38px;
+        font-size: 15px;
     }
     
     .toro-single-image {
@@ -527,46 +601,29 @@ html {
     }
 }
 
-/* Mobile: Compatto con thumbs più piccole + frecce esterne */
+/* Mobile: Compatto con thumbs 40px - 36px frecce */
 @media (max-width: 767.98px) {
     .toro-product-gallery-v2 {
         max-width: 80%;
         width: 80%;
     }
     
-    /* Container con meno padding per frecce */
-    .toro-gallery-main-container {
-        padding: 0 40px;
+    .toro-gallery-main .swiper-slide {
+        height: 40px; /* Altezza ridotta = thumb mobile */
     }
     
-    .toro-gallery-main {
-        max-height: 250px;
+    .toro-gallery-main .swiper-slide img.toro-main-image {
+        height: 40px;
     }
     
-    .toro-gallery-main .swiper-slide img {
-        max-height: 250px;
-    }
-    
-    .toro-gallery-main .swiper-button-next,
-    .toro-gallery-main .swiper-button-prev {
+    .toro-gallery-arrows .toro-arrow-prev,
+    .toro-gallery-arrows .toro-arrow-next {
         width: 32px;
         height: 32px;
-    }
-    
-    .toro-gallery-main .swiper-button-next {
-        right: -36px;
-    }
-    
-    .toro-gallery-main .swiper-button-prev {
-        left: -36px;
-    }
-    
-    .toro-gallery-main .swiper-button-next::after,
-    .toro-gallery-main .swiper-button-prev::after {
         font-size: 14px;
     }
     
-    /* Thumbs più piccole su mobile - centrate con bordi */
+    /* Thumbs più piccole su mobile - 40px */
     .toro-gallery-thumbs-container {
         height: 40px;
     }
@@ -581,18 +638,23 @@ html {
         justify-content: center;
     }
     
-    .toro-gallery-thumbs .swiper-slide {
+    .toro-gallery-thumbs .swiper-slide.toro-thumb-slide {
         width: 40px !important;
         height: 40px !important;
         margin-right: 6px;
         border: 1px solid transparent;
     }
     
-    .toro-gallery-thumbs .swiper-slide:hover {
+    .toro-gallery-thumbs .swiper-slide.toro-thumb-slide:hover {
         border-color: #cd2027;
     }
     
-    .toro-gallery-thumbs .swiper-slide img {
+    .toro-thumb-wrapper {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .toro-thumb-wrapper img.toro-thumb-image {
         width: 40px;
         height: 40px;
     }
@@ -668,27 +730,3 @@ html {
     box-shadow: none !important;
 }
 
-/* ================================
-   LOADING E STATI TRANSITORI
-   ================================ */
-
-/* Loading state per galleria */
-.toro-gallery-loading {
-    opacity: 0.7;
-    pointer-events: none;
-}
-
-.toro-gallery-loading::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 24px;
-    height: 24px;
-    margin: -12px 0 0 -12px;
-    border: 2px solid #f3f3f3;
-    border-top: 2px solid #cd2027;
-    border-radius: 50%;
-    animation: toro-spin 1s linear infinite;
-    z-index: 10;
-}
