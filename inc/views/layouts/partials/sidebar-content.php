@@ -54,7 +54,7 @@ if (isset($sections['form']) && $form_position === 'sidebar'):
 // Mostra CTA solo se ci sono sezioni sidebar (layout a due colonne)
 if (isset($sections['documents']) || isset($sections['videos']) || isset($sections['form'])): 
 ?>
-<div class="toro-cta-sidebar mt-4 p-3 text-center" style="background: white; border-radius: 8px; border: 1px solid #e0e0e0;">
+<div class="toro-cta-sidebar mt-4 p-3 text-center">
     <a href="#contatti" class="btn btn-primary btn-sm">Chiedi informazioni sul prodotto</a>
 </div>
 <?php endif; ?>
