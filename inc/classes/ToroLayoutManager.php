@@ -470,10 +470,17 @@ class ToroLayoutManager {
         // 2. PODS Gallery Images
         $pods_gallery = get_post_meta($product_id, 'galleria_prodotto', true);
         $debug_info .= "PODS Raw: " . print_r($pods_gallery, true) . "\n";
-        $debug_info .= "PODS is_array: " . (is_array($pods_gallery) ? 'YES' : 'NO') . "\n";
-        $debug_info .= "PODS count: " . (is_array($pods_gallery) ? count($pods_gallery) : '0') . "\n";
         
-        if (!empty($pods_gallery) && is_array($pods_gallery)) {
+        // 🔧 FIX: Gestire sia array che valore singolo
+        if (!empty($pods_gallery)) {
+            // Se non è array, convertilo
+            if (!is_array($pods_gallery)) {
+                $pods_gallery = [$pods_gallery];
+                $debug_info .= "PODS converted to array\n";
+            }
+            $debug_info .= "PODS is_array: YES (after conversion)\n";
+            $debug_info .= "PODS count: " . count($pods_gallery) . "\n";
+            
             foreach ($pods_gallery as $image_id) {
                 $debug_info .= "PODS Image ID: {$image_id}\n";
                 $all_images[] = [
@@ -484,6 +491,8 @@ class ToroLayoutManager {
                     'type' => 'gallery'
                 ];
             }
+        } else {
+            $debug_info .= "PODS is empty\n";
         }
         
         $debug_info .= "Total Images: " . count($all_images) . "\n";
