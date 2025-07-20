@@ -85,17 +85,13 @@
 }
 
 .toro-layout-prodotto .toro-layout-content-section {
-    font-size: 1rem;
-    line-height: 1.6;
-    color: #333;
+    /* Stili base rimossi per usare default browser/tema */
 }
 
 .toro-layout-prodotto .toro-layout-content-section h1,
 .toro-layout-prodotto .toro-layout-content-section h2,
 .toro-layout-prodotto .toro-layout-content-section h3 {
-    color: #2c5530;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
+    /* Colore rimosso per usare default - margin gestiti tramite classi Bootstrap */
 }
 
 .toro-layout-prodotto .toro-layout-content-section p {
@@ -120,9 +116,7 @@
 }
 
 .toro-layout-cultures-section {
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 2px solid #f8f9fa;
+    /* Margin e padding gestiti tramite classi Bootstrap */
 }
 
 .toro-layout-form-section {
