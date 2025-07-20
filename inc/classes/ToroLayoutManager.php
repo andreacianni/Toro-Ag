@@ -45,9 +45,48 @@ class ToroLayoutManager {
         add_action('save_post', [__CLASS__, 'clear_cache_on_post_save']);
         add_action('updated_post_meta', [__CLASS__, 'clear_cache_on_meta_update'], 10, 4);
         
+        // Registra stringhe WPML
+        add_action('init', [__CLASS__, 'register_wpml_strings']);
+        
+        // Carica assets CSS e JS
+        add_action('wp_enqueue_scripts', [__CLASS__, 'enqueue_assets']);
+        
         // Debug mode se WP_DEBUG è attivo
         if (defined('WP_DEBUG') && WP_DEBUG) {
             self::$debug_mode = false; // Disabilitato anche in WP_DEBUG
+        }
+    }
+    
+    /**
+     * Carica CSS e JavaScript del Layout Manager
+     */
+    public static function enqueue_assets() {
+        // CSS sempre caricato
+        wp_enqueue_style(
+            'toro-layout-manager', 
+            get_stylesheet_directory_uri() . '/assets/css/toro-layout-manager.css',
+            [], 
+            self::VERSION
+        );
+        
+        // JavaScript solo sulle pagine che potrebbero usare i layout
+        if (is_singular(['prodotto', 'tipo_di_prodotto']) || is_tax(['tipo_di_prodotto', 'coltura']) || is_page()) {
+            wp_enqueue_script(
+                'toro-layout-manager-js',
+                get_stylesheet_directory_uri() . '/assets/js/toro-layout-manager.js',
+                [],
+                self::VERSION,
+                true // Carica nel footer
+            );
+        }
+    }
+    
+    /**
+     * Registra stringhe per WPML
+     */
+    public static function register_wpml_strings() {
+        if (function_exists('wpml_register_single_string')) {
+            wpml_register_single_string('Toro Layout Manager', 'Chiedi informazioni sul prodotto', 'Chiedi informazioni sul prodotto');
         }
     }
     

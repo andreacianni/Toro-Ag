@@ -187,6 +187,50 @@
 }
 
 /* ================================
+   CTA PULSANTE SIDEBAR
+   ================================ */
+
+.toro-cta-sidebar .btn-submit {
+    background-color: #cd2027;
+    color: white;
+    border: 2px solid #cd2027;
+    padding: 14px 35px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-transform: none; /* Come form-prodotti-new */
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.toro-cta-sidebar .btn-submit:hover {
+    background-color: white;
+    color: #cd2027;
+    border-color: #cd2027;
+    text-decoration: none;
+}
+
+.toro-cta-sidebar .btn-submit:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.25);
+}
+
+/* Smooth scroll ottimizzato */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Override per anchor links specifici se scroll troppo lento */
+@media (prefers-reduced-motion: no-preference) {
+    html:focus-within {
+        scroll-behavior: smooth;
+    }
+}
+
+/* ================================
    UTILITY CLASSES
    ================================ */
 

@@ -55,6 +55,6 @@ if (isset($sections['form']) && $form_position === 'sidebar'):
 if (isset($sections['documents']) || isset($sections['videos']) || isset($sections['form'])): 
 ?>
 <div class="toro-cta-sidebar mt-4 p-3 text-center">
-    <a href="#contatti" class="btn btn-primary btn-sm">Chiedi informazioni sul prodotto</a>
+    <a href="#form-prodotti" class="btn-submit"><?php echo apply_filters('wpml_translate_single_string', 'Chiedi informazioni sul prodotto', 'Toro Layout Manager', 'Chiedi informazioni sul prodotto'); ?></a>
 </div>
 <?php endif; ?>
