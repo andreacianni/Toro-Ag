@@ -47,6 +47,7 @@ class ToroLayoutManager {
         
         // Registra stringhe WPML
         add_action('init', [__CLASS__, 'register_wpml_strings']);
+        add_action('admin_notices', [__CLASS__, 'force_wpml_sync']);
         
         // Carica assets CSS e JS
         add_action('wp_enqueue_scripts', [__CLASS__, 'enqueue_assets']);
@@ -86,7 +87,34 @@ class ToroLayoutManager {
      */
     public static function register_wpml_strings() {
         if (function_exists('wpml_register_single_string')) {
+            // Forza la registrazione della stringa
             wpml_register_single_string('Toro Layout Manager', 'Chiedi informazioni sul prodotto', 'Chiedi informazioni sul prodotto');
+            
+            // Debug: verifica registrazione
+            if (current_user_can('manage_options') && isset($_GET['toro_debug_wpml'])) {
+                echo '<div class="notice notice-info"><p>✅ WPML String registrata: "Chiedi informazioni sul prodotto" nel dominio "Toro Layout Manager"</p></div>';
+            }
+        }
+    }
+    
+    /**
+     * Funzione helper per forzare sync WPML stringhe
+     * Chiamare con: ?toro_force_wpml_sync=1
+     */
+    public static function force_wpml_sync() {
+        if (isset($_GET['toro_force_wpml_sync']) && current_user_can('manage_options')) {
+            // Forza registrazione
+            self::register_wpml_strings();
+            
+            // Prova a triggerare scan WPML
+            if (function_exists('wpml_register_single_string')) {
+                // Registra con forza
+                wpml_register_single_string('Toro Layout Manager', 'Chiedi informazioni sul prodotto', 'Chiedi informazioni sul prodotto');
+                
+                echo '<div class="notice notice-success"><p>🔄 WPML Sync forzato! Controlla ora WPML > String Translation</p></div>';
+            } else {
+                echo '<div class="notice notice-error"><p>❌ WPML non attivo o funzioni non disponibili</p></div>';
+            }
         }
     }
     
