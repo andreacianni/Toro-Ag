@@ -15,7 +15,6 @@ $sections = get_query_var('toro_sections', []);
 
 <?php if (isset($sections['documents'])): ?>
 <div class="toro-layout-documents-section mb-4">
-    <h4>Schede Tecniche</h4>
     <?php echo $sections['documents']; ?>
 </div>
 <?php endif; ?>
@@ -50,10 +49,12 @@ if (isset($sections['form']) && $form_position === 'sidebar'):
  */
 ?>
 
-<!-- Esempio CTA personalizzata:
-<div class="toro-cta-sidebar mt-4 p-3 bg-light rounded">
-    <h5>Hai bisogno di aiuto?</h5>
-    <p>Contatta i nostri esperti</p>
-    <a href="/contatti" class="btn btn-primary btn-sm">Contattaci</a>
+<!-- CTA Informazioni Prodotto - Visibile solo in layout a due colonne -->
+<?php 
+// Mostra CTA solo se ci sono sezioni sidebar (layout a due colonne)
+if (isset($sections['documents']) || isset($sections['videos']) || isset($sections['form'])): 
+?>
+<div class="toro-cta-sidebar mt-4 p-3 text-center" style="background: white; border-radius: 8px; border: 1px solid #e0e0e0;">
+    <a href="#contatti" class="btn btn-primary btn-sm">Chiedi informazioni sul prodotto</a>
 </div>
--->
+<?php endif; ?>
