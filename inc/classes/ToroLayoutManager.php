@@ -446,12 +446,16 @@ class ToroLayoutManager {
      * @return string HTML galleria
      */
     public static function render_product_gallery($product_id) {
+        // DEBUG TEMPORANEO - Per diagnosticare conteggio sbagliato
+        $debug_info = "\n🔍 GALLERY DEBUG v2 (ID: {$product_id})\n";
+        
         // Raccogli tutte le immagini
         $all_images = [];
         
         // 1. Featured Image sempre prima
         if (has_post_thumbnail($product_id)) {
             $featured_id = get_post_thumbnail_id($product_id);
+            $debug_info .= "Featured ID: {$featured_id}\n";
             $all_images[] = [
                 'id' => $featured_id,
                 'url' => wp_get_attachment_image_url($featured_id, 'large'),
@@ -459,38 +463,60 @@ class ToroLayoutManager {
                 'alt' => get_post_meta($featured_id, '_wp_attachment_image_alt', true) ?: get_the_title($product_id),
                 'type' => 'featured'
             ];
+        } else {
+            $debug_info .= "No Featured Image\n";
         }
         
-        // 2. PODS Gallery Images
+        // 2. PODS Gallery Images - DEBUG DETTAGLIATO
         $pods_gallery = get_post_meta($product_id, 'galleria_prodotto', true);
+        $debug_info .= "PODS Raw: " . print_r($pods_gallery, true) . "\n";
+        $debug_info .= "PODS Type: " . gettype($pods_gallery) . "\n";
+        $debug_info .= "PODS Empty: " . (empty($pods_gallery) ? 'YES' : 'NO') . "\n";
         
         // 🔧 FIX: Gestire sia array che valore singolo
         if (!empty($pods_gallery)) {
             // Se non è array, convertilo
             if (!is_array($pods_gallery)) {
+                $debug_info .= "Converting single PODS to array: {$pods_gallery}\n";
                 $pods_gallery = [$pods_gallery];
             }
             
-            foreach ($pods_gallery as $image_id) {
-                $all_images[] = [
-                    'id' => $image_id,
-                    'url' => wp_get_attachment_image_url($image_id, 'large'),
-                    'thumb' => wp_get_attachment_image_url($image_id, 'medium'),
-                    'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true) ?: 'Galleria ' . get_the_title($product_id),
-                    'type' => 'gallery'
-                ];
+            $debug_info .= "PODS Count after conversion: " . count($pods_gallery) . "\n";
+            
+            foreach ($pods_gallery as $index => $image_id) {
+                $debug_info .= "PODS[{$index}] Image ID: {$image_id}\n";
+                $image_url = wp_get_attachment_image_url($image_id, 'large');
+                $thumb_url = wp_get_attachment_image_url($image_id, 'medium');
+                $debug_info .= "  - URL: " . ($image_url ? 'VALID' : 'INVALID') . "\n";
+                $debug_info .= "  - Thumb: " . ($thumb_url ? 'VALID' : 'INVALID') . "\n";
+                
+                if ($image_url) {
+                    $all_images[] = [
+                        'id' => $image_id,
+                        'url' => $image_url,
+                        'thumb' => $thumb_url,
+                        'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true) ?: 'Galleria ' . get_the_title($product_id),
+                        'type' => 'gallery'
+                    ];
+                }
             }
+        }
+        
+        $debug_info .= "Total Images Collected: " . count($all_images) . "\n";
+        foreach ($all_images as $i => $img) {
+            $debug_info .= "Image[{$i}]: ID={$img['id']}, Type={$img['type']}\n";
         }
         
         // Se nessuna immagine, ritorna vuoto
         if (empty($all_images)) {
-            return '';
+            return $debug_info . 'NO IMAGES FOUND';
         }
         
         // Se solo 1 immagine, mostra singola (no carousel)
         if (count($all_images) === 1) {
             $image = $all_images[0];
-            return sprintf(
+            $debug_info .= "SINGLE IMAGE MODE\n";
+            return $debug_info . sprintf(
                 '<div class="toro-single-image"><img src="%s" alt="%s" class="img-fluid"></div>',
                 esc_url($image['url']),
                 esc_attr($image['alt'])
@@ -498,7 +524,8 @@ class ToroLayoutManager {
         }
         
         // Multiple immagini: genera carousel Swiper
-        return self::generate_swiper_gallery($all_images, $product_id);
+        $debug_info .= "CAROUSEL MODE\n";
+        return $debug_info . self::generate_swiper_gallery($all_images, $product_id);
     }
     
     /**

@@ -304,7 +304,7 @@ html {
 }
 
 /* ================================
-   GALLERIA PRODOTTO CON SWIPER - V2 RIFATTA
+   GALLERIA PRODOTTO CON SWIPER - V3 FIX DIMENSIONI
    ================================ */
 
 /* Container galleria - Minimalista e integrato */
@@ -314,37 +314,49 @@ html {
     border: none;
     padding: 0;
     position: relative;
+    max-width: 40%; /* Dimensione controllata come single image */
 }
 
-/* Single image fallback - Pulito */
+/* Single image fallback - 40% con Bootstrap e stili migliorati */
 .toro-single-image {
     text-align: center;
     margin: 0;
+    max-width: 40%;
+    width: 40%;
+    display: inline-block;
 }
 
 .toro-single-image img {
     max-width: 100%;
     height: auto;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    transition: transform 0.3s ease;
+    border-radius: 0;
+    box-shadow: none;
+    transition: all 0.3s ease;
 }
 
 .toro-single-image img:hover {
     transform: scale(1.02);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
 /* ================================
    LAYOUT GALLERIA PRINCIPALE
    ================================ */
 
-/* Main carousel - Più pulito */
+/* Main carousel - Dimensioni controllate, no taglio immagini */
 .toro-gallery-main {
-    border-radius: 12px;
+    border-radius: 0;
     overflow: hidden;
     position: relative;
     background: transparent;
-    aspect-ratio: 4/3;
+    width: 100%;
+    box-shadow: none;
+    transition: all 0.3s ease;
+}
+
+.toro-gallery-main:hover {
+    border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
@@ -354,34 +366,36 @@ html {
     justify-content: center;
     background: #ffffff;
     position: relative;
+    height: auto;
 }
 
 .toro-gallery-main .swiper-slide img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    max-height: 400px;
+    object-fit: contain; /* NON tagliare le immagini */
     border-radius: 0;
     transition: transform 0.4s ease;
 }
 
 .toro-gallery-main .swiper-slide:hover img {
-    transform: scale(1.05);
+    transform: scale(1.02);
 }
 
 /* ================================
-   THUMBS LATERALI - RIDISEGNATE
+   THUMBS LATERALI - NON TAGLIATE
    ================================ */
 
 .toro-gallery-thumbs {
     height: 100%;
-    max-height: 280px;
+    max-height: 400px; /* Allineato con main gallery */
     border-radius: 8px;
     overflow: hidden;
     background: transparent;
 }
 
 .toro-gallery-thumbs .swiper-slide {
-    height: 65px !important;
+    height: 75px !important;
     margin-bottom: 8px;
     cursor: pointer;
     border-radius: 8px;
@@ -399,9 +413,10 @@ html {
 
 .toro-gallery-thumbs .swiper-slide img {
     width: 100%;
-    height: 65px;
-    object-fit: cover;
+    height: 75px;
+    object-fit: contain; /* NON tagliare le thumbs */
     border-radius: 6px;
+    background: #f8f9fa;
 }
 
 .toro-gallery-thumbs .swiper-slide-thumb-active {
@@ -466,25 +481,34 @@ html {
 }
 
 /* ================================
-   RESPONSIVE GALLERIA - SEMPLIFICATO
+   RESPONSIVE GALLERIA - DIMENSIONI CONTROLLATE
    ================================ */
 
-/* Desktop: Layout 8/4 invece di 9/3 per thumbs più generose */
+/* Desktop: Layout 70/30 con dimensioni controllate */
 @media (min-width: 992px) {
+    .toro-product-gallery {
+        max-width: 40%; /* Stesso di single image */
+    }
+    
     .toro-product-gallery .col-md-9 {
-        flex: 0 0 75%;
-        max-width: 75%;
+        flex: 0 0 70%;
+        max-width: 70%;
     }
     
     .toro-product-gallery .col-md-3 {
-        flex: 0 0 25%;
-        max-width: 25%;
+        flex: 0 0 30%;
+        max-width: 30%;
         padding-left: 1rem;
     }
 }
 
-/* Tablet: Stack con thumbs orizzontali sotto */
+/* Tablet: Stack con dimensioni ridotte */
 @media (max-width: 991.98px) {
+    .toro-product-gallery {
+        max-width: 60%; /* Più grande su tablet */
+        margin: 0 auto;
+    }
+    
     .toro-product-gallery .row {
         flex-direction: column;
     }
@@ -497,8 +521,12 @@ html {
     }
     
     .toro-gallery-main {
-        aspect-ratio: 3/2;
         margin-bottom: 1rem;
+        max-height: 300px;
+    }
+    
+    .toro-gallery-main .swiper-slide img {
+        max-height: 300px;
     }
     
     .toro-gallery-thumbs {
@@ -526,13 +554,26 @@ html {
     .toro-gallery-thumbs .swiper-slide-thumb-active {
         transform: translateY(-2px);
     }
+    
+    .toro-single-image {
+        max-width: 60%;
+        width: 60%;
+    }
 }
 
-/* Mobile: Thumbs più piccole e controlli ridotti */
+/* Mobile: Compatto ma leggibile */
 @media (max-width: 767.98px) {
+    .toro-product-gallery {
+        max-width: 80%;
+    }
+    
     .toro-gallery-main {
-        aspect-ratio: 1/1;
         border-radius: 8px;
+        max-height: 250px;
+    }
+    
+    .toro-gallery-main .swiper-slide img {
+        max-height: 250px;
     }
     
     .toro-gallery-main .swiper-button-next,
@@ -567,6 +608,11 @@ html {
         height: 6px;
         margin: 0 3px;
     }
+    
+    .toro-single-image {
+        max-width: 80%;
+        width: 80%;
+    }
 }
 
 /* ================================
@@ -576,13 +622,14 @@ html {
 /* Quando galleria sostituisce image section */
 .toro-layout-prodotto .toro-layout-gallery-section {
     margin-bottom: 2rem;
+    text-align: center; /* Centra la galleria */
 }
 
 .toro-layout-prodotto .toro-layout-gallery-section .toro-product-gallery {
     border: none;
     padding: 0;
     background: transparent;
-    margin: 0;
+    margin: 0 auto; /* Centra la galleria */
 }
 
 /* Responsive integration con layout esistente */
@@ -596,6 +643,44 @@ html {
 .toro-layout-sidebar-left .toro-layout-gallery-section,
 .toro-layout-sidebar-right .toro-layout-gallery-section {
     max-width: none;
+    text-align: center;
+}
+
+/* Template integration - Single image con Bootstrap */
+.toro-layout-prodotto .toro-layout-image-section {
+    text-align: center;
+}
+
+.toro-layout-prodotto .toro-layout-image-section .d-inline-block {
+    max-width: 40% !important;
+    width: 40%;
+}
+
+@media (max-width: 991.98px) {
+    .toro-layout-prodotto .toro-layout-image-section .d-inline-block {
+        max-width: 60% !important;
+        width: 60%;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .toro-layout-prodotto .toro-layout-image-section .d-inline-block {
+        max-width: 80% !important;
+        width: 80%;
+    }
+}
+
+/* Border radius e shadow solo su hover per immagini standard */
+.toro-layout-image {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    transition: all 0.3s ease;
+}
+
+.toro-layout-image:hover {
+    border-radius: 12px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
+    transform: scale(1.02);
 }
 
 /* ================================
