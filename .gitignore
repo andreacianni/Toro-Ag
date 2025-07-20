@@ -5,6 +5,7 @@ appo-form/
 # Escludi file di log
 debug-log/
 *.log
-# Escludi Knowledge Base dei progetti Claude
-knowledge-base/
-docs/KB-Claude/
+# Escludi documentazione sviluppo e helper tools
+docs/
+toro-wpml-helper.php
+wp-cli.phar
