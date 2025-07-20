@@ -5,3 +5,6 @@ appo-form/
 # Escludi file di log
 debug-log/
 *.log
+# Escludi Knowledge Base dei progetti Claude
+knowledge-base/
+docs/KB-Claude/
