@@ -230,6 +230,7 @@ class ToroLayoutManager {
             'has_videos' => !empty(get_post_meta($product_id, 'video_prodotto', true)),
             'has_cultures' => !empty(get_the_terms($product_id, 'coltura')),
             'has_featured_image' => has_post_thumbnail($product_id),
+            'has_gallery' => self::check_product_gallery($product_id),
             'has_form_data' => !empty(get_post_meta($product_id, 'form_data', true)) // Placeholder per form
         ];
         
@@ -276,6 +277,10 @@ class ToroLayoutManager {
                     $sections[] = 'videos';
                 }
                 
+                if ($content_map['has_gallery']) {
+                    $sections[] = 'gallery';
+                }
+                
                 if ($content_map['has_form_data']) {
                     $sections[] = 'form';
                 }
@@ -315,6 +320,10 @@ class ToroLayoutManager {
             case 'videos':
                 // Riusa shortcode esistente [video_prodotto_v2]
                 return do_shortcode('[video_prodotto_v2]');
+                
+            case 'gallery':
+                // Nuova gestione galleria prodotto
+                return self::render_product_gallery($post_id);
                 
             case 'form':
                 // Placeholder per futuro form
@@ -394,12 +403,214 @@ class ToroLayoutManager {
      * Pulizia cache quando meta viene aggiornato
      */
     public static function clear_cache_on_meta_update($meta_id, $object_id, $meta_key, $meta_value) {
-        $relevant_keys = ['scheda_prodotto', 'video_prodotto', 'form_data'];
+        $relevant_keys = ['scheda_prodotto', 'video_prodotto', 'galleria_prodotto', 'form_data'];
         
         if (in_array($meta_key, $relevant_keys) && get_post_type($object_id) === 'prodotto') {
             $cache_key = self::CACHE_PREFIX . "content_check_{$object_id}";
             wp_cache_delete($cache_key);
         }
+    }
+    
+    /**
+     * Verifica se il prodotto ha una galleria di immagini
+     * 
+     * @param int $product_id ID del prodotto
+     * @return bool True se ha galleria (Featured + PODS o solo Featured)
+     */
+    public static function check_product_gallery($product_id) {
+        // Controlla Featured Image
+        $has_featured = has_post_thumbnail($product_id);
+        
+        // Controlla campo PODS galleria_prodotto
+        $pods_gallery = get_post_meta($product_id, 'galleria_prodotto', true);
+        $has_pods_images = !empty($pods_gallery) && is_array($pods_gallery);
+        
+        // Se non ha Featured Image e non ha PODS gallery → nessuna galleria
+        if (!$has_featured && !$has_pods_images) {
+            return false;
+        }
+        
+        // Conta totale immagini
+        $total_images = 0;
+        if ($has_featured) $total_images++;
+        if ($has_pods_images) $total_images += count($pods_gallery);
+        
+        // Considera "galleria" solo se ha almeno 1 immagine
+        return $total_images > 0;
+    }
+    
+    /**
+     * Renderizza galleria prodotto con carousel Swiper
+     * 
+     * @param int $product_id ID del prodotto
+     * @return string HTML galleria
+     */
+    public static function render_product_gallery($product_id) {
+        // Raccogli tutte le immagini
+        $all_images = [];
+        
+        // 1. Featured Image sempre prima
+        if (has_post_thumbnail($product_id)) {
+            $featured_id = get_post_thumbnail_id($product_id);
+            $all_images[] = [
+                'id' => $featured_id,
+                'url' => wp_get_attachment_image_url($featured_id, 'large'),
+                'thumb' => wp_get_attachment_image_url($featured_id, 'medium'),
+                'alt' => get_post_meta($featured_id, '_wp_attachment_image_alt', true) ?: get_the_title($product_id),
+                'type' => 'featured'
+            ];
+        }
+        
+        // 2. PODS Gallery Images
+        $pods_gallery = get_post_meta($product_id, 'galleria_prodotto', true);
+        if (!empty($pods_gallery) && is_array($pods_gallery)) {
+            foreach ($pods_gallery as $image_id) {
+                $all_images[] = [
+                    'id' => $image_id,
+                    'url' => wp_get_attachment_image_url($image_id, 'large'),
+                    'thumb' => wp_get_attachment_image_url($image_id, 'medium'),
+                    'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true) ?: 'Galleria ' . get_the_title($product_id),
+                    'type' => 'gallery'
+                ];
+            }
+        }
+        
+        // Se nessuna immagine, ritorna vuoto
+        if (empty($all_images)) {
+            return '';
+        }
+        
+        // Se solo 1 immagine, mostra singola (no carousel)
+        if (count($all_images) === 1) {
+            $image = $all_images[0];
+            return sprintf(
+                '<div class="toro-single-image"><img src="%s" alt="%s" class="img-fluid"></div>',
+                esc_url($image['url']),
+                esc_attr($image['alt'])
+            );
+        }
+        
+        // Multiple immagini: genera carousel Swiper
+        return self::generate_swiper_gallery($all_images, $product_id);
+    }
+    
+    /**
+     * Genera HTML per carousel Swiper con thumbs laterali
+     * 
+     * @param array $images Array di immagini
+     * @param int $product_id ID prodotto per ID univoci
+     * @return string HTML carousel
+     */
+    private static function generate_swiper_gallery($images, $product_id) {
+        $gallery_id = 'toro-gallery-' . $product_id;
+        $thumbs_id = 'toro-thumbs-' . $product_id;
+        
+        $html = '<div class="toro-product-gallery">';
+        
+        // Container principale con layout Bootstrap
+        $html .= '<div class="row g-2">';
+        
+        // Colonna carousel principale (9/12)
+        $html .= '<div class="col-md-9">';
+        $html .= sprintf('<div class="swiper toro-gallery-main" id="%s">', $gallery_id);
+        $html .= '<div class="swiper-wrapper">';
+        
+        // Slide immagini principali
+        foreach ($images as $image) {
+            $html .= sprintf(
+                '<div class="swiper-slide"><img src="%s" alt="%s" class="img-fluid"></div>',
+                esc_url($image['url']),
+                esc_attr($image['alt'])
+            );
+        }
+        
+        $html .= '</div>'; // swiper-wrapper
+        
+        // Controlli carousel
+        $html .= '<div class="swiper-button-next"></div>';
+        $html .= '<div class="swiper-button-prev"></div>';
+        $html .= '<div class="swiper-pagination"></div>';
+        
+        $html .= '</div>'; // swiper main
+        $html .= '</div>'; // col-md-9
+        
+        // Colonna thumbs laterali (3/12)
+        $html .= '<div class="col-md-3">';
+        $html .= sprintf('<div class="swiper toro-gallery-thumbs" id="%s">', $thumbs_id);
+        $html .= '<div class="swiper-wrapper">';
+        
+        // Thumbs
+        foreach ($images as $image) {
+            $html .= sprintf(
+                '<div class="swiper-slide"><img src="%s" alt="%s" class="img-fluid"></div>',
+                esc_url($image['thumb']),
+                esc_attr($image['alt'])
+            );
+        }
+        
+        $html .= '</div>'; // swiper-wrapper thumbs
+        $html .= '</div>'; // swiper thumbs
+        $html .= '</div>'; // col-md-3
+        
+        $html .= '</div>'; // row
+        $html .= '</div>'; // toro-product-gallery
+        
+        // JavaScript per inizializzare Swiper
+        $html .= self::generate_swiper_javascript($gallery_id, $thumbs_id);
+        
+        return $html;
+    }
+    
+    /**
+     * Genera JavaScript per inizializzare carousel Swiper
+     * 
+     * @param string $gallery_id ID carousel principale
+     * @param string $thumbs_id ID carousel thumbs
+     * @return string JavaScript inline
+     */
+    private static function generate_swiper_javascript($gallery_id, $thumbs_id) {
+        return sprintf('
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (typeof Swiper !== "undefined") {
+                // Inizializza thumbs carousel
+                const thumbsSwiper = new Swiper("#%s", {
+                    direction: "vertical",
+                    slidesPerView: "auto",
+                    spaceBetween: 10,
+                    watchSlidesProgress: true,
+                    freeMode: true,
+                    mousewheel: true
+                });
+                
+                // Inizializza main carousel
+                const mainSwiper = new Swiper("#%s", {
+                    spaceBetween: 10,
+                    navigation: {
+                        nextEl: ".swiper-button-next",
+                        prevEl: ".swiper-button-prev"
+                    },
+                    pagination: {
+                        el: ".swiper-pagination",
+                        clickable: true
+                    },
+                    thumbs: {
+                        swiper: thumbsSwiper
+                    },
+                    keyboard: {
+                        enabled: true
+                    },
+                    mousewheel: false,
+                    loop: true
+                });
+            } else {
+                console.warn("Swiper.js non caricato - galleria prodotto non disponibile");
+            }
+        });
+        </script>',
+            $thumbs_id,
+            $gallery_id
+        );
     }
     
     /**
