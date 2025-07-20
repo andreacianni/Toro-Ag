@@ -56,7 +56,6 @@ $sections = get_query_var('toro_sections', []);
 
 <?php if (isset($sections['cultures'])): ?>
 <div class="toro-layout-cultures-section mt-4">
-    <h3>Applicazioni e Colture</h3>
     <?php echo $sections['cultures']; ?>
 </div>
 <?php endif; ?>
