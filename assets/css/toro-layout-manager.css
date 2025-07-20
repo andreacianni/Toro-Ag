@@ -402,13 +402,15 @@ html {
     justify-content: center;
     background: #ffffff;
     position: relative;
-    height: 50px; /* Altezza fissa = altezza thumb */
+    height: auto; /* Altezza automatica basata su immagine */
+    min-height: 200px; /* Minimo per evitare troppo piccole */
 }
 
 .toro-gallery-main .swiper-slide img.toro-main-image {
-    height: 50px; /* Altezza fissa = altezza thumb */
+    max-height: 400px; /* Altezza massima desktop */
     width: auto; /* Larghezza proporzionale */
-    max-width: none; /* Permetti qualsiasi larghezza */
+    height: auto; /* Altezza automatica */
+    max-width: 100%; /* Non eccedere container */
     object-fit: contain;
     border-radius: 0;
     display: block;
@@ -557,11 +559,11 @@ html {
     }
     
     .toro-gallery-main .swiper-slide {
-        height: 50px; /* Altezza fissa = thumb */
+        min-height: 250px; /* Minimo decente */
     }
     
     .toro-gallery-main .swiper-slide img.toro-main-image {
-        height: 50px;
+        max-height: 400px; /* Altezza massima desktop */
     }
     
     .toro-gallery-arrows .toro-arrow-prev,
@@ -581,11 +583,11 @@ html {
     }
     
     .toro-gallery-main .swiper-slide {
-        height: 50px;
+        min-height: 200px;
     }
     
     .toro-gallery-main .swiper-slide img.toro-main-image {
-        height: 50px;
+        max-height: 300px;
     }
     
     .toro-gallery-arrows .toro-arrow-prev,
@@ -609,11 +611,11 @@ html {
     }
     
     .toro-gallery-main .swiper-slide {
-        height: 40px; /* Altezza ridotta = thumb mobile */
+        min-height: 150px; /* Minimo mobile */
     }
     
     .toro-gallery-main .swiper-slide img.toro-main-image {
-        height: 40px;
+        max-height: 250px;
     }
     
     .toro-gallery-arrows .toro-arrow-prev,

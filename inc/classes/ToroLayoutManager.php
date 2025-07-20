@@ -612,38 +612,45 @@ class ToroLayoutManager {
                     const aspectRatio = parseFloat(activeSlide.dataset.aspectRatio) || 1;
                     
                     if (img && img.complete) {
-                        // Calcola dimensioni effettive immagine
-                        const containerHeight = img.offsetHeight;
-                        const imageWidth = containerHeight * aspectRatio;
+                        // Usa dimensioni reali dell'immagine visualizzata
+                        const imgRect = img.getBoundingClientRect();
+                        const imageWidth = imgRect.width;
+                        const imageHeight = imgRect.height;
                         
-                        // Calcola posizione frecce
+                        // Calcola posizione frecce basata su immagine effettiva
                         const arrowDistance = getArrowDistance();
-                        const containerCenter = galleryContainer.querySelector(".toro-gallery-viewport").offsetWidth / 2;
-                        const leftPos = containerCenter - (imageWidth / 2) - arrowDistance;
-                        const rightPos = containerCenter + (imageWidth / 2) + arrowDistance;
+                        const viewportRect = galleryContainer.querySelector(".toro-gallery-viewport").getBoundingClientRect();
+                        const galleryRect = galleryContainer.getBoundingClientRect();
+                        
+                        // Posizione relativa al container galleria
+                        const imageLeft = imgRect.left - galleryRect.left;
+                        const imageRight = imgRect.right - galleryRect.left;
+                        
+                        const leftPos = Math.max(10, imageLeft - arrowDistance);
+                        const rightPos = Math.max(10, galleryContainer.offsetWidth - imageRight - arrowDistance);
                         
                         // Applica posizioni
                         const prevBtn = galleryContainer.querySelector(".toro-arrow-prev");
                         const nextBtn = galleryContainer.querySelector(".toro-arrow-next");
                         
                         if (prevBtn && nextBtn) {
-                            prevBtn.style.left = Math.max(10, leftPos) + "px"; // Min 10px dal bordo
-                            nextBtn.style.right = Math.max(10, galleryContainer.offsetWidth - rightPos) + "px";
+                            prevBtn.style.left = leftPos + "px";
+                            nextBtn.style.right = rightPos + "px";
                         }
                         
-                        // Aggiorna mask overlay
-                        updateMaskOverlays(imageWidth, containerCenter);
+                        // Aggiorna mask overlay basate su posizione reale immagine
+                        updateMaskOverlays(imageLeft, imageRight, galleryContainer.offsetWidth);
                     }
                 }
                 
                 // Funzione per aggiornare overlay mascheramento
-                function updateMaskOverlays(imageWidth, containerCenter) {
+                function updateMaskOverlays(imageLeft, imageRight, containerWidth) {
                     const maskLeft = galleryContainer.querySelector(".toro-gallery-mask-left");
                     const maskRight = galleryContainer.querySelector(".toro-gallery-mask-right");
                     
                     if (maskLeft && maskRight) {
-                        const leftMaskWidth = Math.max(0, containerCenter - (imageWidth / 2));
-                        const rightMaskWidth = Math.max(0, containerCenter - (imageWidth / 2));
+                        const leftMaskWidth = Math.max(0, imageLeft);
+                        const rightMaskWidth = Math.max(0, containerWidth - imageRight);
                         
                         maskLeft.style.width = leftMaskWidth + "px";
                         maskRight.style.width = rightMaskWidth + "px";
@@ -679,9 +686,15 @@ class ToroLayoutManager {
                     loop: true,
                     effect: "slide",
                     speed: 400,
-                    autoHeight: false,
+                    autoHeight: true, /* Altezza automatica per aspect ratio */
                     on: {
                         init: function() {
+                            // Nascondi frecce default Swiper se esistono
+                            const defaultNext = this.el.querySelector('.swiper-button-next:not(.toro-arrow-next)');
+                            const defaultPrev = this.el.querySelector('.swiper-button-prev:not(.toro-arrow-prev)');
+                            if (defaultNext) defaultNext.style.display = 'none';
+                            if (defaultPrev) defaultPrev.style.display = 'none';
+                            
                             // Posiziona frecce al caricamento
                             setTimeout(() => positionArrows(this), 100);
                         },
