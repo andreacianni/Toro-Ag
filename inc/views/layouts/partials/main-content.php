@@ -13,7 +13,11 @@ if (!defined('ABSPATH')) exit;
 $sections = get_query_var('toro_sections', []);
 ?>
 
-<?php if (isset($sections['image'])): ?>
+<?php if (isset($sections['gallery'])): ?>
+<div class="toro-layout-gallery-section mb-4">
+    <?php echo $sections['gallery']; ?>
+</div>
+<?php elseif (isset($sections['image'])): ?>
 <div class="toro-layout-image-section mb-4">
     <div class="text-center">
         <div class="d-inline-block" style="max-width: 400px;">
