@@ -302,3 +302,207 @@ html {
 .toro-layout-cultures-section .grid-container {
     margin-top: 1rem;
 }
+
+/* ================================
+   GALLERIA PRODOTTO CON SWIPER
+   ================================ */
+
+.toro-product-gallery {
+    margin: 1rem 0;
+    background: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #e9ecef;
+}
+
+/* Single image fallback */
+.toro-single-image {
+    text-align: center;
+}
+
+.toro-single-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* Main carousel */
+.toro-gallery-main {
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.toro-gallery-main .swiper-slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+}
+
+.toro-gallery-main .swiper-slide img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* Thumbs carousel */
+.toro-gallery-thumbs {
+    height: 300px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.toro-gallery-thumbs .swiper-slide {
+    height: auto !important;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    overflow: hidden;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+.toro-gallery-thumbs .swiper-slide img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.toro-gallery-thumbs .swiper-slide-thumb-active {
+    opacity: 1;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* Controlli navigation */
+.toro-gallery-main .swiper-button-next,
+.toro-gallery-main .swiper-button-prev {
+    color: #cd2027;
+    background: rgba(255, 255, 255, 0.9);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+.toro-gallery-main .swiper-button-next:hover,
+.toro-gallery-main .swiper-button-prev:hover {
+    background: #cd2027;
+    color: white;
+    transform: scale(1.1);
+}
+
+.toro-gallery-main .swiper-button-next::after,
+.toro-gallery-main .swiper-button-prev::after {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Pagination dots */
+.toro-gallery-main .swiper-pagination {
+    bottom: 15px;
+}
+
+.toro-gallery-main .swiper-pagination-bullet {
+    background: rgba(255, 255, 255, 0.7);
+    border: 2px solid #cd2027;
+    opacity: 1;
+    transition: all 0.3s ease;
+}
+
+.toro-gallery-main .swiper-pagination-bullet-active {
+    background: #cd2027;
+    transform: scale(1.2);
+}
+
+/* ================================
+   RESPONSIVE GALLERY
+   ================================ */
+
+@media (max-width: 991.98px) {
+    .toro-product-gallery .row {
+        flex-direction: column;
+    }
+    
+    .toro-product-gallery .col-md-9,
+    .toro-product-gallery .col-md-3 {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .toro-gallery-thumbs {
+        height: 80px;
+        margin-top: 1rem;
+    }
+    
+    .toro-gallery-thumbs .swiper-wrapper {
+        flex-direction: row !important;
+    }
+    
+    .toro-gallery-thumbs .swiper-slide {
+        width: auto !important;
+        height: 80px !important;
+        margin-right: 10px;
+        margin-bottom: 0;
+    }
+    
+    .toro-gallery-thumbs .swiper-slide img {
+        height: 80px;
+        width: auto;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .toro-product-gallery {
+        padding: 0.5rem;
+    }
+    
+    .toro-gallery-main .swiper-button-next,
+    .toro-gallery-main .swiper-button-prev {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .toro-gallery-main .swiper-button-next::after,
+    .toro-gallery-main .swiper-button-prev::after {
+        font-size: 14px;
+    }
+    
+    .toro-gallery-thumbs {
+        height: 60px;
+    }
+    
+    .toro-gallery-thumbs .swiper-slide {
+        height: 60px !important;
+    }
+    
+    .toro-gallery-thumbs .swiper-slide img {
+        height: 60px;
+    }
+}
+
+/* ================================
+   INTEGRAZIONE CON LAYOUT ESISTENTE
+   ================================ */
+
+/* Quando galleria sostituisce image section */
+.toro-layout-prodotto .toro-layout-gallery-section {
+    margin-bottom: 2rem;
+}
+
+.toro-layout-prodotto .toro-layout-gallery-section .toro-product-gallery {
+    border: none;
+    padding: 0;
+    background: transparent;
+}
+
+/* Responsive integration */
+@media (max-width: 991.98px) {
+    .toro-layout-prodotto .toro-layout-gallery-section {
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+}
