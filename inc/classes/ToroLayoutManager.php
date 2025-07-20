@@ -468,8 +468,29 @@ class ToroLayoutManager {
         }
         
         // 2. PODS Gallery Images - DEBUG DETTAGLIATO
-        $pods_gallery = get_post_meta($product_id, 'galleria_prodotto', true);
-        $debug_info .= "PODS Raw: " . print_r($pods_gallery, true) . "\n";
+        // 🔧 FIX: Usa get_post_meta senza true per ottenere array completo
+        $pods_gallery_single = get_post_meta($product_id, 'galleria_prodotto', true);
+        $pods_gallery_array = get_post_meta($product_id, 'galleria_prodotto', false);
+        $pods_gallery_pods = function_exists('pods') ? pods($product_id, 'galleria_prodotto') : null;
+        
+        $debug_info .= "PODS Single (true): " . print_r($pods_gallery_single, true) . "\n";
+        $debug_info .= "PODS Array (false): " . print_r($pods_gallery_array, true) . "\n";
+        $debug_info .= "PODS Function: " . print_r($pods_gallery_pods, true) . "\n";
+        
+        // Prova diversi metodi per ottenere tutti i valori
+        $pods_gallery = null;
+        if (function_exists('pods') && $pods_gallery_pods) {
+            $pods_gallery = $pods_gallery_pods;
+            $debug_info .= "Using PODS function\n";
+        } elseif (!empty($pods_gallery_array) && is_array($pods_gallery_array)) {
+            $pods_gallery = $pods_gallery_array;
+            $debug_info .= "Using get_post_meta array\n";
+        } else {
+            $pods_gallery = $pods_gallery_single;
+            $debug_info .= "Using get_post_meta single\n";
+        }
+        
+        $debug_info .= "Final PODS: " . print_r($pods_gallery, true) . "\n";
         $debug_info .= "PODS Type: " . gettype($pods_gallery) . "\n";
         $debug_info .= "PODS Empty: " . (empty($pods_gallery) ? 'YES' : 'NO') . "\n";
         
