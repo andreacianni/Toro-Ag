@@ -612,7 +612,7 @@ class ToroLayoutManager {
                     const aspectRatio = parseFloat(activeSlide.dataset.aspectRatio) || 1;
                     
                     if (img && img.complete) {
-                        // Usa dimensioni reali dell'immagine visualizzata
+                        // Usa dimensioni reali dell\'immagine visualizzata
                         const imgRect = img.getBoundingClientRect();
                         const imageWidth = imgRect.width;
                         const imageHeight = imgRect.height;
@@ -690,10 +690,10 @@ class ToroLayoutManager {
                     on: {
                         init: function() {
                             // Nascondi frecce default Swiper se esistono
-                            const defaultNext = this.el.querySelector('.swiper-button-next:not(.toro-arrow-next)');
-                            const defaultPrev = this.el.querySelector('.swiper-button-prev:not(.toro-arrow-prev)');
-                            if (defaultNext) defaultNext.style.display = 'none';
-                            if (defaultPrev) defaultPrev.style.display = 'none';
+                            const defaultNext = this.el.querySelector(".swiper-button-next:not(.toro-arrow-next)");
+                            const defaultPrev = this.el.querySelector(".swiper-button-prev:not(.toro-arrow-prev)");
+                            if (defaultNext) defaultNext.style.display = \'none\';
+                            if (defaultPrev) defaultPrev.style.display = \'none\';
                             
                             // Posiziona frecce al caricamento
                             setTimeout(() => positionArrows(this), 100);
