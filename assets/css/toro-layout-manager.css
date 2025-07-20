@@ -304,17 +304,32 @@ html {
 }
 
 /* ================================
-   GALLERIA PRODOTTO CON SWIPER - V3 FIX DIMENSIONI
+   GALLERIA PRODOTTO V2 - LAYOUT STACK VERTICALE
    ================================ */
 
-/* Container galleria - Minimalista e integrato */
-.toro-product-gallery {
+/* Container galleria V2 - Stack verticale */
+.toro-product-gallery-v2 {
     margin: 0;
     background: transparent;
     border: none;
     padding: 0;
     position: relative;
-    max-width: 40%; /* Dimensione controllata come single image */
+    max-width: 40%; /* Stessa dimensione single image */
+    width: 40%;
+}
+
+/* Container main carousel - Full width sopra */
+.toro-gallery-main-container {
+    width: 100%;
+    margin-bottom: 12px;
+    position: relative;
+}
+
+/* Container thumbs - Sotto sempre 50px */
+.toro-gallery-thumbs-container {
+    width: 100%;
+    height: 50px;
+    overflow: hidden;
 }
 
 /* Single image fallback - 40% con Bootstrap e stili migliorati */
@@ -383,45 +398,51 @@ html {
 }
 
 /* ================================
-   THUMBS LATERALI - NON TAGLIATE
+   THUMBS V2 - ORIZZONTALI SOTTO 50PX
    ================================ */
 
 .toro-gallery-thumbs {
-    height: 100%;
-    max-height: 400px; /* Allineato con main gallery */
-    border-radius: 8px;
-    overflow: hidden;
+    height: 50px;
+    width: 100%;
     background: transparent;
+    overflow: hidden;
+}
+
+.toro-gallery-thumbs .swiper-wrapper {
+    height: 50px;
+    align-items: center;
 }
 
 .toro-gallery-thumbs .swiper-slide {
-    height: 75px !important;
-    margin-bottom: 8px;
+    width: 50px !important;
+    height: 50px !important;
+    flex-shrink: 0;
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: 6px;
     overflow: hidden;
-    opacity: 0.4;
+    opacity: 0.5;
     transition: all 0.3s ease;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     border: 2px solid transparent;
+    margin-right: 8px;
 }
 
 .toro-gallery-thumbs .swiper-slide:hover {
-    opacity: 0.7;
-    transform: translateX(-2px);
+    opacity: 0.8;
+    transform: translateY(-2px);
 }
 
 .toro-gallery-thumbs .swiper-slide img {
-    width: 100%;
-    height: 75px;
-    object-fit: contain; /* NON tagliare le thumbs */
-    border-radius: 6px;
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 4px;
     background: #f8f9fa;
 }
 
 .toro-gallery-thumbs .swiper-slide-thumb-active {
     opacity: 1 !important;
-    transform: translateX(-4px);
+    transform: translateY(-3px);
     border-color: #cd2027;
     box-shadow: 0 4px 12px rgba(205, 32, 39, 0.25);
 }
@@ -481,78 +502,39 @@ html {
 }
 
 /* ================================
-   RESPONSIVE GALLERIA - DIMENSIONI CONTROLLATE
+   RESPONSIVE GALLERIA V2 - STACK VERTICALE
    ================================ */
 
-/* Desktop: Layout 70/30 con dimensioni controllate */
+/* Desktop: Layout V2 stack verticale */
 @media (min-width: 992px) {
-    .toro-product-gallery {
-        max-width: 40%; /* Stesso di single image */
-    }
-    
-    .toro-product-gallery .col-md-9 {
-        flex: 0 0 70%;
-        max-width: 70%;
-    }
-    
-    .toro-product-gallery .col-md-3 {
-        flex: 0 0 30%;
-        max-width: 30%;
-        padding-left: 1rem;
-    }
-}
-
-/* Tablet: Stack con dimensioni ridotte */
-@media (max-width: 991.98px) {
-    .toro-product-gallery {
-        max-width: 60%; /* Più grande su tablet */
-        margin: 0 auto;
-    }
-    
-    .toro-product-gallery .row {
-        flex-direction: column;
-    }
-    
-    .toro-product-gallery .col-md-9,
-    .toro-product-gallery .col-md-3 {
-        width: 100%;
-        max-width: 100%;
-        padding: 0;
+    .toro-product-gallery-v2 {
+        max-width: 40%;
+        width: 40%;
     }
     
     .toro-gallery-main {
-        margin-bottom: 1rem;
+        max-height: 350px;
+    }
+    
+    .toro-gallery-main .swiper-slide img {
+        max-height: 350px;
+    }
+}
+
+/* Tablet: Dimensioni maggiori mantenendo stack */
+@media (max-width: 991.98px) {
+    .toro-product-gallery-v2 {
+        max-width: 60%;
+        width: 60%;
+        margin: 0 auto;
+    }
+    
+    .toro-gallery-main {
         max-height: 300px;
     }
     
     .toro-gallery-main .swiper-slide img {
         max-height: 300px;
-    }
-    
-    .toro-gallery-thumbs {
-        height: 70px;
-        max-height: 70px;
-    }
-    
-    .toro-gallery-thumbs .swiper-wrapper {
-        flex-direction: row !important;
-    }
-    
-    .toro-gallery-thumbs .swiper-slide {
-        width: 70px !important;
-        height: 70px !important;
-        margin-right: 8px;
-        margin-bottom: 0;
-        flex-shrink: 0;
-    }
-    
-    .toro-gallery-thumbs .swiper-slide img {
-        height: 70px;
-        width: 70px;
-    }
-    
-    .toro-gallery-thumbs .swiper-slide-thumb-active {
-        transform: translateY(-2px);
     }
     
     .toro-single-image {
@@ -561,14 +543,14 @@ html {
     }
 }
 
-/* Mobile: Compatto ma leggibile */
+/* Mobile: Compatto con thumbs più piccole */
 @media (max-width: 767.98px) {
-    .toro-product-gallery {
+    .toro-product-gallery-v2 {
         max-width: 80%;
+        width: 80%;
     }
     
     .toro-gallery-main {
-        border-radius: 8px;
         max-height: 250px;
     }
     
@@ -587,26 +569,28 @@ html {
         font-size: 14px;
     }
     
+    /* Thumbs più piccole su mobile */
+    .toro-gallery-thumbs-container {
+        height: 40px;
+    }
+    
     .toro-gallery-thumbs {
-        height: 60px;
-        max-height: 60px;
+        height: 40px;
+    }
+    
+    .toro-gallery-thumbs .swiper-wrapper {
+        height: 40px;
     }
     
     .toro-gallery-thumbs .swiper-slide {
-        width: 60px !important;
-        height: 60px !important;
+        width: 40px !important;
+        height: 40px !important;
         margin-right: 6px;
     }
     
     .toro-gallery-thumbs .swiper-slide img {
-        height: 60px;
-        width: 60px;
-    }
-    
-    .toro-gallery-main .swiper-pagination-bullet {
-        width: 6px;
-        height: 6px;
-        margin: 0 3px;
+        width: 40px;
+        height: 40px;
     }
     
     .toro-single-image {
@@ -616,30 +600,30 @@ html {
 }
 
 /* ================================
-   INTEGRAZIONE LAYOUT ESISTENTE
+   INTEGRAZIONE LAYOUT V2 ESISTENTE
    ================================ */
 
-/* Quando galleria sostituisce image section */
+/* Quando galleria V2 sostituisce image section */
 .toro-layout-prodotto .toro-layout-gallery-section {
     margin-bottom: 2rem;
-    text-align: center; /* Centra la galleria */
+    text-align: center;
 }
 
-.toro-layout-prodotto .toro-layout-gallery-section .toro-product-gallery {
+.toro-layout-prodotto .toro-layout-gallery-section .toro-product-gallery-v2 {
     border: none;
     padding: 0;
     background: transparent;
-    margin: 0 auto; /* Centra la galleria */
+    margin: 0 auto;
 }
 
-/* Responsive integration con layout esistente */
+/* Responsive integration V2 con layout esistente */
 @media (max-width: 991.98px) {
     .toro-layout-prodotto .toro-layout-gallery-section {
         margin-bottom: 1.5rem;
     }
 }
 
-/* Assicura che la galleria non interferisca con il layout bilanciato */
+/* Assicura che la galleria V2 non interferisca con layout bilanciato */
 .toro-layout-sidebar-left .toro-layout-gallery-section,
 .toro-layout-sidebar-right .toro-layout-gallery-section {
     max-width: none;

@@ -550,7 +550,7 @@ class ToroLayoutManager {
     }
     
     /**
-     * Genera HTML per carousel Swiper con thumbs laterali
+     * Genera HTML per carousel Swiper V2 con thumbs sotto
      * 
      * @param array $images Array di immagini
      * @param int $product_id ID prodotto per ID univoci
@@ -560,13 +560,10 @@ class ToroLayoutManager {
         $gallery_id = 'toro-gallery-' . $product_id;
         $thumbs_id = 'toro-thumbs-' . $product_id;
         
-        $html = '<div class="toro-product-gallery">';
+        $html = '<div class="toro-product-gallery-v2">';
         
-        // Container principale con layout Bootstrap
-        $html .= '<div class="row g-2">';
-        
-        // Colonna carousel principale (9/12)
-        $html .= '<div class="col-md-9">';
+        // Main carousel full-width sopra
+        $html .= '<div class="toro-gallery-main-container">';
         $html .= sprintf('<div class="swiper toro-gallery-main" id="%s">', $gallery_id);
         $html .= '<div class="swiper-wrapper">';
         
@@ -581,20 +578,19 @@ class ToroLayoutManager {
         
         $html .= '</div>'; // swiper-wrapper
         
-        // Controlli carousel
+        // Controlli carousel - frecce ai lati dell'immagine
         $html .= '<div class="swiper-button-next"></div>';
         $html .= '<div class="swiper-button-prev"></div>';
-        $html .= '<div class="swiper-pagination"></div>';
         
         $html .= '</div>'; // swiper main
-        $html .= '</div>'; // col-md-9
+        $html .= '</div>'; // main container
         
-        // Colonna thumbs laterali (3/12)
-        $html .= '<div class="col-md-3">';
+        // Thumbs orizzontali sotto sempre 50px
+        $html .= '<div class="toro-gallery-thumbs-container">';
         $html .= sprintf('<div class="swiper toro-gallery-thumbs" id="%s">', $thumbs_id);
         $html .= '<div class="swiper-wrapper">';
         
-        // Thumbs
+        // Thumbs orizzontali
         foreach ($images as $image) {
             $html .= sprintf(
                 '<div class="swiper-slide"><img src="%s" alt="%s" class="img-fluid"></div>',
@@ -605,19 +601,18 @@ class ToroLayoutManager {
         
         $html .= '</div>'; // swiper-wrapper thumbs
         $html .= '</div>'; // swiper thumbs
-        $html .= '</div>'; // col-md-3
+        $html .= '</div>'; // thumbs container
         
-        $html .= '</div>'; // row
-        $html .= '</div>'; // toro-product-gallery
+        $html .= '</div>'; // toro-product-gallery-v2
         
-        // JavaScript per inizializzare Swiper
+        // JavaScript per inizializzare Swiper V2
         $html .= self::generate_swiper_javascript($gallery_id, $thumbs_id);
         
         return $html;
     }
     
     /**
-     * Genera JavaScript per inizializzare carousel Swiper
+     * Genera JavaScript per inizializzare carousel Swiper V2
      * 
      * @param string $gallery_id ID carousel principale
      * @param string $thumbs_id ID carousel thumbs
@@ -628,26 +623,24 @@ class ToroLayoutManager {
         <script>
         document.addEventListener("DOMContentLoaded", function() {
             if (typeof Swiper !== "undefined") {
-                // Inizializza thumbs carousel
+                // Inizializza thumbs carousel V2 - orizzontale sotto
                 const thumbsSwiper = new Swiper("#%s", {
-                    direction: "vertical",
+                    direction: "horizontal",
                     slidesPerView: "auto",
-                    spaceBetween: 10,
+                    spaceBetween: 8,
                     watchSlidesProgress: true,
                     freeMode: true,
-                    mousewheel: true
+                    mousewheel: false,
+                    grabCursor: true,
+                    centeredSlides: false
                 });
                 
-                // Inizializza main carousel
+                // Inizializza main carousel V2
                 const mainSwiper = new Swiper("#%s", {
-                    spaceBetween: 10,
+                    spaceBetween: 0,
                     navigation: {
                         nextEl: ".swiper-button-next",
                         prevEl: ".swiper-button-prev"
-                    },
-                    pagination: {
-                        el: ".swiper-pagination",
-                        clickable: true
                     },
                     thumbs: {
                         swiper: thumbsSwiper
@@ -656,10 +649,13 @@ class ToroLayoutManager {
                         enabled: true
                     },
                     mousewheel: false,
-                    loop: true
+                    loop: true,
+                    effect: "slide",
+                    speed: 400,
+                    autoHeight: false
                 });
             } else {
-                console.warn("Swiper.js non caricato - galleria prodotto non disponibile");
+                console.warn("Swiper.js non caricato - galleria prodotto V2 non disponibile");
             }
         });
         </script>',
