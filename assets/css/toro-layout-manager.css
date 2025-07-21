@@ -10,10 +10,7 @@
 /* Sidebar compatta per layout 3/9 */
 
 
-.toro-layout-sidebar-compact .toro-layout-videos-section h4 {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-}
+/* .toro-layout-sidebar-compact .toro-layout-videos-section h4 rimosso - non c'è più H4 */
 
 /* Ottimizzazione immagine per layout bilanciato */
 .toro-layout-sidebar-left .toro-layout-image-section,
@@ -107,12 +104,7 @@
 
 
 .toro-layout-videos-section {
-    background: #fff;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 1rem; /* Ridotto da 1.5rem */
-    margin-bottom: 1rem; /* Ridotto da 1.5rem */
-    /* box-shadow rimosso */
+    /* Stili rimossi - video gestiscono il proprio spacing */
 }
 
 .toro-layout-cultures-section {
@@ -141,15 +133,7 @@
         text-align: center;
     }
     
-    .toro-layout-videos-section {
-        padding: 1rem;
-        margin-bottom: 1rem;
-    }
-    
-    /* Su mobile, sidebar diventa più generosa */
-    .toro-layout-videos-section {
-        padding: 1.25rem;
-    }
+    /* .toro-layout-videos-section stili rimossi - gestiti da card singole */
 }
 
 @media (max-width: 767.98px) {
@@ -294,9 +278,7 @@ html {
 }
 
 .toro-layout-videos-section .card {
-    border: none;
-    box-shadow: none;
-    background: transparent;
+    /* Stili card rimossi - usano stili Bootstrap default */
 }
 
 .toro-layout-cultures-section .grid-container {
