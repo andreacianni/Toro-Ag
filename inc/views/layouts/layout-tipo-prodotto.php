@@ -1,71 +1,125 @@
 <?php
 /**
- * Template Layout Tipo Prodotto - TORO AG Layout Manager
+ * Template Layout Manager - Tipo Prodotto
  * 
- * Template per [toro_layout_tipo_prodotto] - IN SVILUPPO
+ * Layout 9/3 colonne (75%/25%) per pagine tipo di prodotto
+ * Pattern: Descrizione + Prodotti | Documenti + Video
+ * Mobile: Stack completo (descrizione → prodotti → docs → video)
  * 
- * @var array $sections - Sezioni caricate
- * @var array $atts - Attributi shortcode
- * @var string $layout_type - 'tipo_prodotto'
+ * Variables disponibili:
+ * - $toro_layout_sections: array sezioni caricate
+ * - $toro_layout_atts: attributi shortcode  
+ * - $toro_layout_type: 'tipo_prodotto'
  */
 
-if (!defined('ABSPATH')) exit;
-
+// Recupera variabili template
 $sections = get_query_var('toro_layout_sections', []);
 $atts = get_query_var('toro_layout_atts', []);
+$layout_type = get_query_var('toro_layout_type', '');
+
+// Valida input
+if (empty($sections) || $layout_type !== 'tipo_prodotto') {
+    echo '<div class="toro-layout-error">Template non configurato correttamente</div>';
+    return;
+}
+
+// Separazione sezioni per colonne
+$main_sections = [];
+$sidebar_sections = [];
+
+foreach ($sections as $section_name => $section_content) {
+    switch ($section_name) {
+        case 'description':
+        case 'products':
+            $main_sections[$section_name] = $section_content;
+            break;
+            
+        case 'documents':
+        case 'videos':
+            $sidebar_sections[$section_name] = $section_content;
+            break;
+            
+        case 'hero':
+            // Hero viene gestito separatamente, non nelle colonne
+            break;
+    }
+}
+
+// Determina layout colonne
+$sidebar_empty = empty($sidebar_sections);
+$main_col_class = $sidebar_empty ? 'col-12' : 'col-lg-9';
+$sidebar_col_class = 'col-lg-3';
+
+// CSS classes responsive
+$responsive_class = ($atts['responsive'] === 'true') ? 'toro-layout-responsive' : '';
 ?>
 
-<div class="toro-layout-container toro-layout-tipo-prodotto">
+<div class="toro-layout-tipo-prodotto <?php echo esc_attr($responsive_class); ?>">
     
-    <!-- Hero Section (se presente) -->
     <?php if (isset($sections['hero'])): ?>
-    <div class="toro-layout-hero-section mb-5">
-        <?php echo $sections['hero']; ?>
-    </div>
+        <!-- Hero Section (Full Width - gestito da Divi) -->
+        <div class="toro-hero-section mb-4">
+            <?php echo $sections['hero']; ?>
+        </div>
     <?php endif; ?>
     
-    <!-- Layout Flessibile per Tipo Prodotto -->
-    <div class="row">
-        
-        <!-- Contenuto Principale -->
-        <div class="col-lg-8 col-md-12">
+    <div class="container-fluid">
+        <div class="row">
             
-            <?php if (isset($sections['description'])): ?>
-            <div class="toro-layout-description-section mb-4">
-                <?php echo $sections['description']; ?>
+            <!-- Main Content Column (col-9 o col-12) -->
+            <div class="<?php echo esc_attr($main_col_class); ?>">
+                
+                <?php if (isset($main_sections['description']) && !empty($main_sections['description'])): ?>
+                    <!-- Descrizione Tipo Prodotto -->
+                    <section class="toro-layout-description mb-4">
+                        <?php echo $main_sections['description']; ?>
+                    </section>
+                <?php endif; ?>
+                
+                <?php if (isset($main_sections['products']) && !empty($main_sections['products'])): ?>
+                    <!-- Prodotti Grid -->
+                    <section class="toro-layout-products">
+                        <?php echo $main_sections['products']; ?>
+                    </section>
+                <?php endif; ?>
+                
             </div>
+            
+            <?php if (!$sidebar_empty): ?>
+                <!-- Sidebar Column (col-3) -->
+                <div class="<?php echo esc_attr($sidebar_col_class); ?>">
+                    
+                    <?php if (isset($sidebar_sections['documents']) && !empty($sidebar_sections['documents'])): ?>
+                        <!-- Documenti Section -->
+                        <section class="toro-layout-docs mb-4">
+                            <?php echo $sidebar_sections['documents']; ?>
+                        </section>
+                    <?php endif; ?>
+                    
+                    <?php if (isset($sidebar_sections['videos']) && !empty($sidebar_sections['videos'])): ?>
+                        <!-- Video Section -->
+                        <section class="toro-layout-videos">
+                            <?php echo $sidebar_sections['videos']; ?>
+                        </section>
+                    <?php endif; ?>
+                    
+                </div>
             <?php endif; ?>
             
-            <?php if (isset($sections['products'])): ?>
-            <div class="toro-layout-products-section">
-                <h3>Prodotti di questo tipo</h3>
-                <?php echo $sections['products']; ?>
-            </div>
-            <?php endif; ?>
-            
-        </div>
-        
-        <!-- Sidebar -->
-        <div class="col-lg-4 col-md-12">
-            
-            <?php if (isset($sections['documents'])): ?>
-            <div class="toro-layout-documents-section mb-4">
-                <h4>Documentazione</h4>
-                <?php echo $sections['documents']; ?>
-            </div>
-            <?php endif; ?>
-            
-            <?php if (isset($sections['videos'])): ?>
-            <div class="toro-layout-videos-section">
-                <h4>Video</h4>
-                <?php echo $sections['videos']; ?>
-            </div>
-            <?php endif; ?>
-            
-        </div>
-        
-    </div>
+        </div> <!-- .row -->
+    </div> <!-- .container-fluid -->
     
-</div>
+</div> <!-- .toro-layout-tipo-prodotto -->
 
-<!-- Template per tipo prodotto - da completare nella Fase 3C -->
+<?php
+/**
+ * Mobile Responsive Behavior (CSS gestito in toro-layout-manager.css):
+ * 
+ * Desktop (lg+): 75%/25% side-by-side
+ * Mobile: Stack completo
+ * - Descrizione
+ * - Prodotti  
+ * - Documenti
+ * - Video
+ */
+?>

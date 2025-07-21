@@ -764,3 +764,58 @@ html {
     .toro-product-gallery-v2 .swiper-button-next { right: -36px !important; }
 }
 
+/* ================================
+   LAYOUT TIPO PRODOTTO - 9/3 COLONNE
+   ================================ */
+
+/* Container base */
+.toro-layout-tipo-prodotto {
+    margin: 2rem 0;
+}
+
+/* Hero section spacing */
+.toro-layout-tipo-prodotto .toro-hero-section {
+    margin-bottom: 2rem;
+}
+
+/* Main content sections */
+.toro-layout-tipo-prodotto .toro-layout-description {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.toro-layout-tipo-prodotto .toro-layout-products {
+    /* Styling per grid prodotti già gestito da shortcode grid */
+}
+
+/* Sidebar compatta */
+.toro-layout-tipo-prodotto .toro-layout-docs,
+.toro-layout-tipo-prodotto .toro-layout-videos {
+    /* Card styling già gestito dai rispettivi shortcode */
+}
+
+/* Mobile responsive - Stack completo */
+@media (max-width: 991.98px) {
+    .toro-layout-tipo-prodotto .col-lg-9,
+    .toro-layout-tipo-prodotto .col-lg-3 {
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+        width: 100% !important;
+    }
+    
+    /* Spacing mobile */
+    .toro-layout-tipo-prodotto .toro-layout-description {
+        margin-bottom: 1.5rem;
+    }
+    
+    .toro-layout-tipo-prodotto .toro-layout-products {
+        margin-bottom: 1.5rem;
+    }
+    
+    .toro-layout-tipo-prodotto .toro-layout-docs {
+        margin-bottom: 1.5rem;
+    }
+}
+

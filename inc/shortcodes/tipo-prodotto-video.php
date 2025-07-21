@@ -33,9 +33,9 @@ function ta_render_video_tipo_prodotto_v2_shortcode( $atts ) {
 
     echo '<!-- shortcode video_tipo_prodotto_v2.0: video IDs raw: ' . implode(',', array_map(function($i){ return is_array($i)&&isset($i['ID'])?$i['ID']:(is_object($i)&&isset($i->ID)?$i->ID:$i); }, (array)$videos)) . ' -->';
 
-    // Griglia video
-    echo '<!-- shortcode video_tipo_prodotto_v2.0: inizio video-card-grid -->';
-    $output = '<div class="video-card-grid row">';
+    // Stack verticale video (come prodotti)
+    echo '<!-- shortcode video_tipo_prodotto_v2.0: inizio toro-video-stack -->';
+    $output = '<div class="toro-layout-videos-section"><div class="toro-video-stack">';
 
     foreach ( (array)$videos as $item ) {
         $video_id = is_array($item)&&isset($item['ID']) ? intval($item['ID']) : (is_object($item)&&isset($item->ID) ? intval($item->ID) : intval($item));
@@ -57,19 +57,19 @@ function ta_render_video_tipo_prodotto_v2_shortcode( $atts ) {
         // Debug per ogni video
         echo '<!-- shortcode video_tipo_prodotto_v2.0: card video ' . $video_id . ' -->';
 
-        $output .= '<div class="col-xl-6"><div class="card h-100">';
-        $output .= '<div class="card-video embed-responsive embed-responsive-16by9">';
+        // Stack verticale con card come documenti
+        $output .= '<div class="card shadow-sm mb-4">';
+        $output .= '<div class="card-header">';
+        $output .= '<a href="' . esc_url($video_link) . '" target="_blank" rel="noopener noreferrer" class="fw-bold">' . esc_html($video->post_title) . ' ' . $flag_html . '</a>';
+        $output .= '</div>';
+        $output .= '<div class="card-body p-0">';
         $output .= '<div class="fluid-width-video-wrapper" style="padding-top: 56.25%;">';
         $output .= '<iframe title="' . esc_attr($video->post_title) . '" src="' . esc_url($youtube_embed) . '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
-        $output .= '</div></div>';
-        $output .= '<div class="card-body">';
-        $output .= '<h5 class="card-title text-center py-2 mb-0">';
-        $output .= '<a href="' . esc_url($video_link) . '" target="_blank" rel="noopener noreferrer">' . esc_html($video->post_title) . ' ' . $flag_html . '</a>';
-        $output .= '</h5></div></div></div>';
+        $output .= '</div></div></div>';
     }
 
-    $output .= '</div>';
-    echo '<!-- shortcode video_tipo_prodotto_v2.0: fine video-card-grid -->';
+    $output .= '</div></div>'; // toro-video-stack + toro-layout-videos-section
+    echo '<!-- shortcode video_tipo_prodotto_v2.0: fine toro-video-stack -->';
     return $output;
 }
 add_shortcode('video_tipo_prodotto_v2', 'ta_render_video_tipo_prodotto_v2_shortcode');
