@@ -603,7 +603,10 @@ class ToroLayoutManager {
                 // Inizializza main carousel V2 con frecce native Swiper
                 const mainSwiper = new Swiper("#%s", {
                     spaceBetween: 0,
-                    navigation: true,
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev',
+                    },
                     thumbs: {
                         swiper: thumbsSwiper
                     },
