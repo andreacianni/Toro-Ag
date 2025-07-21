@@ -7,7 +7,7 @@ $columns   = get_query_var('toro_ag_grid_columns', 3); // default 3 colonne
 
 <?php if (!empty($title)) : ?>
     <!-- inc\views\shortcode-grid-page.php -->
-  <h5 class="text-bg-dark px-3 py-2 my-4 rounded-2"><?php echo esc_html($title); ?></h5>
+  <h4 class="fw-bold border-bottom px-3 py-2 my-4"><?php echo esc_html($title); ?></h4>
 <?php endif; ?>
 
 <div class="toro-grid <?php echo esc_attr( get_query_var('toro_ag_grid_wrapper_class','') ); ?>" style="--toro-grid-columns: <?php echo esc_attr($columns); ?>;">
