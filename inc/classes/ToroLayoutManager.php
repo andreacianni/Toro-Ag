@@ -539,6 +539,11 @@ class ToroLayoutManager {
         }
         
         $html .= '</div>'; // swiper-wrapper
+        
+        // Frecce native Swiper - elementi HTML richiesti
+        $html .= '<div class="swiper-button-next"></div>';
+        $html .= '<div class="swiper-button-prev"></div>';
+        
         $html .= '</div>'; // swiper main
         $html .= '</div>'; // viewport
         
