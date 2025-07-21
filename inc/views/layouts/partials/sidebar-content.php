@@ -20,8 +20,7 @@ $sections = get_query_var('toro_sections', []);
 <?php endif; ?>
 
 <?php if (isset($sections['videos'])): ?>
-<div class="toro-layout-videos-section mb-4">
-    <h4>Video Prodotto</h4>
+<div class="toro-layout-videos-section">
     <?php echo $sections['videos']; ?>
 </div>
 <?php endif; ?>

@@ -32,7 +32,7 @@ if ( ! function_exists('ta_render_video_prodotto_v2_shortcode') ) {
             if ( empty($videos) ) return '<!-- shortcode video_prodotto_v2.0 --><!-- DEBUG: Nessun video -->';
         }
 
-        $output .= '<div class="video-card-grid row">';
+        $output .= '<div class="toro-video-stack">';
 
         foreach ( (array) $videos as $item ) {
             $video_id = is_array($item) && isset($item['ID']) ? intval($item['ID']) : (is_object($item) && isset($item->ID) ? intval($item->ID) : intval($item));
@@ -53,15 +53,14 @@ if ( ! function_exists('ta_render_video_prodotto_v2_shortcode') ) {
             $lingua_name = $lingua_names[0] ?? '';
             $flag_html = ($current_lang !== 'it' && function_exists('toroag_get_flag_html')) ? toroag_get_flag_html($first_lingua) : '';
 
-            $output .= '<div class="col-xl-6"><div class="card h-100">';
-            $output .= '<div class="card-video embed-responsive embed-responsive-16by9">';
+            $output .= '<div class="card shadow-sm mb-4">';
+            $output .= '<div class="card-header">';
+            $output .= '<a href="' . esc_url($video_link) . '" target="_blank" rel="noopener noreferrer" class="fw-bold">'. $flag_html . ' ' . esc_html($video->post_title) .'</a>';
+            $output .= '</div>';
+            $output .= '<div class="card-body p-0">';
             $output .= '<div class="fluid-width-video-wrapper" style="padding-top: 56.25%;">';
             $output .= '<iframe title="' . esc_attr($video->post_title) . '" src="' . esc_url($youtube_embed) . '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
-            $output .= '</div></div>';
-            $output .= '<div class="card-body">';
-            $output .= '<h5 class="card-title text-center py-2 mb-0">';
-            $output .= '<a href="' . esc_url($video_link) . '" target="_blank" rel="noopener noreferrer">'. $flag_html . ' ' . esc_html($video->post_title) .'</a>';
-            $output .= '</h5></div></div></div>';
+            $output .= '</div></div></div>';
         }
 
         $output .= '</div>';
