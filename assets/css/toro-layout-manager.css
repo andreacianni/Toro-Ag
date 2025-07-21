@@ -732,3 +732,53 @@ html {
     box-shadow: none !important;
 }
 
+/* ================================
+   FIX FRECCE DOPPIE - FRECCE NATIVE SWIPER RIPOSIZIONATE
+   ================================ */
+
+/* Frecce navigation native Swiper */
+.toro-product-gallery-v2 .swiper-button-prev,
+.toro-product-gallery-v2 .swiper-button-next {
+    width: 40px !important;
+    height: 40px !important;
+    margin-top: -20px !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+    border-radius: 50% !important;
+    transition: background-color 0.3s ease !important;
+    top: 50% !important;
+    z-index: 10 !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.toro-product-gallery-v2 .swiper-button-prev {
+    left: -45px !important;
+}
+
+.toro-product-gallery-v2 .swiper-button-next {
+    right: -45px !important;
+}
+
+.toro-product-gallery-v2 .swiper-button-prev:hover,
+.toro-product-gallery-v2 .swiper-button-next:hover {
+    background: rgba(0, 0, 0, 0.7) !important;
+}
+
+.toro-product-gallery-v2 .swiper-button-prev::after,
+.toro-product-gallery-v2 .swiper-button-next::after {
+    font-size: 16px !important;
+    font-weight: bold !important;
+    color: white !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .toro-product-gallery-v2 .swiper-button-prev { left: -40px !important; }
+    .toro-product-gallery-v2 .swiper-button-next { right: -40px !important; }
+}
+
+@media (max-width: 576px) {
+    .toro-product-gallery-v2 .swiper-button-prev { left: -36px !important; }
+    .toro-product-gallery-v2 .swiper-button-next { right: -36px !important; }
+}
+

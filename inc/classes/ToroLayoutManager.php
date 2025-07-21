@@ -669,13 +669,10 @@ class ToroLayoutManager {
                     centeredSlides: false
                 });
                 
-                // Inizializza main carousel V2 con frecce personalizzate
+                // Inizializza main carousel V2 con frecce native Swiper
                 const mainSwiper = new Swiper("#%s", {
                     spaceBetween: 0,
-                    navigation: {
-                        nextEl: galleryContainer.querySelector(".toro-arrow-next"),
-                        prevEl: galleryContainer.querySelector(".toro-arrow-prev")
-                    },
+                    navigation: true,
                     thumbs: {
                         swiper: thumbsSwiper
                     },
@@ -689,36 +686,11 @@ class ToroLayoutManager {
                     autoHeight: true, /* Altezza automatica per aspect ratio */
                     on: {
                         init: function() {
-                            // Nascondi frecce default Swiper se esistono
-                            const defaultNext = this.el.querySelector(".swiper-button-next:not(.toro-arrow-next)");
-                            const defaultPrev = this.el.querySelector(".swiper-button-prev:not(.toro-arrow-prev)");
-                            if (defaultNext) defaultNext.style.display = \'none\';
-                            if (defaultPrev) defaultPrev.style.display = \'none\';
-                            
-                            // Posiziona frecce al caricamento
-                            setTimeout(() => positionArrows(this), 100);
-                        },
-                        slideChange: function() {
-                            // Riposiziona frecce quando cambia slide
-                            positionArrows(this);
-                        },
-                        imagesReady: function() {
-                            // Riposiziona quando tutte le immagini sono caricate
-                            positionArrows(this);
+                            // Frecce native Swiper gestite da CSS
                         }
                     }
                 });
-                
-                // Riposiziona frecce su resize finestra
-                let resizeTimeout;
-                window.addEventListener("resize", function() {
-                    clearTimeout(resizeTimeout);
-                    resizeTimeout = setTimeout(() => {
-                        if (mainSwiper && !mainSwiper.destroyed) {
-                            positionArrows(mainSwiper);
-                        }
-                    }, 150);
-                });
+
                 
             } else {
                 console.warn("Swiper.js non caricato - galleria prodotto V2 non disponibile");
