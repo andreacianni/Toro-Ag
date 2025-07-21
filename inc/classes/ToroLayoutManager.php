@@ -542,15 +542,8 @@ class ToroLayoutManager {
         $html .= '</div>'; // swiper main
         $html .= '</div>'; // viewport
         
-        // Frecce posizionate dinamicamente via JavaScript
-        $html .= '<div class="toro-gallery-arrows">';
-        $html .= '<button class="swiper-button-prev toro-arrow-prev" type="button"><i class="fas fa-chevron-left"></i></button>';
-        $html .= '<button class="swiper-button-next toro-arrow-next" type="button"><i class="fas fa-chevron-right"></i></button>';
-        $html .= '</div>';
-        
-        // Overlay bianchi per mascheramento immagini laterali
-        $html .= '<div class="toro-gallery-mask-left"></div>';
-        $html .= '<div class="toro-gallery-mask-right"></div>';
+        // Frecce native Swiper generate automaticamente da navigation: true
+        // RIMOSSO: frecce custom HTML che causavano duplicazione
         
         $html .= '</div>'; // main container
         
@@ -595,68 +588,6 @@ class ToroLayoutManager {
                 const galleryContainer = document.querySelector(`[data-gallery-id="%s"]`);
                 if (!galleryContainer) return;
                 
-                // Funzione per calcolare distanza frecce responsive
-                function getArrowDistance() {
-                    const width = window.innerWidth;
-                    if (width >= 992) return 45; // Desktop
-                    if (width >= 768) return 40; // Tablet
-                    return 36; // Mobile
-                }
-                
-                // Funzione per posizionare frecce dinamicamente
-                function positionArrows(swiper) {
-                    const activeSlide = swiper.slides[swiper.activeIndex];
-                    if (!activeSlide) return;
-                    
-                    const img = activeSlide.querySelector(".toro-main-image");
-                    const aspectRatio = parseFloat(activeSlide.dataset.aspectRatio) || 1;
-                    
-                    if (img && img.complete) {
-                        // Usa dimensioni reali dell\'immagine visualizzata
-                        const imgRect = img.getBoundingClientRect();
-                        const imageWidth = imgRect.width;
-                        const imageHeight = imgRect.height;
-                        
-                        // Calcola posizione frecce basata su immagine effettiva
-                        const arrowDistance = getArrowDistance();
-                        const viewportRect = galleryContainer.querySelector(".toro-gallery-viewport").getBoundingClientRect();
-                        const galleryRect = galleryContainer.getBoundingClientRect();
-                        
-                        // Posizione relativa al container galleria
-                        const imageLeft = imgRect.left - galleryRect.left;
-                        const imageRight = imgRect.right - galleryRect.left;
-                        
-                        const leftPos = Math.max(10, imageLeft - arrowDistance);
-                        const rightPos = Math.max(10, galleryContainer.offsetWidth - imageRight - arrowDistance);
-                        
-                        // Applica posizioni
-                        const prevBtn = galleryContainer.querySelector(".toro-arrow-prev");
-                        const nextBtn = galleryContainer.querySelector(".toro-arrow-next");
-                        
-                        if (prevBtn && nextBtn) {
-                            prevBtn.style.left = leftPos + "px";
-                            nextBtn.style.right = rightPos + "px";
-                        }
-                        
-                        // Aggiorna mask overlay basate su posizione reale immagine
-                        updateMaskOverlays(imageLeft, imageRight, galleryContainer.offsetWidth);
-                    }
-                }
-                
-                // Funzione per aggiornare overlay mascheramento
-                function updateMaskOverlays(imageLeft, imageRight, containerWidth) {
-                    const maskLeft = galleryContainer.querySelector(".toro-gallery-mask-left");
-                    const maskRight = galleryContainer.querySelector(".toro-gallery-mask-right");
-                    
-                    if (maskLeft && maskRight) {
-                        const leftMaskWidth = Math.max(0, imageLeft);
-                        const rightMaskWidth = Math.max(0, containerWidth - imageRight);
-                        
-                        maskLeft.style.width = leftMaskWidth + "px";
-                        maskRight.style.width = rightMaskWidth + "px";
-                    }
-                }
-                
                 // Inizializza thumbs carousel V2 - orizzontale sotto
                 const thumbsSwiper = new Swiper("#%s", {
                     direction: "horizontal",
@@ -683,14 +614,13 @@ class ToroLayoutManager {
                     loop: true,
                     effect: "slide",
                     speed: 400,
-                    autoHeight: true, /* Altezza automatica per aspect ratio */
+                    autoHeight: false, /* Altezza fissa basata su prima immagine */
                     on: {
                         init: function() {
                             // Frecce native Swiper gestite da CSS
                         }
                     }
                 });
-
                 
             } else {
                 console.warn("Swiper.js non caricato - galleria prodotto V2 non disponibile");
