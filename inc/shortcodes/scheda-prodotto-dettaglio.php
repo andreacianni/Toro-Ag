@@ -107,6 +107,16 @@ if (! function_exists('ta_scheda_prodotto_dettaglio_shortcode')) {
             $prod_id = apply_filters('wpml_object_id', $post->ID, 'prodotto', true, $current) ?: $post->ID;
             $pod = pods('prodotto', $prod_id, ['lang' => $current]);
             $items = ($pod && $pod->exists()) ? $pod->field($field) : [];
+            
+            // 🔧 FIX: Assicura che items sia sempre array
+            if (!is_array($items)) {
+                $items = [];
+            }
+            
+            // 🔧 FIX: Assicura che items sia sempre array
+            if (!is_array($items)) {
+                $items = [];
+            }
             if (empty($items)) {
                 $prod_id_def = apply_filters('wpml_object_id', $post->ID, 'prodotto', true, $default) ?: $post->ID;
                 foreach ((array) get_post_meta($prod_id_def, $field, false) as $raw) {

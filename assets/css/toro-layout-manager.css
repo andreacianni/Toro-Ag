@@ -770,7 +770,6 @@ html {
 
 /* Container base */
 .toro-layout-tipo-prodotto {
-    margin-top: 0 !important; /* Rimuovi margin top */
     margin-bottom: 2rem;
 }
 
