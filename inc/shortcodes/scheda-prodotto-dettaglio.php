@@ -8,8 +8,31 @@
 if (! function_exists('ta_render_documenti_prodotto_view')) {
     function ta_render_documenti_prodotto_view($terms_data) {
         ob_start();
-        // Nessun contenuto da mostrare
-        if (empty($terms_data) || (empty($terms_data[0]['products'][0]['schede']) && empty($terms_data[0]['products'][0]['docs']))) {
+        // Nessun contenuto da mostrare - verifica se ci sono effettivamente items nei gruppi
+        $has_content = false;
+        if (!empty($terms_data) && isset($terms_data[0]['products'][0])) {
+            $prod = $terms_data[0]['products'][0];
+            // Controlla se ci sono items nelle schede
+            if (!empty($prod['schede'])) {
+                foreach ($prod['schede'] as $group) {
+                    if (!empty($group['items'])) {
+                        $has_content = true;
+                        break;
+                    }
+                }
+            }
+            // Controlla se ci sono items nei documenti
+            if (!$has_content && !empty($prod['docs'])) {
+                foreach ($prod['docs'] as $group) {
+                    if (!empty($group['items'])) {
+                        $has_content = true;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        if (!$has_content) {
             echo '<p class="text-center text-muted">' . esc_html__('Nessuna scheda o documento disponibile', 'toro-ag') . '</p>';
             return ob_get_clean();
         }
