@@ -244,6 +244,13 @@ class ToroLayoutManager {
         $loaded_sections = [];
         foreach ($sections_to_load as $section) {
             $section_content = self::load_section_content($section, $term->term_id, 'tipo_prodotto');
+            
+            // 🔧 DEBUG TEMPORANEO: Log contenuto sezione documents
+            if ($section === 'documents' && isset($_GET['debug_docs'])) {
+                error_log("🔧 LAYOUT DEBUG: Section 'documents' content length: " . strlen($section_content));
+                error_log("🔧 LAYOUT DEBUG: Section 'documents' content preview: " . substr(strip_tags($section_content), 0, 200));
+            }
+            
             if (!empty($section_content)) {
                 $loaded_sections[$section] = $section_content;
             }
