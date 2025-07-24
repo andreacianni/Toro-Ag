@@ -190,24 +190,54 @@ if (! function_exists('ta_scheda_prodotto_tipo_shortcode')) {
         // Funzione per raccogliere e raggruppare elementi schede e documenti dal termine
         $get_grouped_term = function($field, $meta_file_key) use ($term, $current, $default) {
             $groups = [];
+            
+            // 🔧 DEBUG: Log info base
+            if (isset($_GET['debug_docs'])) {
+                error_log("🔧 DEBUG DOCS: Field={$field}, Current Lang={$current}, Term ID={$term->term_id}");
+            }
+            
             $term_id = apply_filters('wpml_object_id', $term->term_id, 'tipo_di_prodotto', true, $current) ?: $term->term_id;
             $pod = pods('tipo_di_prodotto', $term_id, ['lang' => $current]);
             $items = ($pod && $pod->exists()) ? $pod->field($field) : [];
+            
+            // 🔧 DEBUG: Items da PODS
+            if (isset($_GET['debug_docs'])) {
+                error_log("🔧 DEBUG DOCS: PODS items count=" . count($items));
+            }
+            
             if (empty($items)) {
                 $term_id_def = apply_filters('wpml_object_id', $term->term_id, 'tipo_di_prodotto', true, $default) ?: $term->term_id;
                 foreach ((array) get_term_meta($term_id_def, $field, false) as $raw) {
                     $items[] = $raw;
                 }
+                
+                // 🔧 DEBUG: Items da term_meta
+                if (isset($_GET['debug_docs'])) {
+                    error_log("🔧 DEBUG DOCS: term_meta items count=" . count($items));
+                }
             }
             foreach ((array) $items as $raw) {
                 $id = is_array($raw) && isset($raw['ID']) ? intval($raw['ID']) : (is_object($raw) && isset($raw->ID) ? intval($raw->ID) : intval($raw));
                 if (!$id) continue;
+                
+                // 🔧 DEBUG: Processing item
+                if (isset($_GET['debug_docs'])) {
+                    error_log("🔧 DEBUG DOCS: Processing item ID={$id}");
+                }
+                
                 $elem_id = apply_filters('wpml_object_id', $id, $field === 'scheda_prodotto_tipo' ? 'scheda_prodotto' : 'documento_prodotto', true, $current) ?: $id;
                 $slug = wp_get_post_terms($elem_id, 'lingua_aggiuntiva', ['fields'=>'slugs'])[0] ?? '';
+                
+                // 🔧 DEBUG: Language info
+                if (isset($_GET['debug_docs'])) {
+                    error_log("🔧 DEBUG DOCS: Item {$elem_id}, Slug='{$slug}', Current='{$current}'");
+                }
+                
                 // 🔧 FIX WPML: Mostra documenti appropriati per lingua corrente
                 if ($current === 'it') {
                     // Italiano: mostra solo documenti italiani (o senza lingua specificata)
                     if (!empty($slug) && $slug !== 'italiano') {
+                        if (isset($_GET['debug_docs'])) error_log("🔧 DEBUG DOCS: SKIP IT - slug not italiano");
                         continue;
                     }
                 } else {
@@ -215,18 +245,37 @@ if (! function_exists('ta_scheda_prodotto_tipo_shortcode')) {
                     $lang_map = ['en' => 'inglese', 'fr' => 'francese', 'es' => 'spagnolo'];
                     $target_lang = $lang_map[$current] ?? '';
                     
+                    if (isset($_GET['debug_docs'])) {
+                        error_log("🔧 DEBUG DOCS: Target lang='{$target_lang}' for current='{$current}'");
+                    }
+                    
                     // Accetta documenti nella lingua target O documenti italiani (fallback)
                     if (!empty($slug) && $slug !== $target_lang && $slug !== 'italiano') {
+                        if (isset($_GET['debug_docs'])) error_log("🔧 DEBUG DOCS: SKIP EN - slug '{$slug}' not target '{$target_lang}' or 'italiano'");
                         continue;
                     }
                 }
+                
                 $file_id = get_post_meta($elem_id, $meta_file_key, true);
-                if (!$file_id) continue;
+                if (!$file_id) {
+                    if (isset($_GET['debug_docs'])) error_log("🔧 DEBUG DOCS: SKIP - no file_id for key '{$meta_file_key}'");
+                    continue;
+                }
+                
                 $url = wp_get_attachment_url($file_id);
-                if (!$url) continue;
+                if (!$url) {
+                    if (isset($_GET['debug_docs'])) error_log("🔧 DEBUG DOCS: SKIP - no URL for file_id '{$file_id}'");
+                    continue;
+                }
+                
                 $title = get_the_title($elem_id);
                 $groups[$slug]['items'][] = compact('url', 'title');
                 $groups[$slug]['lang'] = $slug;
+                
+                // 🔧 DEBUG: Added to group
+                if (isset($_GET['debug_docs'])) {
+                    error_log("🔧 DEBUG DOCS: ADDED to group '{$slug}' - {$title}");
+                }
             }
             // Ordina per priorità lingua
             $order = ['italiano'=>0, 'inglese'=>1, 'francese'=>2, 'spagnolo'=>3];

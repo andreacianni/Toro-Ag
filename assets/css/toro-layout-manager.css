@@ -770,7 +770,13 @@ html {
 
 /* Container base */
 .toro-layout-tipo-prodotto {
-    margin: 2rem 0;
+    margin-top: 0 !important; /* Rimuovi margin top */
+    margin-bottom: 2rem;
+}
+
+/* Sidebar spacing */
+.toro-sidebar-content {
+    margin-top: 2rem;
 }
 
 /* Hero section spacing */
