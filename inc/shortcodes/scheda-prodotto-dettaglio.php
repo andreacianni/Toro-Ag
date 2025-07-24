@@ -210,6 +210,11 @@ if (! function_exists('ta_scheda_prodotto_tipo_shortcode')) {
             $pod = pods('tipo_di_prodotto', $term_id, ['lang' => $current]);
             $items = ($pod && $pod->exists()) ? $pod->field($field) : [];
             
+            // 🔧 FIX: Assicura che items sia sempre array
+            if (!is_array($items)) {
+                $items = [];
+            }
+            
             // 🔧 DEBUG: Items da PODS
             if (isset($_GET['debug_docs'])) {
                 error_log("🔧 DEBUG DOCS: PODS items count=" . count($items));
