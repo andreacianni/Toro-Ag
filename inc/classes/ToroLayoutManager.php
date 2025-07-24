@@ -202,21 +202,12 @@ class ToroLayoutManager {
      * @return string HTML output
      */
     public static function layout_tipo_prodotto($atts) {
-        // 🚨 DEBUG STEP 1: Avvio metodo
-        $debug_steps = [];
-        $debug_steps[] = "🚨 STEP 1: Metodo layout_tipo_prodotto() AVVIATO";
-        
-        // 🚨 DEBUG STEP 2: Validazione contesto
-        $is_tax_check = is_tax('tipo_di_prodotto');
-        $debug_steps[] = "🚨 STEP 2: is_tax('tipo_di_prodotto') = " . ($is_tax_check ? 'TRUE' : 'FALSE');
-        
-        if (!$is_tax_check) {
-            $debug_steps[] = "❌ STEP 2 FAILED: Contesto non valido";
-            return self::debug_output(implode("\n", $debug_steps) . "\n\n❌ Shortcode [toro_layout_tipo_prodotto] può essere usato solo su pagine tipo di prodotto");
+        // Validazione contesto
+        if (!is_tax('tipo_di_prodotto')) {
+            return self::debug_output('❌ Shortcode [toro_layout_tipo_prodotto] può essere usato solo su pagine tipo di prodotto');
         }
         
-        // 🚨 DEBUG STEP 3: Parse parametri
-        $debug_steps[] = "🚨 STEP 3: Parse parametri shortcode";
+        // Parse parametri
         $atts = shortcode_atts([
             'sections' => 'auto',
             'layout' => 'flexible', 
@@ -224,65 +215,57 @@ class ToroLayoutManager {
             'responsive' => 'true',
             'debug' => 'false'
         ], $atts);
-        $debug_steps[] = "🚨 STEP 3 OK: Parametri = " . json_encode($atts);
         
         // Abilita debug se richiesto
         $debug_local = ($atts['debug'] === 'true') || self::$debug_mode;
         
-        // 🚨 DEBUG STEP 4: Ottieni term object
-        $term = get_queried_object();
-        $debug_steps[] = "🚨 STEP 4: Term ID = " . ($term ? $term->term_id : 'NULL') . ", Name = " . ($term ? $term->name : 'NULL');
-        
-        if (!$term || !isset($term->term_id)) {
-            $debug_steps[] = "❌ STEP 4 FAILED: Term object non valido";
-            return self::debug_output(implode("\n", $debug_steps));
+        if ($debug_local) {
+            $debug_info = "🔧 DEBUG [toro_layout_tipo_prodotto]\n";
+            $debug_info .= "Term ID: " . get_queried_object()->term_id . "\n";
+            $debug_info .= "Params: " . json_encode($atts) . "\n\n";
         }
         
-        // 🚨 DEBUG STEP 5: Content availability
-        $debug_steps[] = "🚨 STEP 5: Chiamo get_tipo_prodotto_content_availability()";
+        // Ottieni availability contenuto (con cache)
+        $term = get_queried_object();
         $content_map = self::get_tipo_prodotto_content_availability($term);
-        $debug_steps[] = "🚨 STEP 5 OK: Content map = " . json_encode($content_map);
         
-        // 🚨 DEBUG STEP 6: Determine sections
-        $debug_steps[] = "🚨 STEP 6: Chiamo determine_sections()";
+        if ($debug_local) {
+            $debug_info .= "Content Availability:\n" . json_encode($content_map, JSON_PRETTY_PRINT) . "\n\n";
+        }
+        
+        // Determina sezioni da caricare
         $sections_to_load = self::determine_sections($atts['sections'], $content_map, 'tipo_prodotto');
-        $debug_steps[] = "🚨 STEP 6 OK: Sections to load = " . json_encode($sections_to_load);
         
-        // 🚨 DEBUG STEP 7: Load sections content
-        $debug_steps[] = "🚨 STEP 7: Caricamento sezioni...";
+        if ($debug_local) {
+            $debug_info .= "Sections to Load: " . implode(', ', $sections_to_load) . "\n\n";
+        }
+        
+        // Caricamento condizionale shortcode
         $loaded_sections = [];
         foreach ($sections_to_load as $section) {
-            $debug_steps[] = "🚨 STEP 7.{$section}: Carico sezione '{$section}'";
             $section_content = self::load_section_content($section, $term->term_id, 'tipo_prodotto');
-            
             if (!empty($section_content)) {
                 $loaded_sections[$section] = $section_content;
-                $debug_steps[] = "🚨 STEP 7.{$section} OK: LOADED (" . strlen($section_content) . " chars)";
-            } else {
-                $debug_steps[] = "🚨 STEP 7.{$section} EMPTY: Contenuto vuoto";
+            }
+            
+            if ($debug_local) {
+                $debug_info .= "Section '{$section}': " . (empty($section_content) ? 'EMPTY' : 'LOADED (' . strlen($section_content) . ' chars)') . "\n";
             }
         }
-        $debug_steps[] = "🚨 STEP 7 COMPLETE: Final sections = " . json_encode(array_keys($loaded_sections));
         
-        // 🚨 DEBUG STEP 8: Render layout
-        $debug_steps[] = "🚨 STEP 8: Chiamo render_adaptive_layout()";
-        if (empty($loaded_sections)) {
-            $debug_steps[] = "❌ STEP 8 ABORTED: Nessuna sezione caricata";
-            return self::debug_output(implode("\n", $debug_steps));
+        if ($debug_local) {
+            $debug_info .= "\nFinal Sections: " . implode(', ', array_keys($loaded_sections)) . "\n";
         }
         
+        // Genera layout HTML
         $layout_html = self::render_adaptive_layout($loaded_sections, $atts, 'tipo_prodotto');
-        $debug_steps[] = "🚨 STEP 8 OK: Layout HTML generato (" . strlen($layout_html) . " chars)";
         
-        // 🚨 DEBUG STEP 9: Output finale
-        $debug_steps[] = "🚨 STEP 9: Preparazione output finale";
+        // Output finale
         $output = '';
-        if ($debug_local || true) { // Forza debug per troubleshooting
-            $output .= self::debug_output(implode("\n", $debug_steps));
+        if ($debug_local) {
+            $output .= self::debug_output($debug_info);
         }
         $output .= $layout_html;
-        
-        $debug_steps[] = "🚨 STEP 9 COMPLETE: Output finale pronto (" . strlen($output) . " chars)";
         
         return $output;
     }
@@ -851,8 +834,7 @@ class ToroLayoutManager {
      * Formatta output di debug
      */
     private static function debug_output($message) {
-        // 🚨 FORZA DEBUG PER TROUBLESHOOTING - Mostra sempre messaggi con 🚨
-        if (!self::$debug_mode && strpos($message, '🔧') === false && strpos($message, '🚨') === false) {
+        if (!self::$debug_mode && strpos($message, '🔧') === false) {
             return '';
         }
         
