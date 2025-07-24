@@ -778,6 +778,11 @@ html {
     margin-top: 2rem;
 }
 
+/* Main content spacing - allineato con sidebar */
+.toro-main-content {
+    margin-top: 2rem;
+}
+
 /* Hero section spacing */
 .toro-layout-tipo-prodotto .toro-hero-section {
     margin-bottom: 2rem;
