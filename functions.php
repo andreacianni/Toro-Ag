@@ -93,7 +93,27 @@ add_action('wp_enqueue_scripts', 'enqueue_toro_layout_manager_styles');
 
 // TEST DEBUG: Shortcode semplice per verificare funzionamento
 add_shortcode('test_debug_toro', function() {
-    return '<div style="background:red;color:white;padding:20px;margin:20px;">🧪 TEST SHORTCODE FUNZIONA! Classe ToroLayoutManager: ' . (class_exists('ToroLayoutManager') ? '✅ ESISTE' : '❌ NON ESISTE') . '</div>';
+    $layout_shortcode_exists = shortcode_exists('toro_layout_tipo_prodotto');
+    $prodotto_shortcode_exists = shortcode_exists('toro_layout_prodotto');
+    $coltura_shortcode_exists = shortcode_exists('toro_layout_coltura');
+    
+    $debug_info = '<div style="background:red;color:white;padding:20px;margin:20px;">';
+    $debug_info .= '🧪 TEST SHORTCODE FUNZIONA!<br>';
+    $debug_info .= 'Classe ToroLayoutManager: ' . (class_exists('ToroLayoutManager') ? '✅ ESISTE' : '❌ NON ESISTE') . '<br>';
+    $debug_info .= '[toro_layout_tipo_prodotto]: ' . ($layout_shortcode_exists ? '✅ REGISTRATO' : '❌ NON REGISTRATO') . '<br>';
+    $debug_info .= '[toro_layout_prodotto]: ' . ($prodotto_shortcode_exists ? '✅ REGISTRATO' : '❌ NON REGISTRATO') . '<br>';
+    $debug_info .= '[toro_layout_coltura]: ' . ($coltura_shortcode_exists ? '✅ REGISTRATO' : '❌ NON REGISTRATO') . '<br>';
+    
+    // Test se il metodo init() è stato chiamato
+    if (method_exists('ToroLayoutManager', 'init')) {
+        $debug_info .= 'Metodo init(): ✅ ESISTE<br>';
+    } else {
+        $debug_info .= 'Metodo init(): ❌ NON ESISTE<br>';
+    }
+    
+    $debug_info .= '</div>';
+    
+    return $debug_info;
 });
 
 // carica Layout Manager intelligente
