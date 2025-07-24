@@ -196,10 +196,95 @@ class ToroLayoutManager {
     }
     
     /**
-     * Layout Manager per tipi di prodotto (placeholder)
+     * Layout Manager per tipi di prodotto
+     * 
+     * @param array $atts Attributi shortcode
+     * @return string HTML output
      */
     public static function layout_tipo_prodotto($atts) {
-        return self::debug_output('🚧 [toro_layout_tipo_prodotto] - In sviluppo...');
+        // 🚨 DEBUG STEP 1: Avvio metodo
+        $debug_steps = [];
+        $debug_steps[] = "🚨 STEP 1: Metodo layout_tipo_prodotto() AVVIATO";
+        
+        // 🚨 DEBUG STEP 2: Validazione contesto
+        $is_tax_check = is_tax('tipo_di_prodotto');
+        $debug_steps[] = "🚨 STEP 2: is_tax('tipo_di_prodotto') = " . ($is_tax_check ? 'TRUE' : 'FALSE');
+        
+        if (!$is_tax_check) {
+            $debug_steps[] = "❌ STEP 2 FAILED: Contesto non valido";
+            return self::debug_output(implode("\n", $debug_steps) . "\n\n❌ Shortcode [toro_layout_tipo_prodotto] può essere usato solo su pagine tipo di prodotto");
+        }
+        
+        // 🚨 DEBUG STEP 3: Parse parametri
+        $debug_steps[] = "🚨 STEP 3: Parse parametri shortcode";
+        $atts = shortcode_atts([
+            'sections' => 'auto',
+            'layout' => 'flexible', 
+            'columns' => 'auto',
+            'responsive' => 'true',
+            'debug' => 'false'
+        ], $atts);
+        $debug_steps[] = "🚨 STEP 3 OK: Parametri = " . json_encode($atts);
+        
+        // Abilita debug se richiesto
+        $debug_local = ($atts['debug'] === 'true') || self::$debug_mode;
+        
+        // 🚨 DEBUG STEP 4: Ottieni term object
+        $term = get_queried_object();
+        $debug_steps[] = "🚨 STEP 4: Term ID = " . ($term ? $term->term_id : 'NULL') . ", Name = " . ($term ? $term->name : 'NULL');
+        
+        if (!$term || !isset($term->term_id)) {
+            $debug_steps[] = "❌ STEP 4 FAILED: Term object non valido";
+            return self::debug_output(implode("\n", $debug_steps));
+        }
+        
+        // 🚨 DEBUG STEP 5: Content availability
+        $debug_steps[] = "🚨 STEP 5: Chiamo get_tipo_prodotto_content_availability()";
+        $content_map = self::get_tipo_prodotto_content_availability($term);
+        $debug_steps[] = "🚨 STEP 5 OK: Content map = " . json_encode($content_map);
+        
+        // 🚨 DEBUG STEP 6: Determine sections
+        $debug_steps[] = "🚨 STEP 6: Chiamo determine_sections()";
+        $sections_to_load = self::determine_sections($atts['sections'], $content_map, 'tipo_prodotto');
+        $debug_steps[] = "🚨 STEP 6 OK: Sections to load = " . json_encode($sections_to_load);
+        
+        // 🚨 DEBUG STEP 7: Load sections content
+        $debug_steps[] = "🚨 STEP 7: Caricamento sezioni...";
+        $loaded_sections = [];
+        foreach ($sections_to_load as $section) {
+            $debug_steps[] = "🚨 STEP 7.{$section}: Carico sezione '{$section}'";
+            $section_content = self::load_section_content($section, $term->term_id, 'tipo_prodotto');
+            
+            if (!empty($section_content)) {
+                $loaded_sections[$section] = $section_content;
+                $debug_steps[] = "🚨 STEP 7.{$section} OK: LOADED (" . strlen($section_content) . " chars)";
+            } else {
+                $debug_steps[] = "🚨 STEP 7.{$section} EMPTY: Contenuto vuoto";
+            }
+        }
+        $debug_steps[] = "🚨 STEP 7 COMPLETE: Final sections = " . json_encode(array_keys($loaded_sections));
+        
+        // 🚨 DEBUG STEP 8: Render layout
+        $debug_steps[] = "🚨 STEP 8: Chiamo render_adaptive_layout()";
+        if (empty($loaded_sections)) {
+            $debug_steps[] = "❌ STEP 8 ABORTED: Nessuna sezione caricata";
+            return self::debug_output(implode("\n", $debug_steps));
+        }
+        
+        $layout_html = self::render_adaptive_layout($loaded_sections, $atts, 'tipo_prodotto');
+        $debug_steps[] = "🚨 STEP 8 OK: Layout HTML generato (" . strlen($layout_html) . " chars)";
+        
+        // 🚨 DEBUG STEP 9: Output finale
+        $debug_steps[] = "🚨 STEP 9: Preparazione output finale";
+        $output = '';
+        if ($debug_local || true) { // Forza debug per troubleshooting
+            $output .= self::debug_output(implode("\n", $debug_steps));
+        }
+        $output .= $layout_html;
+        
+        $debug_steps[] = "🚨 STEP 9 COMPLETE: Output finale pronto (" . strlen($output) . " chars)";
+        
+        return $output;
     }
     
     /**
@@ -207,6 +292,58 @@ class ToroLayoutManager {
      */
     public static function layout_coltura($atts) {
         return self::debug_output('🚧 [toro_layout_coltura] - In sviluppo...');
+    }
+    
+    /**
+     * Ottieni disponibilità contenuto per un tipo prodotto (con cache)
+     * 
+     * @param object $term Termine tipo_di_prodotto
+     * @return array Mappa disponibilità contenuto
+     */
+    public static function get_tipo_prodotto_content_availability($term) {
+        $cache_key = self::CACHE_PREFIX . "tipo_content_check_{$term->term_id}";
+        $cached = wp_cache_get($cache_key);
+        
+        if ($cached !== false && !self::$debug_mode) {
+            return $cached;
+        }
+        
+        // Query leggere - solo existence check
+        $availability = [
+            'has_hero' => true, // Hero sempre disponibile
+            'has_description' => !empty($term->description),
+            'has_products' => self::check_term_has_products($term->term_id, 'tipo_di_prodotto'),
+            'has_documents' => !empty(get_term_meta($term->term_id, 'scheda_prodotto_tipo', true)) || 
+                             !empty(get_term_meta($term->term_id, 'documento_prodotto_tipo', true)),
+            'has_videos' => !empty(get_term_meta($term->term_id, 'tipo-video', true))
+        ];
+        
+        // Cache per 1 ora
+        wp_cache_set($cache_key, $availability, '', self::CACHE_DURATION);
+        
+        return $availability;
+    }
+    
+    /**
+     * Controlla se un termine ha prodotti associati
+     * 
+     * @param int $term_id ID del termine
+     * @param string $taxonomy Nome tassonomia
+     * @return bool True se ha prodotti
+     */
+    private static function check_term_has_products($term_id, $taxonomy) {
+        $products = get_posts([
+            'post_type' => 'prodotto',
+            'posts_per_page' => 1,
+            'fields' => 'ids',
+            'tax_query' => [[
+                'taxonomy' => $taxonomy,
+                'field' => 'term_id',
+                'terms' => $term_id
+            ]]
+        ]);
+        
+        return !empty($products);
     }
     
     /**
@@ -284,6 +421,31 @@ class ToroLayoutManager {
                 if ($content_map['has_form_data']) {
                     $sections[] = 'form';
                 }
+            } elseif ($layout_type === 'tipo_prodotto') {
+                // Hero sempre presente
+                if ($content_map['has_hero']) {
+                    $sections[] = 'hero';
+                }
+                
+                // Descrizione se disponibile
+                if ($content_map['has_description']) {
+                    $sections[] = 'description';
+                }
+                
+                // Prodotti sempre se disponibili
+                if ($content_map['has_products']) {
+                    $sections[] = 'products';
+                }
+                
+                // Documenti se disponibili
+                if ($content_map['has_documents']) {
+                    $sections[] = 'documents';
+                }
+                
+                // Video se disponibili
+                if ($content_map['has_videos']) {
+                    $sections[] = 'videos';
+                }
             }
             
             return $sections;
@@ -297,41 +459,71 @@ class ToroLayoutManager {
      * Carica contenuto per una specifica sezione
      * 
      * @param string $section Nome sezione
-     * @param int $post_id ID del post
+     * @param int $post_id ID del post o term
      * @param string $layout_type Tipo di layout
      * @return string Contenuto HTML della sezione
      */
     public static function load_section_content($section, $post_id, $layout_type) {
-        switch ($section) {
-            case 'image':
-                return get_the_post_thumbnail($post_id, 'large', ['class' => 'toro-layout-image img-fluid']);
-                
-            case 'content':
-                return apply_filters('the_content', get_post_field('post_content', $post_id));
-                
-            case 'documents':
-                // Riusa shortcode esistente [scheda_prodotto_dettaglio]
-                return do_shortcode('[scheda_prodotto_dettaglio]');
-                
-            case 'cultures':
-                // Riusa shortcode esistente [toro_culture_prodotto]
-                return do_shortcode('[toro_culture_prodotto]');
-                
-            case 'videos':
-                // Riusa shortcode esistente [video_prodotto_v2]
-                return do_shortcode('[video_prodotto_v2]');
-                
-            case 'gallery':
-                // Nuova gestione galleria prodotto
-                return self::render_product_gallery($post_id);
-                
-            case 'form':
-                // Placeholder per futuro form
-                return '<div class="toro-layout-form"><!-- Form placeholder --></div>';
-                
-            default:
-                return '';
+        if ($layout_type === 'prodotto') {
+            switch ($section) {
+                case 'image':
+                    return get_the_post_thumbnail($post_id, 'large', ['class' => 'toro-layout-image img-fluid']);
+                    
+                case 'content':
+                    return apply_filters('the_content', get_post_field('post_content', $post_id));
+                    
+                case 'documents':
+                    // Riusa shortcode esistente [scheda_prodotto_dettaglio]
+                    return do_shortcode('[scheda_prodotto_dettaglio]');
+                    
+                case 'cultures':
+                    // Riusa shortcode esistente [toro_culture_prodotto]
+                    return do_shortcode('[toro_culture_prodotto]');
+                    
+                case 'videos':
+                    // Riusa shortcode esistente [video_prodotto_v2]
+                    return do_shortcode('[video_prodotto_v2]');
+                    
+                case 'gallery':
+                    // Nuova gestione galleria prodotto
+                    return self::render_product_gallery($post_id);
+                    
+                case 'form':
+                    // Placeholder per futuro form
+                    return '<div class="toro-layout-form"><!-- Form placeholder --></div>';
+                    
+                default:
+                    return '';
+            }
+        } elseif ($layout_type === 'tipo_prodotto') {
+            switch ($section) {
+                case 'hero':
+                    // Riusa shortcode esistente [hero_tipo_prodotto_e_coltura]
+                    return do_shortcode('[hero_tipo_prodotto_e_coltura]');
+                    
+                case 'description':
+                    // Descrizione del termine
+                    $term = get_queried_object();
+                    return !empty($term->description) ? '<div class="toro-term-description">' . wpautop($term->description) . '</div>' : '';
+                    
+                case 'products':
+                    // Riusa shortcode esistente [toro_prodotti_tipo]
+                    return do_shortcode('[toro_prodotti_tipo]');
+                    
+                case 'documents':
+                    // Riusa shortcode esistente [scheda_prodotto_tipo_dettaglio]
+                    return do_shortcode('[scheda_prodotto_tipo_dettaglio]');
+                    
+                case 'videos':
+                    // Riusa shortcode esistente [video_tipo_prodotto_v2]
+                    return do_shortcode('[video_tipo_prodotto_v2]');
+                    
+                default:
+                    return '';
+            }
         }
+        
+        return '';
     }
     
     /**
@@ -396,6 +588,13 @@ class ToroLayoutManager {
         if (get_post_type($post_id) === 'prodotto') {
             $cache_key = self::CACHE_PREFIX . "content_check_{$post_id}";
             wp_cache_delete($cache_key);
+            
+            // Pulisci anche cache dei tipi prodotto associati
+            $term_ids = wp_get_post_terms($post_id, 'tipo_di_prodotto', ['fields' => 'ids']);
+            foreach ($term_ids as $term_id) {
+                $cache_key_term = self::CACHE_PREFIX . "tipo_content_check_{$term_id}";
+                wp_cache_delete($cache_key_term);
+            }
         }
     }
     
@@ -404,10 +603,17 @@ class ToroLayoutManager {
      */
     public static function clear_cache_on_meta_update($meta_id, $object_id, $meta_key, $meta_value) {
         $relevant_keys = ['scheda_prodotto', 'video_prodotto', 'galleria_prodotto', 'form_data'];
+        $relevant_term_keys = ['scheda_prodotto_tipo', 'documento_prodotto_tipo', 'tipo-video'];
         
         if (in_array($meta_key, $relevant_keys) && get_post_type($object_id) === 'prodotto') {
             $cache_key = self::CACHE_PREFIX . "content_check_{$object_id}";
             wp_cache_delete($cache_key);
+        }
+        
+        // Pulisci cache per term meta (tipo prodotto)
+        if (in_array($meta_key, $relevant_term_keys)) {
+            $cache_key_term = self::CACHE_PREFIX . "tipo_content_check_{$object_id}";
+            wp_cache_delete($cache_key_term);
         }
     }
     
@@ -645,7 +851,8 @@ class ToroLayoutManager {
      * Formatta output di debug
      */
     private static function debug_output($message) {
-        if (!self::$debug_mode && strpos($message, '🔧') === false) {
+        // 🚨 FORZA DEBUG PER TROUBLESHOOTING - Mostra sempre messaggi con 🚨
+        if (!self::$debug_mode && strpos($message, '🔧') === false && strpos($message, '🚨') === false) {
             return '';
         }
         
