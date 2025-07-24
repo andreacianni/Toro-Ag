@@ -180,6 +180,35 @@ if (! function_exists('ta_scheda_prodotto_dettaglio_shortcode')) {
             uksort($groups, function($a, $b) use ($order) {
                 return ($order[$a] ?? 99) <=> ($order[$b] ?? 99);
             });
+            
+            // 🔧 FIX PRIORITÀ LINGUA: Filtra gruppi per mostrare solo quello appropriato
+            if ($current !== 'it') {
+                // Per lingue non italiane, applica logica di priorità
+                $lang_map = ['en' => 'inglese', 'fr' => 'francese', 'es' => 'spagnolo'];
+                $target_lang = $lang_map[$current] ?? '';
+                
+                // Se esiste gruppo nella lingua target, mostra SOLO quello
+                $target_group = null;
+                $fallback_group = null;
+                
+                foreach ($groups as $slug => $group) {
+                    if ($slug === $target_lang) {
+                        $target_group = $group;
+                    } elseif ($slug === 'italiano' || $slug === '') {
+                        $fallback_group = $group;
+                    }
+                }
+                
+                // Priorità: target language > fallback italiano > niente
+                if ($target_group) {
+                    return [$target_group];
+                } elseif ($fallback_group) {
+                    return [$fallback_group];
+                } else {
+                    return [];
+                }
+            }
+            
             return array_values($groups);
         };
 
@@ -320,6 +349,48 @@ if (! function_exists('ta_scheda_prodotto_tipo_shortcode')) {
             uksort($groups, function($a, $b) use ($order) {
                 return ($order[$a] ?? 99) <=> ($order[$b] ?? 99);
             });
+            
+            // 🔧 FIX PRIORITÀ LINGUA: Filtra gruppi per mostrare solo quello appropriato
+            if ($current !== 'it') {
+                // Per lingue non italiane, applica logica di priorità
+                $lang_map = ['en' => 'inglese', 'fr' => 'francese', 'es' => 'spagnolo'];
+                $target_lang = $lang_map[$current] ?? '';
+                
+                // 🔧 DEBUG: Log logica priorità
+                if (isset($_GET['debug_docs'])) {
+                    error_log("🔧 DEBUG DOCS: Applying language priority. Target='{$target_lang}', Groups: " . implode(',', array_keys($groups)));
+                }
+                
+                // Se esiste gruppo nella lingua target, mostra SOLO quello
+                $target_group = null;
+                $fallback_group = null;
+                
+                foreach ($groups as $slug => $group) {
+                    if ($slug === $target_lang) {
+                        $target_group = $group;
+                    } elseif ($slug === 'italiano' || $slug === '') {
+                        $fallback_group = $group;
+                    }
+                }
+                
+                // 🔧 DEBUG: Log gruppi trovati
+                if (isset($_GET['debug_docs'])) {
+                    error_log("🔧 DEBUG DOCS: Target group: " . ($target_group ? 'YES' : 'NO') . ", Fallback group: " . ($fallback_group ? 'YES' : 'NO'));
+                }
+                
+                // Priorità: target language > fallback italiano > niente
+                if ($target_group) {
+                    if (isset($_GET['debug_docs'])) error_log("🔧 DEBUG DOCS: Showing TARGET group only");
+                    return [$target_group];
+                } elseif ($fallback_group) {
+                    if (isset($_GET['debug_docs'])) error_log("🔧 DEBUG DOCS: Showing FALLBACK group only");
+                    return [$fallback_group];
+                } else {
+                    if (isset($_GET['debug_docs'])) error_log("🔧 DEBUG DOCS: No appropriate group found");
+                    return [];
+                }
+            }
+            
             return array_values($groups);
         };
 
