@@ -118,8 +118,21 @@ if (! function_exists('ta_scheda_prodotto_dettaglio_shortcode')) {
                 if (!$id) continue;
                 $elem_id = apply_filters('wpml_object_id', $id, $field === 'scheda_prodotto' ? 'scheda_prodotto' : 'documento_prodotto', true, $current) ?: $id;
                 $slug = wp_get_post_terms($elem_id, 'lingua_aggiuntiva', ['fields'=>'slugs'])[0] ?? '';
-                if (($current === 'it' && $slug !== 'italiano') || ($current !== 'it' && $slug === 'italiano')) {
-                    continue;
+                // 🔧 FIX WPML: Mostra documenti appropriati per lingua corrente
+                if ($current === 'it') {
+                    // Italiano: mostra solo documenti italiani (o senza lingua specificata)
+                    if (!empty($slug) && $slug !== 'italiano') {
+                        continue;
+                    }
+                } else {
+                    // Altre lingue: mostra documenti nella lingua corrente O documenti italiani come fallback
+                    $lang_map = ['en' => 'inglese', 'fr' => 'francese', 'es' => 'spagnolo'];
+                    $target_lang = $lang_map[$current] ?? '';
+                    
+                    // Accetta documenti nella lingua target O documenti italiani (fallback)
+                    if (!empty($slug) && $slug !== $target_lang && $slug !== 'italiano') {
+                        continue;
+                    }
                 }
                 $file_id = get_post_meta($elem_id, $meta_file_key, true);
                 if (!$file_id) continue;
@@ -191,8 +204,21 @@ if (! function_exists('ta_scheda_prodotto_tipo_shortcode')) {
                 if (!$id) continue;
                 $elem_id = apply_filters('wpml_object_id', $id, $field === 'scheda_prodotto_tipo' ? 'scheda_prodotto' : 'documento_prodotto', true, $current) ?: $id;
                 $slug = wp_get_post_terms($elem_id, 'lingua_aggiuntiva', ['fields'=>'slugs'])[0] ?? '';
-                if (($current === 'it' && $slug !== 'italiano') || ($current !== 'it' && $slug === 'italiano')) {
-                    continue;
+                // 🔧 FIX WPML: Mostra documenti appropriati per lingua corrente
+                if ($current === 'it') {
+                    // Italiano: mostra solo documenti italiani (o senza lingua specificata)
+                    if (!empty($slug) && $slug !== 'italiano') {
+                        continue;
+                    }
+                } else {
+                    // Altre lingue: mostra documenti nella lingua corrente O documenti italiani come fallback
+                    $lang_map = ['en' => 'inglese', 'fr' => 'francese', 'es' => 'spagnolo'];
+                    $target_lang = $lang_map[$current] ?? '';
+                    
+                    // Accetta documenti nella lingua target O documenti italiani (fallback)
+                    if (!empty($slug) && $slug !== $target_lang && $slug !== 'italiano') {
+                        continue;
+                    }
                 }
                 $file_id = get_post_meta($elem_id, $meta_file_key, true);
                 if (!$file_id) continue;

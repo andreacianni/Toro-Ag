@@ -780,9 +780,7 @@ html {
 
 /* Main content sections */
 .toro-layout-tipo-prodotto .toro-layout-description {
-    background: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 8px;
+    /* Sfondo grigio e border radius rimossi */
     margin-bottom: 2rem;
 }
 

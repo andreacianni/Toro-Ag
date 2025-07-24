@@ -54,20 +54,20 @@ $sidebar_col_class = 'col-lg-3';
 $responsive_class = ($atts['responsive'] === 'true') ? 'toro-layout-responsive' : '';
 ?>
 
-<div class="toro-layout-tipo-prodotto <?php echo esc_attr($responsive_class); ?>">
+<div class="toro-layout-tipo-prodotto <?php echo esc_attr($responsive_class); ?>" style="margin-top: 0;">
     
-    <?php if (isset($sections['hero'])): ?>
+    <?php if (false && isset($sections['hero'])): // Hero disabilitato - gestito da Divi ?>
         <!-- Hero Section (Full Width - gestito da Divi) -->
         <div class="toro-hero-section mb-4">
             <?php echo $sections['hero']; ?>
         </div>
     <?php endif; ?>
     
-    <div class="container-fluid">
+    <div class="container-fluid px-0">
         <div class="row">
             
             <!-- Main Content Column (col-9 o col-12) -->
-            <div class="<?php echo esc_attr($main_col_class); ?>">
+            <div class="<?php echo esc_attr($main_col_class); ?> toro-main-content">
                 
                 <?php if (isset($main_sections['description']) && !empty($main_sections['description'])): ?>
                     <!-- Descrizione Tipo Prodotto -->
@@ -87,7 +87,7 @@ $responsive_class = ($atts['responsive'] === 'true') ? 'toro-layout-responsive' 
             
             <?php if (!$sidebar_empty): ?>
                 <!-- Sidebar Column (col-3) -->
-                <div class="<?php echo esc_attr($sidebar_col_class); ?>">
+                <div class="<?php echo esc_attr($sidebar_col_class); ?> toro-sidebar-content" style="margin-top: 2rem;">
                     
                     <?php if (isset($sidebar_sections['documents']) && !empty($sidebar_sections['documents'])): ?>
                         <!-- Documenti Section -->
