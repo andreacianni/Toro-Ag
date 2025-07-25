@@ -30,15 +30,27 @@ if ($atts['responsive'] === 'true') {
 <div class="<?= esc_attr(implode(' ', $container_classes)); ?>">
     <?php if (!empty($sections)): ?>
         
-        <!-- Layout Diretto - Descrizione + Brochure -->
+        <!-- Layout Diretto - Descrizione + Products nella Main, Brochure in Sidebar -->
         <div class="row">
             
-            <?php if (isset($sections['description'])): ?>
-            <!-- Descrizione -->
+            <!-- Main Content: Descrizione + Products Stack -->
             <div class="toro-main-content <?= isset($sections['brochures']) ? 'col-lg-9' : 'col-12'; ?>">
-                <?= $sections['description']; ?>
+                
+                <?php if (isset($sections['description'])): ?>
+                <!-- Descrizione -->
+                <div class="toro-term-description mb-4">
+                    <?= $sections['description']; ?>
+                </div>
+                <?php endif; ?>
+                
+                <?php if (isset($sections['products'])): ?>
+                <!-- Prodotti Raggruppati per Tipo (senza titolo) -->
+                <div class="toro-layout-products">
+                    <?= $sections['products']; ?>
+                </div>
+                <?php endif; ?>
+                
             </div>
-            <?php endif; ?>
             
             <?php if (isset($sections['brochures'])): ?>
             <!-- Brochure Sidebar -->
@@ -48,17 +60,6 @@ if ($atts['responsive'] === 'true') {
             <?php endif; ?>
             
         </div>
-        
-        <?php if (isset($sections['products'])): ?>
-        <!-- Prodotti Raggruppati per Tipo (senza titolo) -->
-        <div class="row">
-            <div class="col-12">
-                <div class="toro-layout-products">
-                    <?= $sections['products']; ?>
-                </div>
-            </div>
-        </div>
-        <?php endif; ?>
         
     <?php else: ?>
         <!-- Fallback se nessuna sezione -->

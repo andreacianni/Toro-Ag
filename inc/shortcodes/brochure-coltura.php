@@ -25,7 +25,7 @@ if (! function_exists('ta_render_brochure_coltura_view')) {
                 <!-- Layout Card con Immagini -->
                 <?php foreach ($brochure_data as $group): ?>
                     <?php foreach ($group['items'] as $item): ?>
-                        <div class="card h-100 brochure-card mb-4">
+                        <div class="card h-100 brochure-card shadow-sm mb-4">
                             <?php if (!empty($item['image_url'])): ?>
                                 <a href="<?= esc_url($item['url']); ?>" target="_blank" rel="noopener noreferrer" class="d-block h-100">
                                     <img src="<?= esc_url($item['image_url']); ?>" class="card-img-top h-100" alt="<?= esc_attr($item['title']); ?>" style="object-fit: cover; object-position: center;">
@@ -40,7 +40,7 @@ if (! function_exists('ta_render_brochure_coltura_view')) {
                                 </div>
                             <?php endif; ?>
                             
-                            <div class="card-body text-center">
+                            <div class="card-body text-center border-top">
                                 <a href="<?= esc_url($item['url']); ?>" class="text-decoration-none" target="_blank" rel="noopener noreferrer">
                                     <?php if ($group['lang'] !== 'italiano' && function_exists('toroag_get_flag_html')): ?>
                                         <?= toroag_get_flag_html($group['lang']); ?> 
