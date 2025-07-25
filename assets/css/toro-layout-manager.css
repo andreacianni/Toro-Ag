@@ -4,20 +4,17 @@
  */
 
 /* ================================
-   LAYOUT COLTURA - BROCHURE SIDEBAR FIX
+   LAYOUT COLTURA - BROCHURE SIDEBAR OTTIMIZZATO
    ================================ */
 
-/* Fix per brochure nella sidebar coltura - full width invece di grid */
-.toro-sidebar-content .coltura-brochure .col-md-6,
-.toro-sidebar-content .coltura-brochure .col-lg-4 {
-    max-width: 100% !important;
-    flex: 0 0 100% !important;
-    width: 100% !important;
+/* Brochure card nella sidebar - ottimizzazione per immagini verticali */
+.toro-sidebar-content .coltura-brochure .brochure-card {
+    min-height: 300px; /* Altezza minima per immagini verticali */
 }
 
-/* Spaziatura tra brochure cards nella sidebar */
-.toro-sidebar-content .coltura-brochure .row.g-3 {
-    row-gap: 1rem;
+/* Link wrapper per immagine full-height */
+.toro-sidebar-content .coltura-brochure .brochure-card a.d-block {
+    flex: 1; /* Prende tutto lo spazio disponibile nella card */
 }
 
 /* ================================

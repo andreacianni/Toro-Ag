@@ -23,41 +23,37 @@ if (! function_exists('ta_render_brochure_coltura_view')) {
         <div class="coltura-brochure">
             <?php if ($layout === 'card'): ?>
                 <!-- Layout Card con Immagini -->
-                <div class="row g-3">
-                    <?php foreach ($brochure_data as $group): ?>
-                        <?php foreach ($group['items'] as $item): ?>
-                            <div class="col-md-6 col-lg-4">
-                                <div class="card h-100 brochure-card">
-                                    <?php if (!empty($item['image_url'])): ?>
-                                        <a href="<?= esc_url($item['url']); ?>" target="_blank" rel="noopener noreferrer">
-                                            <img src="<?= esc_url($item['image_url']); ?>" class="card-img-top" alt="<?= esc_attr($item['title']); ?>" style="height: 200px; object-fit: cover;">
-                                        </a>
+                <?php foreach ($brochure_data as $group): ?>
+                    <?php foreach ($group['items'] as $item): ?>
+                        <div class="card h-100 brochure-card mb-4">
+                            <?php if (!empty($item['image_url'])): ?>
+                                <a href="<?= esc_url($item['url']); ?>" target="_blank" rel="noopener noreferrer" class="d-block h-100">
+                                    <img src="<?= esc_url($item['image_url']); ?>" class="card-img-top h-100" alt="<?= esc_attr($item['title']); ?>" style="object-fit: cover; object-position: center;">
+                                </a>
+                            <?php else: ?>
+                                <div class="card-img-top d-flex align-items-center justify-content-center bg-light h-100">
+                                    <?php if (function_exists('toroag_get_icon_class')): ?>
+                                        <i class="<?= esc_attr(toroag_get_icon_class($item['url'])); ?> display-4 text-muted"></i>
                                     <?php else: ?>
-                                        <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
-                                            <?php if (function_exists('toroag_get_icon_class')): ?>
-                                                <i class="<?= esc_attr(toroag_get_icon_class($item['url'])); ?> display-4 text-muted"></i>
-                                            <?php else: ?>
-                                                <i class="bi bi-file-earmark-text display-4 text-muted"></i>
-                                            <?php endif; ?>
-                                        </div>
+                                        <i class="bi bi-file-earmark-text display-4 text-muted"></i>
                                     <?php endif; ?>
-                                    
-                                    <div class="card-body text-center">
-                                        <a href="<?= esc_url($item['url']); ?>" class="text-decoration-none" target="_blank" rel="noopener noreferrer">
-                                            <?php if ($group['lang'] !== 'italiano' && function_exists('toroag_get_flag_html')): ?>
-                                                <?= toroag_get_flag_html($group['lang']); ?> 
-                                            <?php endif; ?>
-                                            <?= esc_html($item['title']); ?>
-                                            <?php if (function_exists('toroag_get_icon_class')): ?>
-                                                 <i class="<?= esc_attr(toroag_get_icon_class($item['url'])); ?>"></i>
-                                            <?php endif; ?>
-                                        </a>
-                                    </div>
                                 </div>
+                            <?php endif; ?>
+                            
+                            <div class="card-body text-center">
+                                <a href="<?= esc_url($item['url']); ?>" class="text-decoration-none" target="_blank" rel="noopener noreferrer">
+                                    <?php if ($group['lang'] !== 'italiano' && function_exists('toroag_get_flag_html')): ?>
+                                        <?= toroag_get_flag_html($group['lang']); ?> 
+                                    <?php endif; ?>
+                                    <?= esc_html($item['title']); ?>
+                                    <?php if (function_exists('toroag_get_icon_class')): ?>
+                                         <i class="<?= esc_attr(toroag_get_icon_class($item['url'])); ?>"></i>
+                                    <?php endif; ?>
+                                </a>
                             </div>
-                        <?php endforeach; ?>
+                        </div>
                     <?php endforeach; ?>
-                </div>
+                <?php endforeach; ?>
             <?php else: ?>
                 <!-- Layout List Compatto -->
                 <?php foreach ($brochure_data as $group): ?>
