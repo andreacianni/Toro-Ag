@@ -93,31 +93,6 @@ class ToroLayoutManager {
             // Debug: verifica registrazione
             if (current_user_can('manage_options') && isset($_GET['toro_debug_wpml'])) {
                 echo '<div class="notice notice-info"><p>✅ WPML String registrata: "Chiedi informazioni sul prodotto" nel dominio "Toro Layout Manager"</p></div>';
-            } elseif ($layout_type === 'coltura') {
-                // Hero sempre presente
-                if ($content_map['has_hero']) {
-                    $sections[] = 'hero';
-                }
-                
-                // Descrizione se disponibile
-                if ($content_map['has_description']) {
-                    $sections[] = 'description';
-                }
-                
-                // Prodotti raggruppati per tipo (tipi_per_coltura)
-                if ($content_map['has_products']) {
-                    $sections[] = 'products';
-                }
-                
-                // Brochure se disponibili
-                if ($content_map['has_brochures']) {
-                    $sections[] = 'brochures';
-                }
-                
-                // Video se disponibili
-                if ($content_map['has_videos']) {
-                    $sections[] = 'videos';
-                }
             }
         }
     }
@@ -431,6 +406,9 @@ class ToroLayoutManager {
         
         return $availability;
     }
+    
+    /**
+     * Controlla se un termine ha prodotti associati
      * 
      * @param int $term_id ID del termine
      * @param string $taxonomy Nome tassonomia
