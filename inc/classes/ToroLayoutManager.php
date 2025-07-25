@@ -1028,6 +1028,9 @@ class ToroLayoutManager {
         
         return false;
     }
+    
+    /**
+     * 🔧 Controlla se un tipo prodotto ha documenti (WPML aware)
      * Replica la logica di scheda-prodotto-dettaglio.php per consistency
      * 
      * @param int $term_id ID del termine tipo_di_prodotto
