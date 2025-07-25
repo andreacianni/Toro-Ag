@@ -93,6 +93,31 @@ class ToroLayoutManager {
             // Debug: verifica registrazione
             if (current_user_can('manage_options') && isset($_GET['toro_debug_wpml'])) {
                 echo '<div class="notice notice-info"><p>✅ WPML String registrata: "Chiedi informazioni sul prodotto" nel dominio "Toro Layout Manager"</p></div>';
+            } elseif ($layout_type === 'coltura') {
+                // Hero sempre presente
+                if ($content_map['has_hero']) {
+                    $sections[] = 'hero';
+                }
+                
+                // Descrizione se disponibile
+                if ($content_map['has_description']) {
+                    $sections[] = 'description';
+                }
+                
+                // Prodotti raggruppati per tipo (tipi_per_coltura)
+                if ($content_map['has_products']) {
+                    $sections[] = 'products';
+                }
+                
+                // Brochure se disponibili
+                if ($content_map['has_brochures']) {
+                    $sections[] = 'brochures';
+                }
+                
+                // Video se disponibili
+                if ($content_map['has_videos']) {
+                    $sections[] = 'videos';
+                }
             }
         }
     }
@@ -281,7 +306,72 @@ class ToroLayoutManager {
      * Layout Manager per colture (placeholder)
      */
     public static function layout_coltura($atts) {
-        return self::debug_output('🚧 [toro_layout_coltura] - In sviluppo...');
+        // Validazione contesto
+        if (!is_tax('coltura')) {
+            return self::debug_output('❌ Shortcode [toro_layout_coltura] può essere usato solo su pagine coltura');
+        }
+        
+        // Parse parametri
+        $atts = shortcode_atts([
+            'sections' => 'auto',
+            'layout' => 'stacked',
+            'brochure_layout' => 'card',
+            'responsive' => 'true',
+            'debug' => 'false'
+        ], $atts);
+        
+        // Abilita debug se richiesto
+        $debug_local = ($atts['debug'] === 'true') || self::$debug_mode;
+        
+        if ($debug_local) {
+            $debug_info = "🔧 DEBUG [toro_layout_coltura]\n";
+            $debug_info .= "Term ID: " . get_queried_object()->term_id . "\n";
+            $debug_info .= "Params: " . json_encode($atts) . "\n\n";
+        }
+        
+        // Ottieni availability contenuto (con cache)
+        $term = get_queried_object();
+        $content_map = self::get_coltura_content_availability($term);
+        
+        if ($debug_local) {
+            $debug_info .= "Content Availability:\n" . json_encode($content_map, JSON_PRETTY_PRINT) . "\n\n";
+        }
+        
+        // Determina sezioni da caricare
+        $sections_to_load = self::determine_sections($atts['sections'], $content_map, 'coltura');
+        
+        if ($debug_local) {
+            $debug_info .= "Sections to Load: " . implode(', ', $sections_to_load) . "\n\n";
+        }
+        
+        // Caricamento condizionale shortcode
+        $loaded_sections = [];
+        foreach ($sections_to_load as $section) {
+            $section_content = self::load_section_content($section, $term->term_id, 'coltura', $atts);
+            if (!empty($section_content)) {
+                $loaded_sections[$section] = $section_content;
+            }
+            
+            if ($debug_local) {
+                $debug_info .= "Section '{$section}': " . (empty($section_content) ? 'EMPTY' : 'LOADED (' . strlen($section_content) . ' chars)') . "\n";
+            }
+        }
+        
+        if ($debug_local) {
+            $debug_info .= "\nFinal Sections: " . implode(', ', array_keys($loaded_sections)) . "\n";
+        }
+        
+        // Genera layout HTML
+        $layout_html = self::render_adaptive_layout($loaded_sections, $atts, 'coltura');
+        
+        // Output finale
+        $output = '';
+        if ($debug_local) {
+            $output .= self::debug_output($debug_info);
+        }
+        $output .= $layout_html;
+        
+        return $output;
     }
     
     /**
@@ -314,7 +404,33 @@ class ToroLayoutManager {
     }
     
     /**
-     * Controlla se un termine ha prodotti associati
+     * Ottieni disponibilità contenuto per una coltura (con cache)
+     * 
+     * @param object $term Termine coltura
+     * @return array Mappa disponibilità contenuto
+     */
+    public static function get_coltura_content_availability($term) {
+        $cache_key = self::CACHE_PREFIX . "coltura_content_check_{$term->term_id}";
+        $cached = wp_cache_get($cache_key);
+        
+        if ($cached !== false && !self::$debug_mode) {
+            return $cached;
+        }
+        
+        // Query leggere - solo existence check
+        $availability = [
+            'has_hero' => true, // Hero sempre disponibile
+            'has_description' => !empty($term->description),
+            'has_products' => self::check_term_has_products($term->term_id, 'coltura'),
+            'has_brochures' => self::check_coltura_has_brochures($term->term_id),
+            'has_videos' => !empty(get_term_meta($term->term_id, 'video-coltura', true))
+        ];
+        
+        // Cache per 1 ora
+        wp_cache_set($cache_key, $availability, '', self::CACHE_DURATION);
+        
+        return $availability;
+    }
      * 
      * @param int $term_id ID del termine
      * @param string $taxonomy Nome tassonomia
@@ -506,6 +622,45 @@ class ToroLayoutManager {
                 case 'videos':
                     // Riusa shortcode esistente [video_tipo_prodotto_v2]
                     return do_shortcode('[video_tipo_prodotto_v2]');
+                    
+                default:
+                    return '';
+            }
+        } elseif ($layout_type === 'coltura') {
+            switch ($section) {
+                case 'hero':
+                    // Riusa shortcode esistente [hero_tipo_prodotto_e_coltura]
+                    return do_shortcode('[hero_tipo_prodotto_e_coltura]');
+                    
+                case 'description':
+                    // Descrizione del termine coltura
+                    $term = get_queried_object();
+                    return !empty($term->description) ? '<div class="toro-term-description">' . wpautop($term->description) . '</div>' : '';
+                    
+                case 'products':
+                    // Usa shortcode [toro_tipi_per_coltura] con titoli allineati
+                    $content = do_shortcode('[toro_tipi_per_coltura]');
+                    // Aggiorna titoli da H5 a H4 come da specifiche
+                    $content = str_replace(
+                        'class="text-bg-dark px-3 py-2 my-4 rounded-2"',
+                        'class="fw-bold border-bottom px-3 py-2 my-4"',
+                        $content
+                    );
+                    return $content;
+                    
+                case 'brochures':
+                    // Riusa shortcode [brochure_coltura_dettaglio] con layout adattato
+                    $atts = func_get_args()[3] ?? []; // Ottieni attributi dal layout_coltura
+                    $brochure_layout = $atts['brochure_layout'] ?? 'card';
+                    return do_shortcode('[brochure_coltura_dettaglio layout="' . $brochure_layout . '"]');
+                    
+                case 'videos':
+                    // Video coltura se implementato
+                    return '<!-- Video coltura non ancora implementato -->';
+                    
+                default:
+                    return '';
+            }
                     
                 default:
                     return '';
@@ -837,7 +992,68 @@ class ToroLayoutManager {
     }
     
     /**
-     * 🔧 Controlla se un tipo prodotto ha documenti (WPML aware)
+     * 🔧 Controlla se una coltura ha brochure (WPML aware)
+     * 
+     * @param int $term_id ID del termine coltura
+     * @return bool True se ha brochure nella lingua corrente
+     */
+    private static function check_coltura_has_brochures($term_id) {
+        $current = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : apply_filters('wpml_current_language', null);
+        $default = apply_filters('wpml_default_language', null);
+        
+        // 1. Prova PODS per lingua corrente
+        $term_id_current = apply_filters('wpml_object_id', $term_id, 'coltura', true, $current) ?: $term_id;
+        $pod = pods('coltura', $term_id_current, ['lang' => $current]);
+        $items = ($pod && $pod->exists()) ? $pod->field('brochure_coltura') : [];
+        
+        // Fix per PODS che ritorna false
+        if (!is_array($items)) {
+            $items = [];
+        }
+        
+        // 2. Fallback a term_meta per lingua default
+        if (empty($items)) {
+            $term_id_def = apply_filters('wpml_object_id', $term_id, 'coltura', true, $default) ?: $term_id;
+            $meta_items = get_term_meta($term_id_def, 'brochure_coltura', false);
+            foreach ((array) $meta_items as $raw) {
+                $items[] = $raw;
+            }
+        }
+        
+        // 3. Controlla se almeno una brochure è valida per la lingua corrente
+        foreach ((array) $items as $raw) {
+            $id = is_array($raw) && isset($raw['ID']) ? intval($raw['ID']) : (is_object($raw) && isset($raw->ID) ? intval($raw->ID) : intval($raw));
+            if (!$id) continue;
+            
+            $brochure_id = apply_filters('wpml_object_id', $id, 'brochure_coltura', true, $current) ?: $id;
+            $slug = wp_get_post_terms($brochure_id, 'lingua_aggiuntiva', ['fields'=>'slugs'])[0] ?? '';
+            
+            // Logica lingua per brochure
+            if ($current === 'it') {
+                // Italiano: accetta brochure italiane (o senza lingua)
+                if (empty($slug) || $slug === 'italiano') {
+                    $file_id = get_post_meta($brochure_id, 'brochure-file', true);
+                    if ($file_id && wp_get_attachment_url($file_id)) {
+                        return true;
+                    }
+                }
+            } else {
+                // Altre lingue: priorità lingua target > italiano fallback
+                $lang_map = ['en' => 'inglese', 'fr' => 'francese', 'es' => 'spagnolo'];
+                $target_lang = $lang_map[$current] ?? '';
+                
+                // Accetta target language O italiano come fallback
+                if ($slug === $target_lang || $slug === 'italiano' || $slug === '') {
+                    $file_id = get_post_meta($brochure_id, 'brochure-file', true);
+                    if ($file_id && wp_get_attachment_url($file_id)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        
+        return false;
+    }
      * Replica la logica di scheda-prodotto-dettaglio.php per consistency
      * 
      * @param int $term_id ID del termine tipo_di_prodotto
