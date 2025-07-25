@@ -6,12 +6,10 @@
  */
 function ta_render_video_tipo_prodotto_v2_shortcode( $atts ) {
     // Debug alpha 2: funzione avviata in contesto tassonomia
-    echo '<!-- shortcode video_tipo_prodotto_v2.0: funzione avviata in contesto tassonomia -->';
 
     // Verifica contesto tassonomia tipo_di_prodotto
     $term = get_queried_object();
     if ( ! $term || ! isset( $term->term_id ) || $term->taxonomy !== 'tipo_di_prodotto' ) {
-        echo '<!-- shortcode video_tipo_prodotto_v2.0: contesto non tassonomia tipo_di_prodotto -->';
         return '';
     }
 
@@ -23,18 +21,13 @@ function ta_render_video_tipo_prodotto_v2_shortcode( $atts ) {
 
     // Recupero lista video dal campo Pods
     $pod_term = pods('tipo_di_prodotto', $term->term_id, ['lang' => $current_lang]);
-    echo '<!-- shortcode video_tipo_prodotto_v2.0: pod esiste? ' . ($pod_term->exists() ? 'yes' : 'no') . ' -->';
     $videos = $pod_term->exists() ? $pod_term->field('tipo-video') : [];
     if ( empty($videos) ) {
-        echo '<!-- shortcode video_tipo_prodotto_v2.0: nessun video in campo, fallback lingua default -->';
         $term_id_default = apply_filters('wpml_object_id', $term->term_id, 'tipo_di_prodotto', true, $default_lang);
         $videos = $term_id_default ? get_term_meta($term_id_default, 'tipo-video', false) : [];
     }
 
-    echo '<!-- shortcode video_tipo_prodotto_v2.0: video IDs raw: ' . implode(',', array_map(function($i){ return is_array($i)&&isset($i['ID'])?$i['ID']:(is_object($i)&&isset($i->ID)?$i->ID:$i); }, (array)$videos)) . ' -->';
-
     // Stack verticale video (come prodotti)
-    echo '<!-- shortcode video_tipo_prodotto_v2.0: inizio toro-video-stack -->';
     $output = '<div class="toro-layout-videos-section"><div class="toro-video-stack">';
 
     foreach ( (array)$videos as $item ) {
@@ -55,7 +48,6 @@ function ta_render_video_tipo_prodotto_v2_shortcode( $atts ) {
         $flag_html = ($current_lang !== 'it' && function_exists('toroag_get_flag_html')) ? toroag_get_flag_html($first_lingua) : '';
 
         // Debug per ogni video
-        echo '<!-- shortcode video_tipo_prodotto_v2.0: card video ' . $video_id . ' -->';
 
         // Stack verticale con card come documenti
         $output .= '<div class="card shadow-sm mb-4">';
@@ -69,7 +61,6 @@ function ta_render_video_tipo_prodotto_v2_shortcode( $atts ) {
     }
 
     $output .= '</div></div>'; // toro-video-stack + toro-layout-videos-section
-    echo '<!-- shortcode video_tipo_prodotto_v2.0: fine toro-video-stack -->';
     return $output;
 }
 add_shortcode('video_tipo_prodotto_v2', 'ta_render_video_tipo_prodotto_v2_shortcode');

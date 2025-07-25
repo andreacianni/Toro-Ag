@@ -33,8 +33,7 @@ if (! function_exists('ta_render_documenti_prodotto_view')) {
         }
         
         if (!$has_content) {
-            echo '<p class="text-center text-muted">' . esc_html__('Nessuna scheda o documento disponibile', 'toro-ag') . '</p>';
-            return ob_get_clean();
+            return '';
         }
         $prod = $terms_data[0]['products'][0];
         // Conteggi per pluralizzazione

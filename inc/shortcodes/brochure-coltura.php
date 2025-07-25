@@ -14,8 +14,7 @@ if (! function_exists('ta_render_brochure_coltura_view')) {
         
         // Nessun contenuto da mostrare
         if (empty($brochure_data)) {
-            echo '<p class="text-center text-muted">' . esc_html__('Nessuna brochure disponibile', 'toro-ag') . '</p>';
-            return ob_get_clean();
+            return '';
         }
 
         $brochure_count = count($brochure_data);
