@@ -30,38 +30,47 @@ if ($atts['responsive'] === 'true') {
 <div class="<?= esc_attr(implode(' ', $container_classes)); ?>">
     <?php if (!empty($sections)): ?>
         
-        <!-- Stack Verticale - Tutte le sezioni in colonna singola -->
+        <!-- Stack Verticale Ottimizzato -->
         <div class="row">
             <div class="col-12">
                 
-                <?php if (isset($sections['hero'])): ?>
-                <!-- Hero Section -->
-                <div class="toro-layout-hero-section">
-                    <?= $sections['hero']; ?>
-                </div>
-                <?php endif; ?>
-                
-                <?php if (isset($sections['description'])): ?>
-                <!-- Descrizione Coltura -->
-                <div class="toro-layout-description">
-                    <?= $sections['description']; ?>
+                <!-- Descrizione + Brochure affiancate -->
+                <?php if (isset($sections['description']) || isset($sections['brochures'])): ?>
+                <div class="row mb-4">
+                    <?php if (isset($sections['description']) && isset($sections['brochures'])): ?>
+                        <!-- Descrizione + Brochure: 2 colonne -->
+                        <div class="col-lg-8">
+                            <div class="toro-layout-description">
+                                <?= $sections['description']; ?>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="toro-layout-brochures">
+                                <?= $sections['brochures']; ?>
+                            </div>
+                        </div>
+                    <?php elseif (isset($sections['description'])): ?>
+                        <!-- Solo descrizione: full width -->
+                        <div class="col-12">
+                            <div class="toro-layout-description">
+                                <?= $sections['description']; ?>
+                            </div>
+                        </div>
+                    <?php elseif (isset($sections['brochures'])): ?>
+                        <!-- Solo brochure: full width -->
+                        <div class="col-12">
+                            <div class="toro-layout-brochures">
+                                <?= $sections['brochures']; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 </div>
                 <?php endif; ?>
                 
                 <?php if (isset($sections['products'])): ?>
-                <!-- Prodotti Raggruppati per Tipo -->
+                <!-- Prodotti Raggruppati per Tipo (senza titolo) -->
                 <div class="toro-layout-products">
-                    <h4 class="fw-bold border-bottom px-3 py-2 my-4">
-                        <?= esc_html__('Applicazioni', 'toro-ag'); ?>
-                    </h4>
                     <?= $sections['products']; ?>
-                </div>
-                <?php endif; ?>
-                
-                <?php if (isset($sections['brochures'])): ?>
-                <!-- Brochure Coltura -->
-                <div class="toro-layout-brochures">
-                    <?= $sections['brochures']; ?>
                 </div>
                 <?php endif; ?>
                 

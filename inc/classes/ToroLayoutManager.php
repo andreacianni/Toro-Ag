@@ -394,7 +394,6 @@ class ToroLayoutManager {
         
         // Query leggere - solo existence check
         $availability = [
-            'has_hero' => true, // Hero sempre disponibile
             'has_description' => !empty($term->description),
             'has_products' => self::check_term_has_products($term->term_id, 'coltura'),
             'has_brochures' => self::check_coltura_has_brochures($term->term_id),
@@ -530,11 +529,6 @@ class ToroLayoutManager {
                     $sections[] = 'videos';
                 }
             } elseif ($layout_type === 'coltura') {
-                // Hero sempre presente
-                if ($content_map['has_hero']) {
-                    $sections[] = 'hero';
-                }
-                
                 // Descrizione se disponibile
                 if ($content_map['has_description']) {
                     $sections[] = 'description';
@@ -632,10 +626,6 @@ class ToroLayoutManager {
             }
         } elseif ($layout_type === 'coltura') {
             switch ($section) {
-                case 'hero':
-                    // Riusa shortcode esistente [hero_tipo_prodotto_e_coltura]
-                    return do_shortcode('[hero_tipo_prodotto_e_coltura]');
-                    
                 case 'description':
                     // Descrizione del termine coltura
                     $term = get_queried_object();
