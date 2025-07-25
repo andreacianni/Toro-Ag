@@ -639,10 +639,6 @@ class ToroLayoutManager {
                 default:
                     return '';
             }
-                    
-                default:
-                    return '';
-            }
         }
         
         return '';
