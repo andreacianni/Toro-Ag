@@ -529,6 +529,31 @@ class ToroLayoutManager {
                 if ($content_map['has_videos']) {
                     $sections[] = 'videos';
                 }
+            } elseif ($layout_type === 'coltura') {
+                // Hero sempre presente
+                if ($content_map['has_hero']) {
+                    $sections[] = 'hero';
+                }
+                
+                // Descrizione se disponibile
+                if ($content_map['has_description']) {
+                    $sections[] = 'description';
+                }
+                
+                // Prodotti raggruppati per tipo (tipi_per_coltura)
+                if ($content_map['has_products']) {
+                    $sections[] = 'products';
+                }
+                
+                // Brochure se disponibili
+                if ($content_map['has_brochures']) {
+                    $sections[] = 'brochures';
+                }
+                
+                // Video se disponibili
+                if ($content_map['has_videos']) {
+                    $sections[] = 'videos';
+                }
             }
             
             return $sections;
@@ -544,9 +569,10 @@ class ToroLayoutManager {
      * @param string $section Nome sezione
      * @param int $post_id ID del post o term
      * @param string $layout_type Tipo di layout
+     * @param array $atts Attributi aggiuntivi (opzionale)
      * @return string Contenuto HTML della sezione
      */
-    public static function load_section_content($section, $post_id, $layout_type) {
+    public static function load_section_content($section, $post_id, $layout_type, $atts = []) {
         if ($layout_type === 'prodotto') {
             switch ($section) {
                 case 'image':
@@ -628,7 +654,6 @@ class ToroLayoutManager {
                     
                 case 'brochures':
                     // Riusa shortcode [brochure_coltura_dettaglio] con layout adattato
-                    $atts = func_get_args()[3] ?? []; // Ottieni attributi dal layout_coltura
                     $brochure_layout = $atts['brochure_layout'] ?? 'card';
                     return do_shortcode('[brochure_coltura_dettaglio layout="' . $brochure_layout . '"]');
                     
