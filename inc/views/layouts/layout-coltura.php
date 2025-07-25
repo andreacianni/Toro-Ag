@@ -38,14 +38,14 @@ if ($atts['responsive'] === 'true') {
                 <?php if (isset($sections['description']) || isset($sections['brochures'])): ?>
                 <div class="row mb-4">
                     <?php if (isset($sections['description']) && isset($sections['brochures'])): ?>
-                        <!-- Descrizione + Brochure: 2 colonne -->
-                        <div class="col-lg-8">
-                            <div class="toro-layout-description">
+                        <!-- Descrizione + Brochure: 9/3 colonne (come tipo prodotto) -->
+                        <div class="col-lg-9">
+                            <div class="toro-main-content">
                                 <?= $sections['description']; ?>
                             </div>
                         </div>
-                        <div class="col-lg-4">
-                            <div class="toro-layout-brochures">
+                        <div class="col-lg-3">
+                            <div class="toro-sidebar-content">
                                 <?= $sections['brochures']; ?>
                             </div>
                         </div>
@@ -71,13 +71,6 @@ if ($atts['responsive'] === 'true') {
                 <!-- Prodotti Raggruppati per Tipo (senza titolo) -->
                 <div class="toro-layout-products">
                     <?= $sections['products']; ?>
-                </div>
-                <?php endif; ?>
-                
-                <?php if (isset($sections['videos'])): ?>
-                <!-- Video Coltura -->
-                <div class="toro-layout-videos">
-                    <?= $sections['videos']; ?>
                 </div>
                 <?php endif; ?>
                 

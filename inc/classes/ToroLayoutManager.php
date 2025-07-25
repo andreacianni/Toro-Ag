@@ -396,8 +396,7 @@ class ToroLayoutManager {
         $availability = [
             'has_description' => !empty($term->description),
             'has_products' => self::check_term_has_products($term->term_id, 'coltura'),
-            'has_brochures' => self::check_coltura_has_brochures($term->term_id),
-            'has_videos' => !empty(get_term_meta($term->term_id, 'video-coltura', true))
+            'has_brochures' => self::check_coltura_has_brochures($term->term_id)
         ];
         
         // Cache per 1 ora
@@ -543,11 +542,6 @@ class ToroLayoutManager {
                 if ($content_map['has_brochures']) {
                     $sections[] = 'brochures';
                 }
-                
-                // Video se disponibili
-                if ($content_map['has_videos']) {
-                    $sections[] = 'videos';
-                }
             }
             
             return $sections;
@@ -646,10 +640,6 @@ class ToroLayoutManager {
                     // Riusa shortcode [brochure_coltura_dettaglio] con layout adattato
                     $brochure_layout = $atts['brochure_layout'] ?? 'card';
                     return do_shortcode('[brochure_coltura_dettaglio layout="' . $brochure_layout . '"]');
-                    
-                case 'videos':
-                    // Video coltura se implementato
-                    return '<!-- Video coltura non ancora implementato -->';
                     
                 default:
                     return '';
