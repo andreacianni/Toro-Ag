@@ -4,6 +4,23 @@
  */
 
 /* ================================
+   LAYOUT COLTURA - BROCHURE SIDEBAR FIX
+   ================================ */
+
+/* Fix per brochure nella sidebar coltura - full width invece di grid */
+.toro-sidebar-content .coltura-brochure .col-md-6,
+.toro-sidebar-content .coltura-brochure .col-lg-4 {
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    width: 100% !important;
+}
+
+/* Spaziatura tra brochure cards nella sidebar */
+.toro-sidebar-content .coltura-brochure .row.g-3 {
+    row-gap: 1rem;
+}
+
+/* ================================
    LAYOUT BILANCIATO E SIDEBAR COMPATTA
    ================================ */
 
