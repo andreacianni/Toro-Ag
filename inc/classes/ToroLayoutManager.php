@@ -87,12 +87,13 @@ class ToroLayoutManager {
      */
     public static function register_wpml_strings() {
         if (function_exists('wpml_register_single_string')) {
-            // Forza la registrazione della stringa
+            // Forza la registrazione delle stringhe
             wpml_register_single_string('Toro Layout Manager', 'Chiedi informazioni sul prodotto', 'Chiedi informazioni sul prodotto');
+            wpml_register_single_string('Toro Layout Manager', 'Scarica la Brochure', 'Scarica la Brochure');
             
             // Debug: verifica registrazione
             if (current_user_can('manage_options') && isset($_GET['toro_debug_wpml'])) {
-                echo '<div class="notice notice-info"><p>✅ WPML String registrata: "Chiedi informazioni sul prodotto" nel dominio "Toro Layout Manager"</p></div>';
+                echo '<div class="notice notice-info"><p>✅ WPML Strings registrate: "Chiedi informazioni sul prodotto" + "Scarica la Brochure" nel dominio "Toro Layout Manager"</p></div>';
             }
         }
     }
@@ -108,10 +109,11 @@ class ToroLayoutManager {
             
             // Prova a triggerare scan WPML
             if (function_exists('wpml_register_single_string')) {
-                // Registra con forza
+                // Registra con forza entrambe le stringhe
                 wpml_register_single_string('Toro Layout Manager', 'Chiedi informazioni sul prodotto', 'Chiedi informazioni sul prodotto');
+                wpml_register_single_string('Toro Layout Manager', 'Scarica la Brochure', 'Scarica la Brochure');
                 
-                echo '<div class="notice notice-success"><p>🔄 WPML Sync forzato! Controlla ora WPML > String Translation</p></div>';
+                echo '<div class="notice notice-success"><p>🔄 WPML Sync forzato! Controlla ora WPML > String Translation per "Chiedi informazioni sul prodotto" e "Scarica la Brochure"</p></div>';
             } else {
                 echo '<div class="notice notice-error"><p>❌ WPML non attivo o funzioni non disponibili</p></div>';
             }

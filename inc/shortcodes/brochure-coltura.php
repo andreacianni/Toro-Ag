@@ -22,6 +22,11 @@ if (! function_exists('ta_render_brochure_coltura_view')) {
         ?>
         <div class="coltura-brochure">
             <?php if ($layout === 'card'): ?>
+                <!-- Titolo Sezione Brochure -->
+                <h5 class="fw-bold border-bottom px-3 py-2 mb-4">
+                    <?= esc_html__('Scarica la Brochure', 'toro-ag'); ?>
+                </h5>
+                
                 <!-- Layout Card con Immagini -->
                 <?php foreach ($brochure_data as $group): ?>
                     <?php foreach ($group['items'] as $item): ?>
