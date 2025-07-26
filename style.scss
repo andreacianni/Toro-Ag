@@ -1075,3 +1075,79 @@ NUOVO LAYOUT FORMS - 2 COLONNE
     max-width: 33.333333% !important;
   }
 }
+
+/* Stili per le pagine di servizio */
+.page-id-3111 #servizio-testo {
+   counter-reset: main-section;
+
+   > ol {
+       counter-reset: main-section;
+       list-style: none;
+       padding-left: 0;
+
+       > li {
+           counter-increment: main-section;
+
+           > h3 {
+               margin-top: 1.5em;
+               position: relative;
+               padding-left: 3em;
+
+               &::before {
+                   content: counter(main-section) ".";
+                   font-weight: bold;
+                   position: absolute;
+                   left: 0;
+                   width: 2.5em;
+                   text-align: left;
+               }
+           }
+
+           > ol {
+               counter-reset: sub-section;
+               list-style: none;
+               padding-left: 0;
+
+               > li {
+                   counter-increment: sub-section;
+                   position: relative;
+                   padding-left: 4em;
+
+                   > p > strong::before {
+                       content: counter(main-section) "." counter(sub-section);
+                       position: absolute;
+                       left: 0;
+                       width: 3.5em;
+                       text-align: left;
+                       font-weight: bold;
+                   }
+               }
+
+               // Liste interne con lettere
+               ol {
+                   counter-reset: letter-section;
+                   list-style: none;
+                   padding-left: 5em;
+
+                   > li {
+                       counter-increment: letter-section;
+                       position: relative;
+
+                       &::before {
+                           content: counter(letter-section, lower-alpha) ")";
+                           font-weight: bold;
+                           position: absolute;
+                           left: -2em;
+                           width: 1.5em;
+                           text-align: left;
+                       }
+                   }
+               }
+           }
+       }
+   }
+
+   h3 {
+       margin-top: 1.5em;
+   }
+}

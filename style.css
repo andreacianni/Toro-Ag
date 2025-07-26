@@ -150,7 +150,7 @@ Template: Divi
   font-size: 1rem;
 }
 #loginform-custom input[type=submit]:hover {
-  background-color: #0262ef;
+  background-color: rgb(1.9713114754, 97.5799180328, 238.5286885246);
 }
 
 .documenti-download-grid .card-title a,
@@ -479,7 +479,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 }
 .form-contatti-new .privacy-section .privacy-toggle:hover,
 .form-prodotti-new .privacy-section .privacy-toggle:hover {
-  color: #a1191f;
+  color: rgb(160.8860759494, 25.1139240506, 30.6075949367);
   text-decoration: underline;
 }
 .form-contatti-new .privacy-section .privacy-toggle:focus,
@@ -667,7 +667,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   flex-shrink: 0;
 }
 .form-contatti-new .motivo-section .wpcf7-form-control-wrap .wpcf7-form-control .wpcf7-list-item input[type=radio]:hover {
-  border-color: #e86b70;
+  border-color: rgb(231.9113924051, 107.0886075949, 112.1392405063);
 }
 .form-contatti-new .motivo-section .wpcf7-form-control-wrap .wpcf7-form-control .wpcf7-list-item input[type=radio]:checked {
   border-color: #cd2027;
@@ -699,14 +699,14 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   color: #cd2027;
 }
 .form-contatti-new .motivo-section .wpcf7-form-control-wrap .wpcf7-form-control .wpcf7-list-item input[type=radio]:checked + .wpcf7-list-item-label {
-  color: #262a2d;
+  color: rgb(38.096875, 41.75, 45.403125);
   font-weight: 600;
 }
 .form-contatti-new .motivo-section .wpcf7-form-control-wrap .wpcf7-form-control.wpcf7-not-valid .wpcf7-list-item input[type=radio] {
   border-color: #dc3545;
 }
 .form-contatti-new .motivo-section .wpcf7-form-control-wrap .wpcf7-form-control.wpcf7-not-valid .wpcf7-list-item input[type=radio]:hover {
-  border-color: #bd2130;
+  border-color: rgb(189.2151898734, 32.7848101266, 47.7721518987);
 }
 .form-contatti-new .motivo-section .wpcf7-form-control-wrap .wpcf7-not-valid-tip {
   display: block !important;
@@ -894,4 +894,67 @@ NUOVO LAYOUT FORMS - 2 COLONNE
     flex: 0 0 33.333333% !important;
     max-width: 33.333333% !important;
   }
+}
+/* Stili per le pagine di servizio */
+.page-id-3111 #servizio-testo {
+  counter-reset: main-section;
+}
+.page-id-3111 #servizio-testo > ol {
+  counter-reset: main-section;
+  list-style: none;
+  padding-left: 0;
+}
+.page-id-3111 #servizio-testo > ol > li {
+  counter-increment: main-section;
+}
+.page-id-3111 #servizio-testo > ol > li > h3 {
+  margin-top: 1.5em;
+  position: relative;
+  padding-left: 3em;
+}
+.page-id-3111 #servizio-testo > ol > li > h3::before {
+  content: counter(main-section) ".";
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+  width: 2.5em;
+  text-align: left;
+}
+.page-id-3111 #servizio-testo > ol > li > ol {
+  counter-reset: sub-section;
+  list-style: none;
+  padding-left: 0;
+}
+.page-id-3111 #servizio-testo > ol > li > ol > li {
+  counter-increment: sub-section;
+  position: relative;
+  padding-left: 4em;
+}
+.page-id-3111 #servizio-testo > ol > li > ol > li > p > strong::before {
+  content: counter(main-section) "." counter(sub-section);
+  position: absolute;
+  left: 0;
+  width: 3.5em;
+  text-align: left;
+  font-weight: bold;
+}
+.page-id-3111 #servizio-testo > ol > li > ol ol {
+  counter-reset: letter-section;
+  list-style: none;
+  padding-left: 5em;
+}
+.page-id-3111 #servizio-testo > ol > li > ol ol > li {
+  counter-increment: letter-section;
+  position: relative;
+}
+.page-id-3111 #servizio-testo > ol > li > ol ol > li::before {
+  content: counter(letter-section, lower-alpha) ")";
+  font-weight: bold;
+  position: absolute;
+  left: -2em;
+  width: 1.5em;
+  text-align: left;
+}
+.page-id-3111 #servizio-testo h3 {
+  margin-top: 1.5em;
 }/*# sourceMappingURL=style.css.map */
