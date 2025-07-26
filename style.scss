@@ -1179,74 +1179,32 @@ NUOVO LAYOUT FORMS - 2 COLONNE
                     text-align: left;
                 }
             }
+        }
+    }
 
-            // Liste numerate standard (1. 2. 3.)
-            > ol[style*="lower-alpha"] {
-                counter-reset: alpha-section;
-                list-style: none;
-                padding-left: 2em;
+    // Rimuovi list-style e applica counter personalizzato per liste alfabetiche
+    ol[style*="lower-alpha"] {
+        list-style: none !important;
+        counter-reset: alpha-section;
+        padding-left: 2em;
 
-                > li {
-                    counter-increment: alpha-section;
-                    position: relative;
+        > li {
+            counter-increment: alpha-section;
+            position: relative;
 
-                    &::before {
-                        content: counter(alpha-section, lower-alpha) ")";
-                        font-weight: bold;
-                        position: absolute;
-                        left: -2em;
-                        width: 1.5em;
-                        text-align: left;
-                    }
-                }
-
-                // Sottoliste numerate annidate
-                ol {
-                    counter-reset: numeric-section;
-                    list-style: none;
-                    padding-left: 2em;
-
-                    > li {
-                        counter-increment: numeric-section;
-                        position: relative;
-
-                        &::before {
-                            content: counter(numeric-section) ".";
-                            font-weight: normal;
-                            position: absolute;
-                            left: -2em;
-                            width: 1.5em;
-                            text-align: left;
-                        }
-
-                        // Sottoliste alfabetiche annidate (a), b), c))
-                        ol[style*="lower-alpha"] {
-                            counter-reset: nested-alpha;
-                            list-style: none;
-                            padding-left: 2em;
-
-                            > li {
-                                counter-increment: nested-alpha;
-                                position: relative;
-
-                                &::before {
-                                    content: counter(nested-alpha, lower-alpha) ")";
-                                    font-weight: normal;
-                                    position: absolute;
-                                    left: -2em;
-                                    width: 1.5em;
-                                    text-align: left;
-                                }
-                            }
-                        }
-                    }
-                }
+            &::before {
+                content: counter(alpha-section, lower-alpha) ")";
+                font-weight: bold;
+                position: absolute;
+                left: -2em;
+                width: 1.5em;
+                text-align: left;
             }
 
-            // Liste numerate standard (1. 2. 3.) - per quelle che non hanno style inline
-            > ol:not([style*="lower-alpha"]) {
+            // Sottoliste numerate annidate
+            ol:not([style*="lower-alpha"]) {
                 counter-reset: numeric-section;
-                list-style: none;
+                list-style: none !important;
                 padding-left: 2em;
 
                 > li {
@@ -1262,10 +1220,10 @@ NUOVO LAYOUT FORMS - 2 COLONNE
                         text-align: left;
                     }
 
-                    // Sottoliste alfabetiche (a), b), c))
+                    // Sottoliste alfabetiche annidate
                     ol[style*="lower-alpha"] {
                         counter-reset: nested-alpha;
-                        list-style: none;
+                        list-style: none !important;
                         padding-left: 2em;
 
                         > li {
@@ -1287,6 +1245,27 @@ NUOVO LAYOUT FORMS - 2 COLONNE
         }
     }
 
+    // Liste numerate standard (senza style inline)
+    ol:not([style*="lower-alpha"]):not(.main-list) {
+        counter-reset: numeric-section;
+        list-style: none !important;
+        padding-left: 2em;
+
+        > li {
+            counter-increment: numeric-section;
+            position: relative;
+
+            &::before {
+                content: counter(numeric-section) ".";
+                font-weight: normal;
+                position: absolute;
+                left: -2em;
+                width: 1.5em;
+                text-align: left;
+            }
+        }
+    }
+
     h3 {
         margin-top: 1.5em;
     }
@@ -1294,21 +1273,19 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 
 /* Allineamento testo FontAwesome */
 #servizio-testo p {
+    i.fa-solid {
+        float: left;
+        width: 1.5em;
+        margin-top: 0.1em;
+    }
+
     &:has(i.fa-solid) {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.5em;
-
-        i.fa-solid {
-            flex-shrink: 0;
-            margin-top: 0.1em; // Piccolo aggiustamento per allineamento verticale
-        }
-
-        strong, 
-        span,
-        a {
-            flex: 1;
-            line-height: 1.4;
+        padding-left: 1.5em;
+        text-indent: -1.5em;
+        
+        // Per gestire il caso in cui ci siano elementi strong/a dopo l'icona
+        strong, a {
+            display: inline;
         }
     }
 }

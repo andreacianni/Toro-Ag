@@ -987,19 +987,19 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   width: 2.5em;
   text-align: left;
 }
-.page-id-556 #servizio-testo > ol > li > ol[style*=lower-alpha],
-.page-id-5997 #servizio-testo > ol > li > ol[style*=lower-alpha] {
+.page-id-556 #servizio-testo ol[style*=lower-alpha],
+.page-id-5997 #servizio-testo ol[style*=lower-alpha] {
+  list-style: none !important;
   counter-reset: alpha-section;
-  list-style: none;
   padding-left: 2em;
 }
-.page-id-556 #servizio-testo > ol > li > ol[style*=lower-alpha] > li,
-.page-id-5997 #servizio-testo > ol > li > ol[style*=lower-alpha] > li {
+.page-id-556 #servizio-testo ol[style*=lower-alpha] > li,
+.page-id-5997 #servizio-testo ol[style*=lower-alpha] > li {
   counter-increment: alpha-section;
   position: relative;
 }
-.page-id-556 #servizio-testo > ol > li > ol[style*=lower-alpha] > li::before,
-.page-id-5997 #servizio-testo > ol > li > ol[style*=lower-alpha] > li::before {
+.page-id-556 #servizio-testo ol[style*=lower-alpha] > li::before,
+.page-id-5997 #servizio-testo ol[style*=lower-alpha] > li::before {
   content: counter(alpha-section, lower-alpha) ")";
   font-weight: bold;
   position: absolute;
@@ -1007,19 +1007,19 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   width: 1.5em;
   text-align: left;
 }
-.page-id-556 #servizio-testo > ol > li > ol[style*=lower-alpha] ol,
-.page-id-5997 #servizio-testo > ol > li > ol[style*=lower-alpha] ol {
+.page-id-556 #servizio-testo ol[style*=lower-alpha] > li ol:not([style*=lower-alpha]),
+.page-id-5997 #servizio-testo ol[style*=lower-alpha] > li ol:not([style*=lower-alpha]) {
   counter-reset: numeric-section;
-  list-style: none;
+  list-style: none !important;
   padding-left: 2em;
 }
-.page-id-556 #servizio-testo > ol > li > ol[style*=lower-alpha] ol > li,
-.page-id-5997 #servizio-testo > ol > li > ol[style*=lower-alpha] ol > li {
+.page-id-556 #servizio-testo ol[style*=lower-alpha] > li ol:not([style*=lower-alpha]) > li,
+.page-id-5997 #servizio-testo ol[style*=lower-alpha] > li ol:not([style*=lower-alpha]) > li {
   counter-increment: numeric-section;
   position: relative;
 }
-.page-id-556 #servizio-testo > ol > li > ol[style*=lower-alpha] ol > li::before,
-.page-id-5997 #servizio-testo > ol > li > ol[style*=lower-alpha] ol > li::before {
+.page-id-556 #servizio-testo ol[style*=lower-alpha] > li ol:not([style*=lower-alpha]) > li::before,
+.page-id-5997 #servizio-testo ol[style*=lower-alpha] > li ol:not([style*=lower-alpha]) > li::before {
   content: counter(numeric-section) ".";
   font-weight: normal;
   position: absolute;
@@ -1027,19 +1027,19 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   width: 1.5em;
   text-align: left;
 }
-.page-id-556 #servizio-testo > ol > li > ol[style*=lower-alpha] ol > li ol[style*=lower-alpha],
-.page-id-5997 #servizio-testo > ol > li > ol[style*=lower-alpha] ol > li ol[style*=lower-alpha] {
+.page-id-556 #servizio-testo ol[style*=lower-alpha] > li ol:not([style*=lower-alpha]) > li ol[style*=lower-alpha],
+.page-id-5997 #servizio-testo ol[style*=lower-alpha] > li ol:not([style*=lower-alpha]) > li ol[style*=lower-alpha] {
   counter-reset: nested-alpha;
-  list-style: none;
+  list-style: none !important;
   padding-left: 2em;
 }
-.page-id-556 #servizio-testo > ol > li > ol[style*=lower-alpha] ol > li ol[style*=lower-alpha] > li,
-.page-id-5997 #servizio-testo > ol > li > ol[style*=lower-alpha] ol > li ol[style*=lower-alpha] > li {
+.page-id-556 #servizio-testo ol[style*=lower-alpha] > li ol:not([style*=lower-alpha]) > li ol[style*=lower-alpha] > li,
+.page-id-5997 #servizio-testo ol[style*=lower-alpha] > li ol:not([style*=lower-alpha]) > li ol[style*=lower-alpha] > li {
   counter-increment: nested-alpha;
   position: relative;
 }
-.page-id-556 #servizio-testo > ol > li > ol[style*=lower-alpha] ol > li ol[style*=lower-alpha] > li::before,
-.page-id-5997 #servizio-testo > ol > li > ol[style*=lower-alpha] ol > li ol[style*=lower-alpha] > li::before {
+.page-id-556 #servizio-testo ol[style*=lower-alpha] > li ol:not([style*=lower-alpha]) > li ol[style*=lower-alpha] > li::before,
+.page-id-5997 #servizio-testo ol[style*=lower-alpha] > li ol:not([style*=lower-alpha]) > li ol[style*=lower-alpha] > li::before {
   content: counter(nested-alpha, lower-alpha) ")";
   font-weight: normal;
   position: absolute;
@@ -1047,40 +1047,20 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   width: 1.5em;
   text-align: left;
 }
-.page-id-556 #servizio-testo > ol > li > ol:not([style*=lower-alpha]),
-.page-id-5997 #servizio-testo > ol > li > ol:not([style*=lower-alpha]) {
+.page-id-556 #servizio-testo ol:not([style*=lower-alpha]):not(.main-list),
+.page-id-5997 #servizio-testo ol:not([style*=lower-alpha]):not(.main-list) {
   counter-reset: numeric-section;
-  list-style: none;
+  list-style: none !important;
   padding-left: 2em;
 }
-.page-id-556 #servizio-testo > ol > li > ol:not([style*=lower-alpha]) > li,
-.page-id-5997 #servizio-testo > ol > li > ol:not([style*=lower-alpha]) > li {
+.page-id-556 #servizio-testo ol:not([style*=lower-alpha]):not(.main-list) > li,
+.page-id-5997 #servizio-testo ol:not([style*=lower-alpha]):not(.main-list) > li {
   counter-increment: numeric-section;
   position: relative;
 }
-.page-id-556 #servizio-testo > ol > li > ol:not([style*=lower-alpha]) > li::before,
-.page-id-5997 #servizio-testo > ol > li > ol:not([style*=lower-alpha]) > li::before {
+.page-id-556 #servizio-testo ol:not([style*=lower-alpha]):not(.main-list) > li::before,
+.page-id-5997 #servizio-testo ol:not([style*=lower-alpha]):not(.main-list) > li::before {
   content: counter(numeric-section) ".";
-  font-weight: normal;
-  position: absolute;
-  left: -2em;
-  width: 1.5em;
-  text-align: left;
-}
-.page-id-556 #servizio-testo > ol > li > ol:not([style*=lower-alpha]) > li ol[style*=lower-alpha],
-.page-id-5997 #servizio-testo > ol > li > ol:not([style*=lower-alpha]) > li ol[style*=lower-alpha] {
-  counter-reset: nested-alpha;
-  list-style: none;
-  padding-left: 2em;
-}
-.page-id-556 #servizio-testo > ol > li > ol:not([style*=lower-alpha]) > li ol[style*=lower-alpha] > li,
-.page-id-5997 #servizio-testo > ol > li > ol:not([style*=lower-alpha]) > li ol[style*=lower-alpha] > li {
-  counter-increment: nested-alpha;
-  position: relative;
-}
-.page-id-556 #servizio-testo > ol > li > ol:not([style*=lower-alpha]) > li ol[style*=lower-alpha] > li::before,
-.page-id-5997 #servizio-testo > ol > li > ol:not([style*=lower-alpha]) > li ol[style*=lower-alpha] > li::before {
-  content: counter(nested-alpha, lower-alpha) ")";
   font-weight: normal;
   position: absolute;
   left: -2em;
@@ -1093,18 +1073,15 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 }
 
 /* Allineamento testo FontAwesome */
-#servizio-testo p:has(i.fa-solid) {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5em;
-}
-#servizio-testo p:has(i.fa-solid) i.fa-solid {
-  flex-shrink: 0;
+#servizio-testo p i.fa-solid {
+  float: left;
+  width: 1.5em;
   margin-top: 0.1em;
 }
-#servizio-testo p:has(i.fa-solid) strong,
-#servizio-testo p:has(i.fa-solid) span,
-#servizio-testo p:has(i.fa-solid) a {
-  flex: 1;
-  line-height: 1.4;
+#servizio-testo p:has(i.fa-solid) {
+  padding-left: 1.5em;
+  text-indent: -1.5em;
+}
+#servizio-testo p:has(i.fa-solid) strong, #servizio-testo p:has(i.fa-solid) a {
+  display: inline;
 }/*# sourceMappingURL=style.css.map */
