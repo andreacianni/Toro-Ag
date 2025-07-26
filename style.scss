@@ -1078,77 +1078,237 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 
 /* Stili per le pagine di servizio */
 .page-id-3111 #servizio-testo {
-   counter-reset: main-section;
+    counter-reset: main-section;
 
-   > ol {
-       counter-reset: main-section;
-       list-style: none;
-       padding-left: 0;
+    > ol {
+        counter-reset: main-section;
+        list-style: none;
+        padding-left: 0;
 
-       > li {
-           counter-increment: main-section;
+        > li {
+            counter-increment: main-section;
 
-           > h3 {
-               margin-top: 1.5em;
-               position: relative;
-               padding-left: 1.5em;
+            > h3 {
+                margin-top: 1.5em;
+                position: relative;
+                padding-left: 1.5em;
 
-               &::before {
-                   content: counter(main-section) ".";
-                   font-size: 16px;
-                   font-weight: bold;
-                   position: absolute;
-                   left: 0;
-                   width: 2.5em;
-                   text-align: left;
-               }
-           }
+                &::before {
+                    content: counter(main-section) ".";
+                    font-size: 16px;
+                    font-weight: bold;
+                    position: absolute;
+                    left: 0;
+                    width: 2.5em;
+                    text-align: left;
+                }
+            }
 
-           > ol {
-               counter-reset: sub-section;
-               list-style: none;
-               padding-left: 0 !important;
+            > ol {
+                counter-reset: sub-section;
+                list-style: none;
+                padding-left: 0 !important;
 
-               > li {
-                   counter-increment: sub-section;
-                   position: relative;
-                   padding-left: 2em;
+                > li {
+                    counter-increment: sub-section;
+                    position: relative;
+                    padding-left: 2em;
 
-                   > p > strong::before {
-                       content: counter(main-section) "." counter(sub-section);
-                       position: absolute;
-                       left: 0;
-                       width: 3.5em;
-                       text-align: left;
-                       font-weight: bold;
-                   }
-               }
+                    > p > strong::before {
+                        content: counter(main-section) "." counter(sub-section);
+                        position: absolute;
+                        left: 0;
+                        width: 3.5em;
+                        text-align: left;
+                        font-weight: bold;
+                    }
+                }
 
-               // Liste interne con lettere
-               ol {
-                   counter-reset: letter-section;
-                   list-style: none;
-                   padding-left: 5em;
+                // Liste interne con lettere
+                ol {
+                    counter-reset: letter-section;
+                    list-style: none;
+                    padding-left: 5em;
 
-                   > li {
-                       counter-increment: letter-section;
-                       position: relative;
+                    > li {
+                        counter-increment: letter-section;
+                        position: relative;
 
-                       &::before {
-                           content: counter(letter-section, lower-alpha) ")";
-                           font-weight: bold;
-                           position: absolute;
-                           left: -2em;
-                           width: 1.5em;
-                           text-align: left;
-                       }
-                   }
-               }
-           }
-       }
-   }
+                        &::before {
+                            content: counter(letter-section, lower-alpha) ")";
+                            font-weight: bold;
+                            position: absolute;
+                            left: -2em;
+                            width: 1.5em;
+                            text-align: left;
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-   h3 {
-       margin-top: 1.5em;
-   }
+    h3 {
+        margin-top: 1.5em;
+    }
+}
+
+/* Stili per le pagine Privacy */
+.page-id-556 #servizio-testo,
+.page-id-5997 #servizio-testo {
+    > ol {
+        counter-reset: main-section;
+        list-style: none;
+        padding-left: 0;
+
+        > li {
+            counter-increment: main-section;
+
+            > h3 {
+                margin-top: 1.5em;
+                position: relative;
+                padding-left: 1.5em;
+
+                &::before {
+                    content: counter(main-section) ".";
+                    font-size: 16px;
+                    font-weight: bold;
+                    position: absolute;
+                    left: 0;
+                    width: 2.5em;
+                    text-align: left;
+                }
+            }
+
+            // Liste numerate standard (1. 2. 3.)
+            > ol[style*="lower-alpha"] {
+                counter-reset: alpha-section;
+                list-style: none;
+                padding-left: 2em;
+
+                > li {
+                    counter-increment: alpha-section;
+                    position: relative;
+
+                    &::before {
+                        content: counter(alpha-section, lower-alpha) ")";
+                        font-weight: bold;
+                        position: absolute;
+                        left: -2em;
+                        width: 1.5em;
+                        text-align: left;
+                    }
+                }
+
+                // Sottoliste numerate annidate
+                ol {
+                    counter-reset: numeric-section;
+                    list-style: none;
+                    padding-left: 2em;
+
+                    > li {
+                        counter-increment: numeric-section;
+                        position: relative;
+
+                        &::before {
+                            content: counter(numeric-section) ".";
+                            font-weight: normal;
+                            position: absolute;
+                            left: -2em;
+                            width: 1.5em;
+                            text-align: left;
+                        }
+
+                        // Sottoliste alfabetiche annidate (a), b), c))
+                        ol[style*="lower-alpha"] {
+                            counter-reset: nested-alpha;
+                            list-style: none;
+                            padding-left: 2em;
+
+                            > li {
+                                counter-increment: nested-alpha;
+                                position: relative;
+
+                                &::before {
+                                    content: counter(nested-alpha, lower-alpha) ")";
+                                    font-weight: normal;
+                                    position: absolute;
+                                    left: -2em;
+                                    width: 1.5em;
+                                    text-align: left;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Liste numerate standard (1. 2. 3.) - per quelle che non hanno style inline
+            > ol:not([style*="lower-alpha"]) {
+                counter-reset: numeric-section;
+                list-style: none;
+                padding-left: 2em;
+
+                > li {
+                    counter-increment: numeric-section;
+                    position: relative;
+
+                    &::before {
+                        content: counter(numeric-section) ".";
+                        font-weight: normal;
+                        position: absolute;
+                        left: -2em;
+                        width: 1.5em;
+                        text-align: left;
+                    }
+
+                    // Sottoliste alfabetiche (a), b), c))
+                    ol[style*="lower-alpha"] {
+                        counter-reset: nested-alpha;
+                        list-style: none;
+                        padding-left: 2em;
+
+                        > li {
+                            counter-increment: nested-alpha;
+                            position: relative;
+
+                            &::before {
+                                content: counter(nested-alpha, lower-alpha) ")";
+                                font-weight: normal;
+                                position: absolute;
+                                left: -2em;
+                                width: 1.5em;
+                                text-align: left;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    h3 {
+        margin-top: 1.5em;
+    }
+}
+
+/* Allineamento testo FontAwesome */
+#servizio-testo p {
+    &:has(i.fa-solid) {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5em;
+
+        i.fa-solid {
+            flex-shrink: 0;
+            margin-top: 0.1em; // Piccolo aggiustamento per allineamento verticale
+        }
+
+        strong, 
+        span,
+        a {
+            flex: 1;
+            line-height: 1.4;
+        }
+    }
 }
