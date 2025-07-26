@@ -1186,7 +1186,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
     ol[style*="lower-alpha"] {
         list-style: none !important;
         counter-reset: alpha-section;
-        padding-left: 2em;
+        padding-left: 3em; // Aumentato per migliore indentazione
 
         > li {
             counter-increment: alpha-section;
@@ -1196,8 +1196,8 @@ NUOVO LAYOUT FORMS - 2 COLONNE
                 content: counter(alpha-section, lower-alpha) ")";
                 font-weight: bold;
                 position: absolute;
-                left: -2em;
-                width: 1.5em;
+                left: -2.5em;
+                width: 2em;
                 text-align: left;
             }
 
@@ -1205,7 +1205,8 @@ NUOVO LAYOUT FORMS - 2 COLONNE
             ol:not([style*="lower-alpha"]) {
                 counter-reset: numeric-section;
                 list-style: none !important;
-                padding-left: 2em;
+                padding-left: 3em; // Aumentato per migliore indentazione
+                margin-top: 0.5em;
 
                 > li {
                     counter-increment: numeric-section;
@@ -1215,16 +1216,17 @@ NUOVO LAYOUT FORMS - 2 COLONNE
                         content: counter(numeric-section) ".";
                         font-weight: normal;
                         position: absolute;
-                        left: -2em;
-                        width: 1.5em;
+                        left: -2.5em;
+                        width: 2em;
                         text-align: left;
                     }
 
-                    // Sottoliste alfabetiche annidate
+                    // Sottoliste alfabetiche annidate (terzo livello)
                     ol[style*="lower-alpha"] {
                         counter-reset: nested-alpha;
                         list-style: none !important;
-                        padding-left: 2em;
+                        padding-left: 3em; // Aumentato per migliore indentazione
+                        margin-top: 0.5em;
 
                         > li {
                             counter-increment: nested-alpha;
@@ -1234,8 +1236,8 @@ NUOVO LAYOUT FORMS - 2 COLONNE
                                 content: counter(nested-alpha, lower-alpha) ")";
                                 font-weight: normal;
                                 position: absolute;
-                                left: -2em;
-                                width: 1.5em;
+                                left: -2.5em;
+                                width: 2em;
                                 text-align: left;
                             }
                         }
@@ -1249,7 +1251,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
     ol:not([style*="lower-alpha"]):not(.main-list) {
         counter-reset: numeric-section;
         list-style: none !important;
-        padding-left: 2em;
+        padding-left: 3em; // Aggiunto padding per indentazione
 
         > li {
             counter-increment: numeric-section;
@@ -1259,9 +1261,31 @@ NUOVO LAYOUT FORMS - 2 COLONNE
                 content: counter(numeric-section) ".";
                 font-weight: normal;
                 position: absolute;
-                left: -2em;
-                width: 1.5em;
+                left: -2.5em;
+                width: 2em;
                 text-align: left;
+            }
+
+            // Sottoliste alfabetiche dentro liste numerate
+            ol[style*="lower-alpha"] {
+                counter-reset: nested-alpha;
+                list-style: none !important;
+                padding-left: 3em;
+                margin-top: 0.5em;
+
+                > li {
+                    counter-increment: nested-alpha;
+                    position: relative;
+
+                    &::before {
+                        content: counter(nested-alpha, lower-alpha) ")";
+                        font-weight: normal;
+                        position: absolute;
+                        left: -2.5em;
+                        width: 2em;
+                        text-align: left;
+                    }
+                }
             }
         }
     }
