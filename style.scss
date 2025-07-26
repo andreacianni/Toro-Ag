@@ -1275,8 +1275,9 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 #servizio-testo p {
     i.fa-solid {
         float: left;
-        width: 1.5em;
-        margin-top: 0.1em;
+        width: 2em;
+        margin-top: 0.4em;
+        color: $brand-red;
     }
 
     &:has(i.fa-solid) {
