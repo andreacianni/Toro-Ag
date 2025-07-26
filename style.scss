@@ -1091,11 +1091,11 @@ NUOVO LAYOUT FORMS - 2 COLONNE
            > h3 {
                margin-top: 1.5em;
                position: relative;
-               padding-left: 3em;
+               padding-left: 1.5em;
 
                &::before {
                    content: counter(main-section) ".";
-                   font-weight: bold;
+                   // font-weight: bold;
                    position: absolute;
                    left: 0;
                    width: 2.5em;
@@ -1106,12 +1106,12 @@ NUOVO LAYOUT FORMS - 2 COLONNE
            > ol {
                counter-reset: sub-section;
                list-style: none;
-               padding-left: 0;
+               padding-left: 0 !important;
 
                > li {
                    counter-increment: sub-section;
                    position: relative;
-                   padding-left: 4em;
+                   padding-left: 2em;
 
                    > p > strong::before {
                        content: counter(main-section) "." counter(sub-section);
