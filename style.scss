@@ -1169,7 +1169,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
                 position: relative;
                 padding-left: 1.5em;
 
-                &::before {
+                /* &::before {
                     content: counter(main-section) ".";
                     font-size: 16px;
                     font-weight: bold;
@@ -1177,7 +1177,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
                     left: 0;
                     width: 2.5em;
                     text-align: left;
-                }
+                } */
             }
         }
     }

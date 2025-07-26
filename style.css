@@ -976,16 +976,15 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   margin-top: 1.5em;
   position: relative;
   padding-left: 1.5em;
-}
-.page-id-556 #servizio-testo > ol > li > h3::before,
-.page-id-5997 #servizio-testo > ol > li > h3::before {
-  content: counter(main-section) ".";
-  font-size: 16px;
-  font-weight: bold;
-  position: absolute;
-  left: 0;
-  width: 2.5em;
-  text-align: left;
+  /* &::before {
+      content: counter(main-section) ".";
+      font-size: 16px;
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+      width: 2.5em;
+      text-align: left;
+  } */
 }
 .page-id-556 #servizio-testo ol[style*=lower-alpha],
 .page-id-5997 #servizio-testo ol[style*=lower-alpha] {
