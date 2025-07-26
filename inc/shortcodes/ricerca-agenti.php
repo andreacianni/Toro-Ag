@@ -153,11 +153,26 @@ add_shortcode('ricerca_agenti', function($atts) {
     $regioni_province = ($atts['ordinamento'] === 'N-S') ? $regioni_province_nord_sud : $regioni_province_alfabetiche;
     
     // Preleva tutti i valori distinti di "territori" da usermeta per verificare quali province hanno agenti
+    // INCLUDE FALLBACK: se territori vuoto, usa provincia dall'indirizzo
     global $wpdb;
     $province_con_agenti = $wpdb->get_col(
-        "SELECT DISTINCT meta_value
-         FROM {$wpdb->usermeta}
-         WHERE meta_key = 'territori' AND meta_value != ''"
+        "SELECT DISTINCT 
+            CASE 
+                WHEN um_territori.meta_value IS NOT NULL AND um_territori.meta_value != '' 
+                THEN um_territori.meta_value
+                ELSE um_provincia.meta_value
+            END as provincia_effettiva
+         FROM {$wpdb->users} u
+         INNER JOIN {$wpdb->usermeta} um_attivo ON u.ID = um_attivo.user_id 
+             AND um_attivo.meta_key = 'agente_attivo' AND um_attivo.meta_value = '1'
+         LEFT JOIN {$wpdb->usermeta} um_territori ON u.ID = um_territori.user_id 
+             AND um_territori.meta_key = 'territori'
+         LEFT JOIN {$wpdb->usermeta} um_provincia ON u.ID = um_provincia.user_id 
+             AND um_provincia.meta_key = 'provincia'
+         WHERE (
+             (um_territori.meta_value IS NOT NULL AND um_territori.meta_value != '')
+             OR (um_provincia.meta_value IS NOT NULL AND um_provincia.meta_value != '')
+         )"
     );
     $province_con_agenti = array_filter($province_con_agenti, function($t){
         return '' !== trim($t);
@@ -169,15 +184,28 @@ add_shortcode('ricerca_agenti', function($atts) {
     
     foreach ($regioni_province as $regione => $province_della_regione) {
         // Conta quanti rivenditori attivi ci sono nelle province di questa regione
+        // INCLUDE FALLBACK: se territori vuoto, usa provincia dall'indirizzo
+        $placeholders = implode(' OR ', array_fill(0, count($province_della_regione), 
+            '(um_territori.meta_value LIKE %s OR um_provincia.meta_value LIKE %s)'
+        ));
+        
+        $params = [];
+        foreach ($province_della_regione as $provincia) {
+            $params[] = '%' . $provincia . '%'; // per territori
+            $params[] = '%' . $provincia . '%'; // per provincia fallback
+        }
+        
         $rivenditori_in_regione = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(DISTINCT u.ID)
              FROM {$wpdb->users} u
-             INNER JOIN {$wpdb->usermeta} um1 ON u.ID = um1.user_id
-             INNER JOIN {$wpdb->usermeta} um2 ON u.ID = um2.user_id
-             WHERE um1.meta_key = 'agente_attivo' AND um1.meta_value = '1'
-             AND um2.meta_key = 'territori' 
-             AND (" . implode(' OR ', array_fill(0, count($province_della_regione), 'um2.meta_value LIKE %s')) . ")",
-            array_map(function($provincia) { return '%' . $provincia . '%'; }, $province_della_regione)
+             INNER JOIN {$wpdb->usermeta} um_attivo ON u.ID = um_attivo.user_id
+                 AND um_attivo.meta_key = 'agente_attivo' AND um_attivo.meta_value = '1'
+             LEFT JOIN {$wpdb->usermeta} um_territori ON u.ID = um_territori.user_id
+                 AND um_territori.meta_key = 'territori'
+             LEFT JOIN {$wpdb->usermeta} um_provincia ON u.ID = um_provincia.user_id
+                 AND um_provincia.meta_key = 'provincia'
+             WHERE (" . $placeholders . ")",
+            $params
         ));
         
         $regioni_con_conteggi[$regione] = (int) $rivenditori_in_regione;
@@ -193,7 +221,7 @@ add_shortcode('ricerca_agenti', function($atts) {
                 <label for="regione-select">Seleziona Regione</label>
                 <select id="regione-select" name="regione" class="form-control" required>
                     <option value="" disabled selected>— Scegli la regione —</option>
-                    <option value="tutte">Tutte le regioni &nbsp;&nbsp;<i class="bi bi-people-fill"></i> <?php echo $totale_rivenditori; ?></option>
+                    <option value="tutte">Tutte le regioni (<?php echo $totale_rivenditori; ?> rivenditore<?php echo $totale_rivenditori !== 1 ? 'i' : ''; ?>)</option>
                     <?php foreach ($regioni_province as $regione => $province_della_regione): 
                         $count = $regioni_con_conteggi[$regione];
                     ?>
@@ -201,7 +229,7 @@ add_shortcode('ricerca_agenti', function($atts) {
                                 <?php if ($count === 0): ?>disabled class="muted" title="Nessun rivenditore in questa regione"<?php endif; ?>>
                             <?php echo esc_html($regione) ?>
                             <?php if ($count > 0): ?>
-                                &nbsp;&nbsp;<i class="bi bi-people-fill"></i> <?php echo $count; ?>
+                                (<?php echo $count; ?> rivenditore<?php echo $count !== 1 ? 'i' : ''; ?>)
                             <?php endif; ?>
                         </option>
                     <?php endforeach; ?>
@@ -248,17 +276,27 @@ function ajax_ricerca_agenti() {
     }
     
     // Query utenti con ruolo "agente" e meta attivo = "Sì" + territorio match
+    // INCLUDE FALLBACK: se territori vuoto, usa provincia dall'indirizzo
     $args = [
         'meta_query' => [
+            'relation' => 'AND',
             [
                 'key'     => 'agente_attivo',
                 'value'   => '1',
                 'compare' => '=',
             ],
             [
-                'key'     => 'territori',
-                'value'   => $territorio,
-                'compare' => 'LIKE',   // Pods multi-pick stoccato come meta multipli
+                'relation' => 'OR',
+                [
+                    'key'     => 'territori',
+                    'value'   => $territorio,
+                    'compare' => 'LIKE',
+                ],
+                [
+                    'key'     => 'provincia',
+                    'value'   => $territorio,
+                    'compare' => 'LIKE',
+                ],
             ],
         ],
         'orderby'    => 'display_name',
