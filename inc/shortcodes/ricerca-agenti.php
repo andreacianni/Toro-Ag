@@ -163,6 +163,27 @@ add_shortcode('ricerca_agenti', function($atts) {
         return '' !== trim($t);
     });
     
+    // Calcola conteggio rivenditori per regione
+    $regioni_con_conteggi = [];
+    $totale_rivenditori = 0;
+    
+    foreach ($regioni_province as $regione => $province_della_regione) {
+        // Conta quanti rivenditori attivi ci sono nelle province di questa regione
+        $rivenditori_in_regione = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(DISTINCT u.ID)
+             FROM {$wpdb->users} u
+             INNER JOIN {$wpdb->usermeta} um1 ON u.ID = um1.user_id
+             INNER JOIN {$wpdb->usermeta} um2 ON u.ID = um2.user_id
+             WHERE um1.meta_key = 'agente_attivo' AND um1.meta_value = '1'
+             AND um2.meta_key = 'territori' 
+             AND (" . implode(' OR ', array_fill(0, count($province_della_regione), 'um2.meta_value LIKE %s')) . ")",
+            array_map(function($provincia) { return '%' . $provincia . '%'; }, $province_della_regione)
+        ));
+        
+        $regioni_con_conteggi[$regione] = (int) $rivenditori_in_regione;
+        $totale_rivenditori += (int) $rivenditori_in_regione;
+    }
+    
     // Costruisci il form e il contenitore risultati
     ob_start(); ?>
     
@@ -172,10 +193,16 @@ add_shortcode('ricerca_agenti', function($atts) {
                 <label for="regione-select">Seleziona Regione</label>
                 <select id="regione-select" name="regione" class="form-control" required>
                     <option value="" disabled selected>— Scegli la regione —</option>
-                    <option value="tutte">Tutte le regioni</option>
-                    <?php foreach (array_keys($regioni_province) as $regione): ?>
-                        <option value="<?php echo esc_attr($regione) ?>">
+                    <option value="tutte">Tutte le regioni &nbsp;&nbsp;<i class="bi bi-people-fill"></i> <?php echo $totale_rivenditori; ?></option>
+                    <?php foreach ($regioni_province as $regione => $province_della_regione): 
+                        $count = $regioni_con_conteggi[$regione];
+                    ?>
+                        <option value="<?php echo esc_attr($regione) ?>" 
+                                <?php if ($count === 0): ?>disabled class="muted" title="Nessun rivenditore in questa regione"<?php endif; ?>>
                             <?php echo esc_html($regione) ?>
+                            <?php if ($count > 0): ?>
+                                &nbsp;&nbsp;<i class="bi bi-people-fill"></i> <?php echo $count; ?>
+                            <?php endif; ?>
                         </option>
                     <?php endforeach; ?>
                 </select>

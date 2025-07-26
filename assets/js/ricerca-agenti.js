@@ -6,6 +6,11 @@
     var $provinciaSelect = $('#territorio-select');
     var $submitBtn = $('.btn-search');
     
+    // Verifica se la regione selezionata è disabilitata (non dovrebbe succedere, ma per sicurezza)
+    if ($(this).find('option:selected').hasClass('muted')) {
+      return false;
+    }
+    
     // Reset provincia select
     $provinciaSelect.empty().append('<option value="" disabled selected>— Seleziona la provincia —</option>');
     
