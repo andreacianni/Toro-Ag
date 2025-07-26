@@ -221,7 +221,7 @@ add_shortcode('ricerca_agenti', function($atts) {
                 <label for="regione-select">Seleziona Regione</label>
                 <select id="regione-select" name="regione" class="form-control" required>
                     <option value="" disabled selected>— Scegli la regione —</option>
-                    <option value="tutte">Tutte le regioni (<?php echo $totale_rivenditori; ?> rivenditore<?php echo $totale_rivenditori !== 1 ? 'i' : ''; ?>)</option>
+                    <option value="tutte">Tutte le regioni (<?php echo $totale_rivenditori; ?> rivenditore<?php echo $totale_rivenditori === 1 ? '' : 'i'; ?>)</option>
                     <?php foreach ($regioni_province as $regione => $province_della_regione): 
                         $count = $regioni_con_conteggi[$regione];
                     ?>
@@ -229,7 +229,7 @@ add_shortcode('ricerca_agenti', function($atts) {
                                 <?php if ($count === 0): ?>disabled class="muted" title="Nessun rivenditore in questa regione"<?php endif; ?>>
                             <?php echo esc_html($regione) ?>
                             <?php if ($count > 0): ?>
-                                (<?php echo $count; ?> rivenditore<?php echo $count !== 1 ? 'i' : ''; ?>)
+                                (<?php echo $count; ?> rivenditore<?php echo $count === 1 ? '' : 'i'; ?>)
                             <?php endif; ?>
                         </option>
                     <?php endforeach; ?>
