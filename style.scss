@@ -1095,7 +1095,8 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 
                &::before {
                    content: counter(main-section) ".";
-                   // font-weight: bold;
+                   font-size: 16px;
+                   font-weight: bold;
                    position: absolute;
                    left: 0;
                    width: 2.5em;

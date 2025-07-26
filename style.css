@@ -914,6 +914,8 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 }
 .page-id-3111 #servizio-testo > ol > li > h3::before {
   content: counter(main-section) ".";
+  font-size: 16px;
+  font-weight: bold;
   position: absolute;
   left: 0;
   width: 2.5em;
