@@ -975,7 +975,6 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 .page-id-5997 #servizio-testo > ol > li > h3 {
   margin-top: 1.5em;
   position: relative;
-  padding-left: 1.5em;
   /* &::before {
       content: counter(main-section) ".";
       font-size: 16px;
@@ -1052,7 +1051,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 .page-id-5997 #servizio-testo ol:not([style*=lower-alpha]):not(.main-list) {
   counter-reset: numeric-section;
   list-style: none !important;
-  padding-left: 3em;
+  padding-left: 3em !important;
 }
 .page-id-556 #servizio-testo ol:not([style*=lower-alpha]):not(.main-list) > li,
 .page-id-5997 #servizio-testo ol:not([style*=lower-alpha]):not(.main-list) > li {
@@ -1072,7 +1071,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 .page-id-5997 #servizio-testo ol:not([style*=lower-alpha]):not(.main-list) > li ol[style*=lower-alpha] {
   counter-reset: nested-alpha;
   list-style: none !important;
-  padding-left: 3em;
+  padding-left: 3em !important;
   margin-top: 0.5em;
 }
 .page-id-556 #servizio-testo ol:not([style*=lower-alpha]):not(.main-list) > li ol[style*=lower-alpha] > li,

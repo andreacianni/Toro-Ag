@@ -1167,7 +1167,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
             > h3 {
                 margin-top: 1.5em;
                 position: relative;
-                padding-left: 1.5em;
+                // padding-left: 1.5em;
 
                 /* &::before {
                     content: counter(main-section) ".";
@@ -1251,7 +1251,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
     ol:not([style*="lower-alpha"]):not(.main-list) {
         counter-reset: numeric-section;
         list-style: none !important;
-        padding-left: 3em; // Aggiunto padding per indentazione
+        padding-left: 3em !important; // Aggiunto padding per indentazione
 
         > li {
             counter-increment: numeric-section;
@@ -1270,7 +1270,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
             ol[style*="lower-alpha"] {
                 counter-reset: nested-alpha;
                 list-style: none !important;
-                padding-left: 3em;
+                padding-left: 3em !important;
                 margin-top: 0.5em;
 
                 > li {
