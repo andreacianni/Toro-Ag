@@ -12,6 +12,17 @@ Template: Divi
 ======================================*/
 /* You can add your own CSS styles here. Use !important to overwrite styles if needed. */
 /* COMPILATO DA SCSS */
+/* Stili per regioni senza rivenditori */
+.form-control option.muted {
+  color: #6c757d !important;
+  background-color: #f8f9fa !important;
+  font-style: italic;
+}
+
+.form-control option.muted:disabled {
+  cursor: not-allowed;
+}
+
 /* stili menù */
 #menu-principale #menu-header li a,
 #menu-principale #menu-header-inglese-1 li a {
