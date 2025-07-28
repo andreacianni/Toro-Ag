@@ -565,24 +565,3 @@ function toro_parse_excel_date($date_string) {
     error_log("PARSING DATE: last resort current date: {$result}");
     return $result;
 }
-// DEBUG: Verifica caricamento ToroLayoutManager
-error_log("TORO DEBUG: Loading ToroLayoutManager...");
-
-if (file_exists(get_stylesheet_directory() . '/inc/classes/ToroLayoutManager.php')) {
-    error_log("TORO DEBUG: ToroLayoutManager.php file exists");
-    
-    try {
-        require_once get_stylesheet_directory() . '/inc/classes/ToroLayoutManager.php';
-        error_log("TORO DEBUG: ToroLayoutManager.php loaded successfully");
-        
-        if (class_exists('ToroLayoutManager')) {
-            error_log("TORO DEBUG: ToroLayoutManager class exists");
-        } else {
-            error_log("TORO DEBUG: ToroLayoutManager class NOT FOUND");
-        }
-    } catch (Exception $e) {
-        error_log("TORO DEBUG: Exception loading ToroLayoutManager: " . $e->getMessage());
-    }
-} else {
-    error_log("TORO DEBUG: ToroLayoutManager.php file NOT FOUND");
-}
