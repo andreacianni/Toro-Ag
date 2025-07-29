@@ -12,8 +12,8 @@ jQuery(document).ready(function($) {
     console.log('🔧 Campo #role trovato:', $('#role').length > 0);
     
     // Verifica che siamo nella pagina di editing utente
-    if (!$('body').hasClass('users-php')) {
-        console.log('❌ Non siamo nella pagina users-php');
+    if (!$('body').hasClass('user-edit-php') && !$('body').hasClass('user-new-php')) {
+        console.log('❌ Non siamo nella pagina user-edit-php o user-new-php');
         return;
     }
     
