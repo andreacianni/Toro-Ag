@@ -7,8 +7,24 @@
 
 jQuery(document).ready(function($) {
     
+    console.log('🔧 TORO AG: Script hide social fields caricato');
+    console.log('🔧 Body classes:', $('body').attr('class'));
+    console.log('🔧 Campo #role trovato:', $('#role').length > 0);
+    
     // Verifica che siamo nella pagina di editing utente
-    if (!$('body').hasClass('users-php') || !$('#role').length) {
+    if (!$('body').hasClass('users-php')) {
+        console.log('❌ Non siamo nella pagina users-php');
+        return;
+    }
+    
+    if (!$('#role').length) {
+        console.log('❌ Campo #role non trovato');
+        // Proviamo altri selettori possibili
+        console.log('🔧 Altri campi role trovati:', $('select[name="role"]').length);
+        console.log('🔧 Tutti i select:', $('select').length);
+        $('select').each(function(i, el) {
+            console.log('Select ' + i + ':', $(el).attr('name'), $(el).attr('id'));
+        });
         return;
     }
     
@@ -26,17 +42,31 @@ jQuery(document).ready(function($) {
         'user-youtube-wrap'
     ];
     
+    console.log('🔧 Campi social da nascondere:', socialFieldsToHide);
+    
+    // Verifica che i campi esistano
+    socialFieldsToHide.forEach(function(fieldClass) {
+        const $field = $('.' + fieldClass);
+        console.log('🔧 Campo .' + fieldClass + ' trovato:', $field.length > 0);
+    });
+    
     /**
      * Funzione per nascondere/mostrare i campi social
      * @param {boolean} hide - true per nascondere, false per mostrare
      */
     function toggleSocialFields(hide) {
+        console.log('🔧 toggleSocialFields chiamata con hide:', hide);
+        
         socialFieldsToHide.forEach(function(fieldClass) {
             const $field = $('.' + fieldClass);
-            if (hide) {
-                $field.fadeOut(300);
-            } else {
-                $field.fadeIn(300);
+            if ($field.length > 0) {
+                if (hide) {
+                    $field.css('display', 'none');
+                    console.log('✅ Nascosto campo:', fieldClass);
+                } else {
+                    $field.css('display', '');
+                    console.log('✅ Mostrato campo:', fieldClass);
+                }
             }
         });
     }
@@ -46,27 +76,31 @@ jQuery(document).ready(function($) {
      */
     function checkRoleAndToggleFields() {
         const selectedRole = $('#role').val();
+        console.log('🔧 Ruolo selezionato:', selectedRole);
+        console.log('🔧 Tipo ruolo:', typeof selectedRole);
+        console.log('🔧 Ruolo === "agente":', selectedRole === 'agente');
+        
         const isAgent = (selectedRole === 'agente');
         
         // Nasconde i campi se è un agente, li mostra altrimenti
         toggleSocialFields(isAgent);
         
-        // Debug info (rimuovere in produzione)
-        if (window.console) {
-            console.log('Ruolo selezionato:', selectedRole, '| Agente:', isAgent);
-        }
+        console.log('🎯 RISULTATO: Agente:', isAgent, '| Campi nascosti:', isAgent);
     }
     
     // Esegui il check iniziale al caricamento della pagina
+    console.log('🚀 Eseguo check iniziale...');
     checkRoleAndToggleFields();
     
     // Monitora i cambiamenti del ruolo per comportamento dinamico
     $('#role').on('change', function() {
+        console.log('🔄 Ruolo cambiato, eseguo nuovo check...');
         checkRoleAndToggleFields();
     });
     
     // Fallback: monitora anche eventuali altri select di ruolo
     $('select[name="role"]').on('change', function() {
+        console.log('🔄 Select[name="role"] cambiato, eseguo nuovo check...');
         checkRoleAndToggleFields();
     });
     
