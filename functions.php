@@ -569,6 +569,10 @@ function toro_parse_excel_date($date_string) {
 /**
  * Enqueue script per nascondere campi social degli agenti
  * TORO AG - Feature: Hide Social Fields for Agents
+ * 
+ * 🔧 PER DISABILITARE QUESTA FUNZIONALITÀ:
+ * Commenta le righe dalla 576 alla 704 (tutto il blocco da qui fino a "add_action('user_register'...")
+ * Oppure rimuovi il file assets/js/admin-user-social-fields.js
  */
 function toro_ag_enqueue_admin_user_scripts($hook) {
     // Carica solo nelle pagine di editing/creazione utente
@@ -629,7 +633,7 @@ function toro_ag_show_simplified_profile_field($user) {
             var $contactTable = $contactSection.next('.form-table');
             if ($contactTable.length > 0) {
                 $('.toro-simplified-profile-section').insertAfter($contactTable);
-                console.log('✅ Sezione Preferenze Profilo spostata dopo Informazioni di contatto');
+                // console.log('✅ Sezione Preferenze Profilo spostata dopo Informazioni di contatto');
             }
         }
     });
