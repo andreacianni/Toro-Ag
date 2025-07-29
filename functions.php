@@ -579,9 +579,9 @@ function toro_ag_enqueue_admin_user_scripts($hook) {
     // Enqueue dello script
     wp_enqueue_script(
         'toro-ag-admin-user-social-fields',
-        get_template_directory_uri() . '/assets/js/admin-user-social-fields.js',
+        get_stylesheet_directory_uri() . '/assets/js/admin-user-social-fields.js',
         array('jquery'),
-        filemtime(get_template_directory() . '/assets/js/admin-user-social-fields.js'),
+        filemtime(get_stylesheet_directory() . '/assets/js/admin-user-social-fields.js'),
         true
     );
     
