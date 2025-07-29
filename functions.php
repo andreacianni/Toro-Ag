@@ -597,3 +597,85 @@ function toro_ag_enqueue_admin_user_scripts($hook) {
 }
 add_action('admin_enqueue_scripts', 'toro_ag_enqueue_admin_user_scripts');
 
+/**
+ * Aggiunge checkbox "Modalità semplificata profilo" nella pagina di editing utente
+ * TORO AG - Feature: Simplified Profile Mode Toggle
+ */
+
+// Mostra il campo nella pagina di editing utente
+function toro_ag_show_simplified_profile_field($user) {
+    $hide_social_fields = get_user_meta($user->ID, 'hide_social_fields', true);
+    // Default: true (checked) se non è stato mai impostato
+    if ($hide_social_fields === '') {
+        $hide_social_fields = '1';
+    }
+    ?>
+    <h3>Preferenze Profilo</h3>
+    <table class="form-table" role="presentation">
+        <tr>
+            <th scope="row">Modalità Profilo</th>
+            <td>
+                <label for="hide_social_fields">
+                    <input type="checkbox" 
+                           name="hide_social_fields" 
+                           id="hide_social_fields" 
+                           value="1" 
+                           <?php checked($hide_social_fields, '1'); ?> />
+                    Modalità semplificata profilo
+                    <p class="description">Nasconde i campi social media per un'interfaccia più pulita.</p>
+                </label>
+            </td>
+        </tr>
+    </table>
+    <?php
+}
+add_action('show_user_profile', 'toro_ag_show_simplified_profile_field');
+add_action('edit_user_profile', 'toro_ag_show_simplified_profile_field');
+
+// Salva il campo quando viene aggiornato il profilo
+function toro_ag_save_simplified_profile_field($user_id) {
+    if (!current_user_can('edit_user', $user_id)) {
+        return false;
+    }
+    
+    // Salva il valore del checkbox (1 se checked, 0 se unchecked)
+    $hide_social_fields = isset($_POST['hide_social_fields']) ? '1' : '0';
+    update_user_meta($user_id, 'hide_social_fields', $hide_social_fields);
+}
+add_action('personal_options_update', 'toro_ag_save_simplified_profile_field');
+add_action('edit_user_profile_update', 'toro_ag_save_simplified_profile_field');
+
+/**
+ * Aggiunge il campo anche nella pagina di creazione nuovo utente
+ */
+function toro_ag_show_simplified_profile_field_new_user() {
+    ?>
+    <h3>Preferenze Profilo</h3>
+    <table class="form-table" role="presentation">
+        <tr>
+            <th scope="row">Modalità Profilo</th>
+            <td>
+                <label for="hide_social_fields">
+                    <input type="checkbox" 
+                           name="hide_social_fields" 
+                           id="hide_social_fields" 
+                           value="1" 
+                           checked /> <!-- Default checked per nuovi utenti -->
+                    Modalità semplificata profilo
+                    <p class="description">Nasconde i campi social media per un'interfaccia più pulita.</p>
+                </label>
+            </td>
+        </tr>
+    </table>
+    <?php
+}
+add_action('user_new_form', 'toro_ag_show_simplified_profile_field_new_user');
+
+// Salva il campo per nuovi utenti
+function toro_ag_save_simplified_profile_field_new_user($user_id) {
+    // Salva il valore del checkbox per nuovo utente
+    $hide_social_fields = isset($_POST['hide_social_fields']) ? '1' : '0';
+    update_user_meta($user_id, 'hide_social_fields', $hide_social_fields);
+}
+add_action('user_register', 'toro_ag_save_simplified_profile_field_new_user');
+

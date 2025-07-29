@@ -72,36 +72,29 @@ jQuery(document).ready(function($) {
     }
     
     /**
-     * Controlla il ruolo corrente e nasconde/mostra i campi
+     * Controlla il checkbox e nasconde/mostra i campi
      */
-    function checkRoleAndToggleFields() {
-        const selectedRole = $('#role').val();
-        console.log('🔧 Ruolo selezionato:', selectedRole);
-        console.log('🔧 Tipo ruolo:', typeof selectedRole);
-        console.log('🔧 Ruolo === "agente":', selectedRole === 'agente');
+    function checkToggleAndToggleFields() {
+        const $hideCheckbox = $('#hide_social_fields');
+        const shouldHide = $hideCheckbox.is(':checked');
         
-        const isAgent = (selectedRole === 'agente');
+        console.log('🔧 Checkbox "Modalità semplificata" trovato:', $hideCheckbox.length > 0);
+        console.log('🔧 Checkbox è checked:', shouldHide);
         
-        // Nasconde i campi se è un agente, li mostra altrimenti
-        toggleSocialFields(isAgent);
+        // Nasconde i campi se checkbox è checked
+        toggleSocialFields(shouldHide);
         
-        console.log('🎯 RISULTATO: Agente:', isAgent, '| Campi nascosti:', isAgent);
+        console.log('🎯 RISULTATO: Modalità semplificata:', shouldHide, '| Campi nascosti:', shouldHide);
     }
     
     // Esegui il check iniziale al caricamento della pagina
     console.log('🚀 Eseguo check iniziale...');
-    checkRoleAndToggleFields();
+    checkToggleAndToggleFields();
     
-    // Monitora i cambiamenti del ruolo per comportamento dinamico
-    $('#role').on('change', function() {
-        console.log('🔄 Ruolo cambiato, eseguo nuovo check...');
-        checkRoleAndToggleFields();
-    });
-    
-    // Fallback: monitora anche eventuali altri select di ruolo
-    $('select[name="role"]').on('change', function() {
-        console.log('🔄 Select[name="role"] cambiato, eseguo nuovo check...');
-        checkRoleAndToggleFields();
+    // Monitora i cambiamenti del checkbox per comportamento dinamico
+    $(document).on('change', '#hide_social_fields', function() {
+        console.log('🔄 Checkbox cambiato, eseguo nuovo check...');
+        checkToggleAndToggleFields();
     });
     
 });
