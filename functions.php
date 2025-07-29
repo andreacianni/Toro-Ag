@@ -602,7 +602,7 @@ add_action('admin_enqueue_scripts', 'toro_ag_enqueue_admin_user_scripts');
  * TORO AG - Feature: Simplified Profile Mode Toggle
  */
 
-// Mostra il campo nella pagina di editing utente
+// Mostra il campo nella pagina di editing utente - DOPO i campi contatto ma PRIMA di Pods
 function toro_ag_show_simplified_profile_field($user) {
     $hide_social_fields = get_user_meta($user->ID, 'hide_social_fields', true);
     // Default: true (checked) se non è stato mai impostato
@@ -610,23 +610,50 @@ function toro_ag_show_simplified_profile_field($user) {
         $hide_social_fields = '1';
     }
     ?>
-    <h3>Preferenze Profilo</h3>
-    <table class="form-table" role="presentation">
-        <tr>
-            <th scope="row">Modalità Profilo</th>
-            <td>
-                <label for="hide_social_fields">
-                    <input type="checkbox" 
-                           name="hide_social_fields" 
-                           id="hide_social_fields" 
-                           value="1" 
-                           <?php checked($hide_social_fields, '1'); ?> />
-                    Modalità semplificata profilo
-                    <p class="description">Nasconde i campi social media per un'interfaccia più pulita.</p>
-                </label>
-            </td>
-        </tr>
-    </table>
+    <style>
+    /* Assicuriamoci che sia visibile e ben posizionato */
+    .toro-simplified-profile-section {
+        margin: 20px 0;
+        padding: 15px 0;
+        border-bottom: 1px solid #c3c4c7;
+    }
+    </style>
+    <script>
+    jQuery(document).ready(function($) {
+        // Sposta il campo subito dopo "Informazioni di contatto"
+        var $contactSection = $('h2').filter(function() {
+            return $(this).text().trim() === 'Informazioni di contatto';
+        });
+        
+        if ($contactSection.length > 0) {
+            var $contactTable = $contactSection.next('.form-table');
+            if ($contactTable.length > 0) {
+                $('.toro-simplified-profile-section').insertAfter($contactTable);
+                console.log('✅ Sezione Preferenze Profilo spostata dopo Informazioni di contatto');
+            }
+        }
+    });
+    </script>
+    
+    <div class="toro-simplified-profile-section">
+        <h3>Preferenze Profilo</h3>
+        <table class="form-table" role="presentation">
+            <tr>
+                <th scope="row">Modalità Profilo</th>
+                <td>
+                    <label for="hide_social_fields">
+                        <input type="checkbox" 
+                               name="hide_social_fields" 
+                               id="hide_social_fields" 
+                               value="1" 
+                               <?php checked($hide_social_fields, '1'); ?> />
+                        Modalità semplificata profilo
+                        <p class="description">Nasconde i campi social media per un'interfaccia più pulita.</p>
+                    </label>
+                </td>
+            </tr>
+        </table>
+    </div>
     <?php
 }
 add_action('show_user_profile', 'toro_ag_show_simplified_profile_field');
