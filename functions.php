@@ -565,3 +565,35 @@ function toro_parse_excel_date($date_string) {
     error_log("PARSING DATE: last resort current date: {$result}");
     return $result;
 }
+
+/**
+ * Enqueue script per nascondere campi social degli agenti
+ * TORO AG - Feature: Hide Social Fields for Agents
+ */
+function toro_ag_enqueue_admin_user_scripts($hook) {
+    // Carica solo nelle pagine di editing/creazione utente
+    if ($hook !== 'user-edit.php' && $hook !== 'user-new.php') {
+        return;
+    }
+    
+    // Enqueue dello script
+    wp_enqueue_script(
+        'toro-ag-admin-user-social-fields',
+        get_template_directory_uri() . '/assets/js/admin-user-social-fields.js',
+        array('jquery'),
+        filemtime(get_template_directory() . '/assets/js/admin-user-social-fields.js'),
+        true
+    );
+    
+    // Opzionale: Passa dati PHP a JavaScript se necessario
+    wp_localize_script(
+        'toro-ag-admin-user-social-fields',
+        'toroAgentFields',
+        array(
+            'agentRole' => 'agente',
+            'debug' => defined('WP_DEBUG') && WP_DEBUG
+        )
+    );
+}
+add_action('admin_enqueue_scripts', 'toro_ag_enqueue_admin_user_scripts');
+
