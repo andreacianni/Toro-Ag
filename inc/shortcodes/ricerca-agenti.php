@@ -221,7 +221,7 @@ add_shortcode('ricerca_agenti', function($atts) {
                 <label for="regione-select">Seleziona Regione</label>
                 <select id="regione-select" name="regione" class="form-control" required>
                     <option value="" disabled selected>— Scegli la regione —</option>
-                    <option value="tutte">Tutte le regioni (<?php echo $totale_rivenditori; ?> rivenditor<?php echo $totale_rivenditori === 1 ? 'e' : 'i'; ?>)</option>
+                    <option value="tutte">Tutte le regioni</option>
                     <?php foreach ($regioni_province as $regione => $province_della_regione): 
                         $count = $regioni_con_conteggi[$regione];
                     ?>
