@@ -112,6 +112,11 @@ if ( ! function_exists( 'get_agente_maps_link' ) ) {
         $citta         = $pod->field( 'citta' );
         $provincia_raw = $pod->field( 'provincia' );
 
+        // Verifica se abbiamo informazioni sufficienti per un indirizzo valido
+        if ( empty( trim( $via ) ) && empty( trim( $citta ) ) ) {
+            return ''; // Nessun link se mancano via e città
+        }
+
         // Estraggo il codice provincia fra parentesi, se presente
         if ( preg_match( '/\(([^)]+)\)/', $provincia_raw, $m ) ) {
             $provincia = $m[1];
