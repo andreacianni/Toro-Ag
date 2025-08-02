@@ -5,7 +5,6 @@
  */
 ?>
 <?php foreach ($categorie as $categoria): ?>
-    <h4 class="fw-semibold mb-3 border-bottom"><?php echo esc_html($categoria->name); ?></h4>
     <?php
         $args = [
             'post_type' => 'documento_agente',
@@ -19,6 +18,7 @@
         $query = new WP_Query($args);
     ?>
     <?php if ($query->have_posts()): ?>
+        <h4 class="fw-semibold mb-3 border-bottom"><?php echo esc_html($categoria->name); ?></h4>
         <div class="row g-3 mb-5">
             <?php while ($query->have_posts()): $query->the_post(); ?>
                 <?php
@@ -54,9 +54,6 @@
                 </div>
             <?php endwhile; wp_reset_postdata(); ?>
         </div>
-    <?php else: ?>
-        <div class="row g-3 mb-5">
-            <p class="text-muted">La sezione non contiene documenti.</p>
-        </div>
     <?php endif; ?>
+    <?php // NOTA: Sezioni vuote non vengono più mostrate - Fix #3 implementato ?>
 <?php endforeach; ?>
