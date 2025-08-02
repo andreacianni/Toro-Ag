@@ -15,21 +15,32 @@ add_action('init', function () {
     ]);
 });
 
-// Blocco totale accesso admin per tutti gli utenti NON amministratori
+// Blocco accesso admin SOLO per ruolo "agente" - Altri ruoli (editor/author) possono accedere
 add_action('init', function () {
     $user = wp_get_current_user();
 
-    $allowed_roles = ['administrator'];
-
-    if (!array_intersect($allowed_roles, $user->roles)) {
+    // Blocchiamo SOLO il ruolo "agente", tutti gli altri ruoli WordPress possono accedere al backend
+    if (in_array('agente', (array) $user->roles)) {
         show_admin_bar(false);
 
         if (is_admin() && !defined('DOING_AJAX')) {
-            wp_redirect(site_url('/area-agenti/risorse/'));
+            // Redirect corretto alla pagina area agenti (non /risorse/)
+            wp_redirect(site_url('/area-agenti/'));
             exit;
         }
     }
 });
+
+// Hook per redirect agenti dopo login da wp-login.php
+add_filter('login_redirect', function ($redirect_to, $request, $user) {
+    // Se l'utente ha ruolo "agente", redirigilo sempre all'area agenti
+    if (isset($user->roles) && in_array('agente', $user->roles)) {
+        return site_url('/area-agenti/');
+    }
+    
+    // Per tutti gli altri ruoli, mantieni il comportamento standard
+    return $redirect_to;
+}, 10, 3);
 
 // Shortcode: pagina unica area agenti con login, accesso, cambio password e dati
 add_shortcode('area_agenti_unificato', function () {
