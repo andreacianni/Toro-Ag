@@ -3,6 +3,9 @@
  * Divi Cake Child Theme
  * Functions.php
  *
+ * 🧪 TEST WORKFLOW GIT - San Tommaso Andrea - 02/08/2025 15:30
+ * Questo commento PHP conferma che le modifiche passano da Local → Staging
+ * 
  * ===== NOTES ==================================================================
  * 
  * Unlike style.css, the functions.php of a child theme does not override its 
@@ -709,4 +712,16 @@ function toro_ag_save_simplified_profile_field_new_user($user_id) {
     update_user_meta($user_id, 'hide_social_fields', $hide_social_fields);
 }
 add_action('user_register', 'toro_ag_save_simplified_profile_field_new_user');
+
+// 🧪 TEST WORKFLOW GIT - SHORTCODE VISIBILE
+// San Tommaso Andrea - 02/08/2025 15:30
+// Questo shortcode stampa un messaggio HTML visibile per confermare il deploy
+function toro_test_workflow_shortcode() {
+    return '<div style="background: #28a745; color: white; padding: 15px; margin: 20px 0; border-radius: 5px; text-align: center; font-weight: bold;">
+        🧪 TEST WORKFLOW GIT ATTIVO! 🚀<br>
+        Modifica committata il: ' . date('d/m/Y H:i:s') . '<br>
+        <small>Se vedi questo messaggio, il workflow Local → Staging funziona!</small>
+    </div>';
+}
+add_shortcode('test_workflow', 'toro_test_workflow_shortcode');
 
