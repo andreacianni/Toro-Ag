@@ -725,3 +725,7 @@ function toro_test_workflow_shortcode() {
 }
 add_shortcode('test_workflow', 'toro_test_workflow_shortcode');
 
+// 🚀 TORO AG GitHub Auto-Updater
+// Sistema per aggiornamenti automatici tema da GitHub
+require_once get_stylesheet_directory() . '/inc/github-updater/ToroGitHubUpdater.php';
+
