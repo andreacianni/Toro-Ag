@@ -13,7 +13,9 @@
         <section class="p-4 rounded-3 shadow-sm bg-light border">
             <h2 class="h4 mb-3 text-danger">Accesso non autorizzato</h2>
             <p class="text-muted">
-                Il tuo account è attualmente disattivato. Se ritieni ci sia un errore o vuoi contattare l’amministratore.
+                Il tuo account è attualmente disattivato. Se ritieni ci sia un errore contatta l'amministratore.
             </p>
         </section>
     </div>
+
+</div>

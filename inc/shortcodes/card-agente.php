@@ -25,7 +25,7 @@ add_shortcode('agente_card', function ($atts = [], $content = null) {
         <div class="card shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div class="me-2">
-                Scheda Agente "<em><?php echo esc_html($user->display_name); ?></em>"
+                Rivenditore "<em><?php echo esc_html($user->display_name); ?></em>"
                 </div>
                 <div>
                     <?php if ( is_agente_attivo($user->ID) ) : ?>
