@@ -703,6 +703,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   color: #495057;
   font-size: 15px;
   line-height: 1.2;
+  -webkit-user-select: none;
   user-select: none;
   white-space: nowrap;
 }
@@ -770,7 +771,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 @media (max-width: 767px) {
   .form-contatti-new .row,
   .form-prodotti-new .row {
-    min-height: auto;
+    min-height: initial;
   }
   .form-contatti-new .textarea-full-height,
   .form-prodotti-new .textarea-full-height {
@@ -857,6 +858,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   line-height: 1.3;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  -webkit-hyphens: auto;
   hyphens: auto;
 }
 .nav-link-section:hover, .nav-link-section.active {

@@ -11,7 +11,7 @@ $img_field = get_query_var('toro_ag_grid_image_field','featured');
 
 <div class="toro-grid <?php echo esc_attr( get_query_var('toro_ag_grid_wrapper_class','') ); ?>">
     <?php foreach ($items as $item) : ?>
-        <div class="toro-grid__item">
+        <div class="toro-grid__item"> <!-- inc\views\shortcode-grid.php -->
             <?php
             if (is_a($item,'WP_Term')) {
                 $img_id = get_term_meta($item->term_id, $img_field, true);
