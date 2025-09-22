@@ -112,6 +112,15 @@ Template: Divi
   line-height: 1.2;
   flex-grow: 1;
 }
+.toro-grid__item a.d-block.w-100 {
+  overflow: hidden;
+}
+.toro-grid__item img {
+  transition: scale 0.3s ease;
+}
+.toro-grid__item:hover img {
+  scale: 1.1;
+}
 
 .toro-grid--tipi-prod h4 {
   text-transform: uppercase;

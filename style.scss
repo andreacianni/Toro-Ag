@@ -131,6 +131,21 @@ $brand-red-hover: #b01c22;
       flex-grow: 1;
     }
   }
+
+  // Hover effect for images
+  &__item {
+    a.d-block.w-100 {
+      overflow: hidden;
+    }
+
+    img {
+      transition: scale 0.3s ease;
+    }
+
+    &:hover img {
+      scale: 1.1;
+    }
+  }
 }
 // Add these classes alongside .toro-grid in the wrapper markup (e.g. <div class="toro-grid toro-grid--tipi-prod">)
  .toro-grid--tipi-prod { 

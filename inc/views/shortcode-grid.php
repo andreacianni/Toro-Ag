@@ -25,7 +25,7 @@ $img_field = get_query_var('toro_ag_grid_image_field','featured');
                 $link   = get_permalink($item);
             }
             if ($link) echo "<a class=\"d-block w-100\" href='" . esc_url($link) . "'>";
-            echo wp_get_attachment_image($img_id, 'medium', false, ['class' => 'd-block w-100 img-fluid', 'alt' => esc_attr($title)]);
+            echo wp_get_attachment_image($img_id, 'full', false, ['class' => 'd-block w-100 img-fluid', 'alt' => esc_attr($title)]);
             if ($link) echo "</a>";
             ?>
             <?php if ($link) echo "<a href='" . esc_url($link) . "'>"; ?>
