@@ -22,7 +22,7 @@ class ToroGitHubUpdater {
     /**
      * @var string Theme slug (nome della cartella del tema)
      */
-    private $theme_slug = 'toro-ag-template';
+    private $theme_slug;
     
     /**
      * @var string Theme stylesheet (get_option('stylesheet'))
@@ -49,12 +49,13 @@ class ToroGitHubUpdater {
      */
     public function __construct() {
         $this->theme_stylesheet = get_option('stylesheet');
+        $this->theme_slug = $this->theme_stylesheet; // Auto-rileva il nome del tema corrente
         $this->theme_data = wp_get_theme($this->theme_stylesheet);
         $this->theme_version = $this->theme_data->get('Version');
         $this->github_token = get_option('toro_github_token', '');
-        
-        // Inizializza hooks solo se siamo nel tema giusto
-        if ($this->theme_stylesheet === $this->theme_slug) {
+
+        // Inizializza hooks solo se il tema ha il nome corretto (inizia con 'toro-ag')
+        if (strpos($this->theme_stylesheet, 'toro-ag') === 0) {
             $this->init_hooks();
         }
     }
