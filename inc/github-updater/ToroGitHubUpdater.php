@@ -51,12 +51,11 @@ class ToroGitHubUpdater {
         $this->theme_stylesheet = get_option('stylesheet');
         $this->theme_slug = 'toro-ag'; // Nome fisso della cartella tema (evita auto-rilevamento)
         $this->theme_data = wp_get_theme($this->theme_stylesheet);
-        $this->theme_version = $this->theme_data->get('Version');
+        $this->theme_version = $this->theme_data instanceof WP_Theme ? $this->theme_data->get('Version') : '1.0.0';
         $this->github_token = get_option('toro_github_token', '');
 
         // Inizializza hooks sempre (rimuovendo il controllo del nome auto-rilevato)
         $this->init_hooks();
-        }
     }
     
     /**
@@ -244,18 +243,24 @@ class ToroGitHubUpdater {
             return $result;
         }
         
+        $theme_name = $this->theme_data instanceof WP_Theme ? $this->theme_data->get('Name') : 'Toro AG';
+        $theme_author = $this->theme_data instanceof WP_Theme ? $this->theme_data->get('Author') : 'Andrea Cianni';
+        $theme_author_uri = $this->theme_data instanceof WP_Theme ? $this->theme_data->get('AuthorURI') : '';
+        $theme_uri = $this->theme_data instanceof WP_Theme ? $this->theme_data->get('ThemeURI') : '';
+        $theme_description = $this->theme_data instanceof WP_Theme ? $this->theme_data->get('Description') : 'Child Theme per Toro Ag';
+
         return (object) array(
-            'name' => $this->theme_data->get('Name'),
+            'name' => $theme_name,
             'slug' => $this->theme_slug,
             'version' => $remote_info['version'],
-            'author' => $this->theme_data->get('Author'),
-            'author_profile' => $this->theme_data->get('AuthorURI'),
+            'author' => $theme_author,
+            'author_profile' => $theme_author_uri,
             'last_updated' => $remote_info['date'],
-            'homepage' => $this->theme_data->get('ThemeURI'),
-            'description' => $this->theme_data->get('Description'),
-            'short_description' => $this->theme_data->get('Description'),
+            'homepage' => $theme_uri,
+            'description' => $theme_description,
+            'short_description' => $theme_description,
             'sections' => array(
-                'description' => $this->theme_data->get('Description'),
+                'description' => $theme_description,
                 'changelog' => $remote_info['body']
             ),
             'download_link' => $remote_info['download_url'],
