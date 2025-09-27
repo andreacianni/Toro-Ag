@@ -1342,3 +1342,8 @@ NUOVO LAYOUT FORMS - 2 COLONNE
         }
     }
 }
+
+/* Disattiva Bootstrap smooth scroll */
+:root {
+    scroll-behavior: auto !important;
+}

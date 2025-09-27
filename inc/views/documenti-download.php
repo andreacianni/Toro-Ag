@@ -286,21 +286,11 @@ document.addEventListener('DOMContentLoaded', function() {
   
   navLinks.forEach(link => {
     link.addEventListener('click', function(e) {
-      e.preventDefault();
-      const targetId = this.getAttribute('href').substring(1);
-      const targetElement = document.getElementById(targetId);
-      
-      if (targetElement) {
-        // Smooth scroll più immediato e fluido
-        window.scrollTo({
-          top: targetElement.offsetTop - 140,
-          behavior: 'smooth'
-        });
-        
-        // Aggiorna stato attivo
-        navLinks.forEach(l => l.classList.remove('active'));
-        this.classList.add('active');
-      }
+      // Non prevenire default - lascia che toro-layout-manager.js gestisca lo scroll
+
+      // Aggiorna solo stato attivo
+      navLinks.forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
     });
   });
   

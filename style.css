@@ -1128,4 +1128,9 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 }
 #servizio-testo p:has(i.fa-solid) strong, #servizio-testo p:has(i.fa-solid) a {
   display: inline;
-}/*# sourceMappingURL=style.css.map */
+}
+
+/* Disattiva Bootstrap smooth scroll */
+:root {
+  scroll-behavior: auto !important;
+}

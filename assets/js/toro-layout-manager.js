@@ -13,60 +13,127 @@
     function initSmoothScroll() {
         // Seleziona tutti i link che puntano ad anchor interni
         const anchorLinks = document.querySelectorAll('a[href^="#"]');
-        
-        anchorLinks.forEach(link => {
+
+        console.log(`🔗 Found ${anchorLinks.length} anchor links to handle`);
+
+        anchorLinks.forEach((link, index) => {
             link.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
-                
+
+                console.log(`🎯 Click on anchor ${index + 1}: ${href}`);
+
                 // Ignora link vuoti o solo #
-                if (!href || href === '#') return;
-                
+                if (!href || href === '#') {
+                    console.log('❌ Ignored: empty or # only');
+                    return;
+                }
+
                 const target = document.querySelector(href);
-                if (!target) return;
-                
+                if (!target) {
+                    console.log('❌ Target not found:', href);
+                    return;
+                }
+
                 // Previeni comportamento default
                 e.preventDefault();
-                
+                console.log('✅ Default prevented');
+
                 // Calcola offset per header fisso (se presente)
                 const headerOffset = getHeaderOffset();
-                const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerOffset;
-                
+                const targetRect = target.getBoundingClientRect();
+                const targetPosition = targetRect.top + window.pageYOffset - headerOffset;
+
+                console.log(`📏 Calculations:`, {
+                    'Header Offset': headerOffset + 'px',
+                    'Target Top': targetRect.top + 'px',
+                    'Page Y Offset': window.pageYOffset + 'px',
+                    'Final Position': targetPosition + 'px',
+                    'Current Scroll': window.scrollY + 'px'
+                });
+
+                // Verifica se CSS scroll-behavior sta interferendo
+                const htmlScrollBehavior = getComputedStyle(document.documentElement).scrollBehavior;
+                if (htmlScrollBehavior === 'smooth') {
+                    console.log('⚠️ CSS scroll-behavior: smooth detected - may conflict!');
+                }
+
                 // Smooth scroll ottimizzato
+                const startTime = performance.now();
+                console.log('🚀 Starting scroll to:', targetPosition);
+
                 window.scrollTo({
                     top: targetPosition,
                     behavior: 'smooth'
                 });
-                
+
+                // Monitor scroll completion
+                let scrollCheckCount = 0;
+                const scrollCheck = setInterval(() => {
+                    scrollCheckCount++;
+                    const currentScroll = window.scrollY;
+                    const distance = Math.abs(currentScroll - targetPosition);
+
+                    console.log(`📍 Scroll check ${scrollCheckCount}: ${currentScroll}px (distance: ${distance}px)`);
+
+                    if (distance < 5 || scrollCheckCount > 50) {
+                        clearInterval(scrollCheck);
+                        const endTime = performance.now();
+                        console.log(`✅ Scroll completed in ${(endTime - startTime).toFixed(2)}ms`);
+                    }
+                }, 50);
+
                 // Aggiorna URL senza jump
                 if (history.pushState) {
                     history.pushState(null, null, href);
+                    console.log('🔗 URL updated to:', href);
                 }
             });
         });
     }
     
     /**
-     * Calcola offset per header fisso/sticky
+     * Calcola offset intelligente per header fisso/sticky
      * @returns {number} Pixel di offset
      */
     function getHeaderOffset() {
-        // Header Divi standard
+        // Header Divi standard (priorità massima)
         const mainHeader = document.querySelector('#main-header');
         if (mainHeader && window.getComputedStyle(mainHeader).position === 'fixed') {
             return mainHeader.offsetHeight + 20; // 20px padding extra
         }
-        
-        // Header custom o altri
-        const stickyHeaders = document.querySelectorAll('[style*="position: fixed"], .sticky-header, .fixed-header');
+
+        // Header Top Bar Divi
+        const topHeader = document.querySelector('#top-header');
+        if (topHeader && window.getComputedStyle(topHeader).position === 'fixed') {
+            return topHeader.offsetHeight + 20;
+        }
+
+        // Header custom o altri elementi fissi in top
+        const stickyHeaders = document.querySelectorAll('[style*="position: fixed"], .sticky-header, .fixed-header, .navbar-fixed-top');
         let maxHeight = 0;
-        
+
         stickyHeaders.forEach(header => {
-            if (header.offsetTop <= 50) { // Solo header in cima
-                maxHeight = Math.max(maxHeight, header.offsetHeight);
+            const rect = header.getBoundingClientRect();
+            // Solo elementi davvero in cima e visibili
+            if (rect.top <= 10 && rect.height > 0 && window.getComputedStyle(header).display !== 'none') {
+                maxHeight = Math.max(maxHeight, rect.height);
             }
         });
-        
-        return maxHeight > 0 ? maxHeight + 20 : 80; // Default 80px se non trovato
+
+        // Fallback intelligente basato su viewport
+        if (maxHeight === 0) {
+            // Desktop: header più grandi, Mobile: header più piccoli
+            const viewportWidth = window.innerWidth;
+            if (viewportWidth >= 992) {
+                return 120; // Desktop - header Divi standard
+            } else if (viewportWidth >= 768) {
+                return 80;  // Tablet
+            } else {
+                return 60;  // Mobile
+            }
+        }
+
+        return maxHeight + 20; // Header trovato + padding
     }
     
     /**
@@ -112,12 +179,28 @@
             document.addEventListener('DOMContentLoaded', init);
             return;
         }
-        
+
         // Inizializza funzionalità
         initSmoothScroll();
         initWPMLDebug();
         initPerformanceMonitoring();
-        
+
+        // Debug per testing
+        if (window.location.search.includes('toro_debug_scroll=1')) {
+            console.log('🎯 TORO Smooth Scroll Debug Enabled');
+            console.log('Header Offset Calculated:', getHeaderOffset() + 'px');
+
+            // Test automatico con primo link anchor trovato
+            const firstAnchor = document.querySelector('a[href^="#"]:not([href="#"]):not([href="#top"])');
+            if (firstAnchor) {
+                console.log('Test anchor found:', firstAnchor.getAttribute('href'));
+                setTimeout(() => {
+                    console.log('Auto-testing smooth scroll...');
+                    firstAnchor.click();
+                }, 2000);
+            }
+        }
+
         console.log('🚀 TORO Layout Manager JavaScript Initialized');
     }
     

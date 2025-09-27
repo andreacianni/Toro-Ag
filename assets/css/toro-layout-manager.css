@@ -189,17 +189,7 @@
     box-shadow: 0 0 0 0.2rem rgba(205, 32, 39, 0.25);
 }
 
-/* Smooth scroll ottimizzato */
-html {
-    scroll-behavior: smooth;
-}
-
-/* Override per anchor links specifici se scroll troppo lento */
-@media (prefers-reduced-motion: no-preference) {
-    html:focus-within {
-        scroll-behavior: smooth;
-    }
-}
+/* Smooth scroll gestito via JavaScript per controllo totale offset */
 
 /* ================================
    UTILITY CLASSES
