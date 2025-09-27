@@ -49,14 +49,13 @@ class ToroGitHubUpdater {
      */
     public function __construct() {
         $this->theme_stylesheet = get_option('stylesheet');
-        $this->theme_slug = $this->theme_stylesheet; // Auto-rileva il nome del tema corrente
+        $this->theme_slug = 'toro-ag'; // Nome fisso della cartella tema (evita auto-rilevamento)
         $this->theme_data = wp_get_theme($this->theme_stylesheet);
         $this->theme_version = $this->theme_data->get('Version');
         $this->github_token = get_option('toro_github_token', '');
 
-        // Inizializza hooks solo se il tema ha il nome corretto (inizia con 'toro-ag')
-        if (strpos($this->theme_stylesheet, 'toro-ag') === 0) {
-            $this->init_hooks();
+        // Inizializza hooks sempre (rimuovendo il controllo del nome auto-rilevato)
+        $this->init_hooks();
         }
     }
     
@@ -73,9 +72,12 @@ class ToroGitHubUpdater {
         // Hook per informazioni tema
         add_filter('themes_api', array($this, 'theme_api_call'), 10, 3);
         
+        // Hook per rinominare cartella dopo installazione
+        add_filter('upgrader_post_install', array($this, 'rename_theme_folder'), 10, 3);
+
         // Pulizia transient quando necessario
         add_action('upgrader_process_complete', array($this, 'clear_update_transient'), 10, 2);
-        
+
         // Settings page
         add_action('admin_menu', array($this, 'add_settings_page'));
         add_action('admin_init', array($this, 'register_settings'));
@@ -272,7 +274,55 @@ class ToroGitHubUpdater {
             delete_transient('toro_github_remote_info');
         }
     }
-    
+
+    /**
+     * Rinomina la cartella del tema dopo l'installazione
+     *
+     * @param bool $response Installation response
+     * @param array $hook_extra Hook extra data
+     * @param array $result Installation result
+     * @return bool
+     */
+    public function rename_theme_folder($response, $hook_extra, $result) {
+        global $wp_filesystem;
+
+        // Verifica se è il nostro tema
+        if (!isset($hook_extra['theme']) ||
+            !isset($result['destination']) ||
+            !str_contains($result['destination'], 'andreacianni-Toro-Ag')) {
+            return $response;
+        }
+
+        // Inizializza WP_Filesystem se necessario
+        if (!$wp_filesystem) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+            WP_Filesystem();
+        }
+
+        $themes_dir = get_theme_root();
+        $old_path = $result['destination']; // Percorso con nome GitHub
+        $new_path = $themes_dir . '/' . $this->theme_slug; // Percorso con nome fisso
+
+        // Se la cartella di destinazione esiste già, eliminala
+        if ($wp_filesystem->exists($new_path)) {
+            $wp_filesystem->delete($new_path, true);
+        }
+
+        // Rinomina la cartella
+        if ($wp_filesystem->move($old_path, $new_path)) {
+            // Aggiorna il percorso nel risultato
+            $result['destination'] = $new_path;
+            $result['destination_name'] = $this->theme_slug;
+
+            // Log per debug
+            error_log("TORO GitHub Updater: Cartella rinominata da " . basename($old_path) . " a " . $this->theme_slug);
+        } else {
+            error_log("TORO GitHub Updater: Errore nella rinomina da " . basename($old_path) . " a " . $this->theme_slug);
+        }
+
+        return $response;
+    }
+
     /**
      * Aggiunge pagina settings
      */
