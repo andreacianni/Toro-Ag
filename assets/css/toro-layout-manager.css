@@ -95,16 +95,6 @@
     }
 }
 
-.toro-layout-prodotto .toro-layout-content-section {
-    /* Stili base rimossi per usare default browser/tema */
-}
-
-.toro-layout-prodotto .toro-layout-content-section h1,
-.toro-layout-prodotto .toro-layout-content-section h2,
-.toro-layout-prodotto .toro-layout-content-section h3 {
-    /* Colore rimosso per usare default - margin gestiti tramite classi Bootstrap */
-}
-
 .toro-layout-prodotto .toro-layout-content-section p {
     margin-bottom: 1rem;
 }
@@ -112,18 +102,6 @@
 /* ================================
    SIDEBAR E DOCUMENTI
    ================================ */
-
-
-
-
-
-.toro-layout-videos-section {
-    /* Stili rimossi - video gestiscono il proprio spacing */
-}
-
-.toro-layout-cultures-section {
-    /* Margin e padding gestiti tramite classi Bootstrap */
-}
 
 .toro-layout-form-section {
     background: #f8f9fa;
@@ -179,25 +157,20 @@
     transform: scale(1.02); /* Leggero zoom invece di elevazione */
 }
 
-/* Sidebar sections ora senza effetti hover */
-.toro-layout-videos-section {
-    /* transizioni rimosse */
-}
 
 /* ================================
    CTA PULSANTE SIDEBAR
    ================================ */
 
 .toro-cta-sidebar .btn-submit {
-    background-color: #cd2027;
-    color: white;
-    border: 2px solid #cd2027;
-    padding: 14px 35px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 8px;
+    background-color: #fff;
+    color: #212529;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 400;
+    border-radius: 5px;
     transition: all 0.3s ease;
-    text-transform: none; /* Come form-prodotti-new */
+    text-transform: none;
     letter-spacing: 0.5px;
     text-decoration: none;
     display: inline-block;
@@ -205,8 +178,8 @@
 }
 
 .toro-cta-sidebar .btn-submit:hover {
-    background-color: white;
-    color: #cd2027;
+    background-color: #cd2027;
+    color: white;
     border-color: #cd2027;
     text-decoration: none;
 }
@@ -289,10 +262,6 @@ html {
 /* Assicura che i shortcode esistenti si adattino bene */
 .toro-layout-videos-section .grid-container {
     margin: 0;
-}
-
-.toro-layout-videos-section .card {
-    /* Stili card rimossi - usano stili Bootstrap default */
 }
 
 .toro-layout-cultures-section .grid-container {
@@ -806,16 +775,6 @@ html {
 .toro-layout-tipo-prodotto .toro-layout-description {
     /* Sfondo grigio e border radius rimossi */
     margin-bottom: 2rem;
-}
-
-.toro-layout-tipo-prodotto .toro-layout-products {
-    /* Styling per grid prodotti già gestito da shortcode grid */
-}
-
-/* Sidebar compatta */
-.toro-layout-tipo-prodotto .toro-layout-docs,
-.toro-layout-tipo-prodotto .toro-layout-videos {
-    /* Card styling già gestito dai rispettivi shortcode */
 }
 
 /* Mobile responsive - Stack completo */

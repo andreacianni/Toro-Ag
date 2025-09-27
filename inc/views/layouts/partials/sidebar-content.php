@@ -53,7 +53,7 @@ if (isset($sections['form']) && $form_position === 'sidebar'):
 // Mostra CTA solo se ci sono sezioni sidebar (layout a due colonne)
 if (isset($sections['documents']) || isset($sections['videos']) || isset($sections['form'])): 
 ?>
-<div class="toro-cta-sidebar mt-4 p-3 text-center">
-    <a href="#form-prodotti" class="btn-submit"><?php echo apply_filters('wpml_translate_single_string', 'Chiedi informazioni sul prodotto', 'Toro Layout Manager', 'Chiedi informazioni sul prodotto'); ?></a>
+<div class="toro-cta-sidebar mt-4 py-3 text-center">
+    <a href="#form-prodotti" class="btn-submit border shadow-sm"><?php echo apply_filters('wpml_translate_single_string', 'Chiedi informazioni sul prodotto', 'Toro Layout Manager', 'Chiedi informazioni sul prodotto'); ?></a>
 </div>
 <?php endif; ?>
