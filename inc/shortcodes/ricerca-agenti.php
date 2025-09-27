@@ -225,12 +225,9 @@ add_shortcode('ricerca_agenti', function($atts) {
                     <?php foreach ($regioni_province as $regione => $province_della_regione): 
                         $count = $regioni_con_conteggi[$regione];
                     ?>
-                        <option value="<?php echo esc_attr($regione) ?>" 
+                        <option value="<?php echo esc_attr($regione) ?>"
                                 <?php if ($count === 0): ?>disabled class="muted" title="Nessun rivenditore in questa regione"<?php endif; ?>>
                             <?php echo esc_html($regione) ?>
-                            <?php if ($count > 0): ?>
-                                (<?php echo $count; ?> rivenditor<?php echo $count === 1 ? 'e' : 'i'; ?>)
-                            <?php endif; ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
