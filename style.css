@@ -5,7 +5,7 @@ Text Domain:  toro-ag
 Domain Path:  /languages
 Theme URI: https://divicake.com/
 Description: Child Theme per Toro Ag
-Version: 1.2.4
+Version: 1.2.5
 Author: Andrea Cianni
 Author URI: https://www.novacomitalia.com/
 Template: Divi
@@ -1140,4 +1140,29 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 /* Disattiva Bootstrap smooth scroll */
 :root {
   scroll-behavior: auto !important;
+}
+
+/* Bottoni Attivalo ora class="btn-activate-now" */
+a.btn-activate-now {
+  display: inline-block;
+  color: #FFFFFF !important;
+  border: 2px solid;
+  border-color: #6d8d5b;
+  border-radius: 0.75em;
+  font-size: 16px;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  background-color: #6d8d5b;
+  padding-top: 0.5em !important;
+  padding-right: 1.75em !important;
+  padding-bottom: 0.5em !important;
+  padding-left: 1.75em !important;
+  transition: all 300ms ease 0ms;
+  box-shadow: 0px 2px 18px 0px rgba(0, 0, 0, 0.3);
+}
+a.btn-activate-now:hover {
+  color: #6d8d5b !important;
+  border-color: #6d8d5b !important;
+  background-image: initial;
+  background-color: #FFFFFF;
 }/*# sourceMappingURL=style.css.map */
