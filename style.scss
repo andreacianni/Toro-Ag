@@ -365,7 +365,7 @@ sup.r {
 }
 
 
-/* menù social */
+/* menù social OLD
 #menu-social,
 #menu-social-inglese{
   .footer-icon a{
@@ -388,6 +388,58 @@ sup.r {
   .footer-icon.linkedin a:before {
     content: "\f08c"; // LinkedIn icon
     color: #0A66C2;
+  }
+}
+*/
+
+/* Menu Social - SVG come Background */
+#menu-social,
+#menu-social-inglese {
+  .footer-icon {
+    a {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 14px;
+      color: #ffffff;
+      
+      // Rimuovi Font Awesome
+      &:before {
+        content: '';
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+    }
+    
+    // YouTube
+    &.youtube a {
+      background-color: #CD201F;
+      &:before {
+        background-image: url('./assets/svg/youtube-brands-solid.svg');
+      }
+    }
+    
+    // Facebook  
+    &.facebook a {
+      background-color: #1877F2;
+      &:before {
+        background-image: url('./assets/svg/square-facebook-brands-solid.svg');
+      }
+    }
+    
+    // LinkedIn
+    &.linkedin a {
+      background-color: #0A66C2;
+      &:before {
+        background-image: url('./assets/svg/linkedin-brands-solid.svg');
+      }
+    }
   }
 }
 

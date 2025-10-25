@@ -288,31 +288,76 @@ sup.r {
   }
 }
 
-/* menù social */
+/* menù social OLD
+#menu-social,
+#menu-social-inglese{
+  .footer-icon a{
+    display: flex;
+    &:before{
+      font-family: "Font Awesome 6 Brands";
+      font-size: 1.75em;
+      margin-inline-end: 0.25em;
+    }
+  }
+  .footer-icon.youtube a:before {
+    content: "\f167"; // Youtube icon
+    // content: "\f431"; // Youtube Square icon
+    color: #CD201F;
+  }
+  .footer-icon.facebook a:before {
+    content: "\f082"; // Facebook icon
+    color: #1877F2;
+  }
+  .footer-icon.linkedin a:before {
+    content: "\f08c"; // LinkedIn icon
+    color: #0A66C2;
+  }
+}
+*/
+/* Menu Social - SVG come Background */
 #menu-social .footer-icon a,
 #menu-social-inglese .footer-icon a {
-  display: flex;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 14px;
+  color: #ffffff;
 }
 #menu-social .footer-icon a:before,
 #menu-social-inglese .footer-icon a:before {
-  font-family: "Font Awesome 6 Brands";
-  font-size: 1.75em;
-  margin-inline-end: 0.25em;
+  content: "";
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+#menu-social .footer-icon.youtube a,
+#menu-social-inglese .footer-icon.youtube a {
+  background-color: #CD201F;
 }
 #menu-social .footer-icon.youtube a:before,
 #menu-social-inglese .footer-icon.youtube a:before {
-  content: "\f167";
-  color: #CD201F;
+  background-image: url("./assets/svg/youtube-brands-solid.svg");
+}
+#menu-social .footer-icon.facebook a,
+#menu-social-inglese .footer-icon.facebook a {
+  background-color: #1877F2;
 }
 #menu-social .footer-icon.facebook a:before,
 #menu-social-inglese .footer-icon.facebook a:before {
-  content: "\f082";
-  color: #1877F2;
+  background-image: url("./assets/svg/square-facebook-brands-solid.svg");
+}
+#menu-social .footer-icon.linkedin a,
+#menu-social-inglese .footer-icon.linkedin a {
+  background-color: #0A66C2;
 }
 #menu-social .footer-icon.linkedin a:before,
 #menu-social-inglese .footer-icon.linkedin a:before {
-  content: "\f08c";
-  color: #0A66C2;
+  background-image: url("./assets/svg/linkedin-brands-solid.svg");
 }
 
 .box-home:hover .et_pb_with_border {
@@ -1133,4 +1178,4 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 /* Disattiva Bootstrap smooth scroll */
 :root {
   scroll-behavior: auto !important;
-}
+}/*# sourceMappingURL=style.css.map */
