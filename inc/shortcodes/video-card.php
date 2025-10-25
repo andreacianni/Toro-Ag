@@ -264,7 +264,7 @@ function ac_video_pagina_shortcode($atts = []) {
         if (! $oemb) {
             continue;
         }
-        echo '<div class="p-2" style="flex: 0 0 33.333%;">';
+        echo '<div class="p-2" style="flex: 0 0 50%;">';
         echo '<div class="card h-100">';
         echo '<div class="embed-responsive embed-responsive-16by9 w-100">' . $oemb . '</div>';
         echo '<div class="card-body">';
