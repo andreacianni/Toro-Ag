@@ -1009,22 +1009,18 @@ class ToroLayoutManager {
             $brochure_id = apply_filters('wpml_object_id', $id, 'brochure_coltura', true, $current) ?: $id;
             $slug = wp_get_post_terms($brochure_id, 'lingua_aggiuntiva', ['fields'=>'slugs'])[0] ?? '';
             
-            // Logica lingua per brochure
+            // 🔧 FIX: Logica semplificata basata su doc-plus-view.php
             if ($current === 'it') {
-                // Italiano: accetta brochure italiane (o senza lingua)
-                if (empty($slug) || $slug === 'italiano') {
+                // Italiano: mostra SOLO brochure italiane (o senza lingua)
+                if ($slug === 'italiano' || $slug === '') {
                     $file_id = get_post_meta($brochure_id, 'brochure-file', true);
                     if ($file_id && wp_get_attachment_url($file_id)) {
                         return true;
                     }
                 }
             } else {
-                // Altre lingue: priorità lingua target > italiano fallback
-                $lang_map = ['en' => 'inglese', 'fr' => 'francese', 'es' => 'spagnolo'];
-                $target_lang = $lang_map[$current] ?? '';
-                
-                // Accetta target language O italiano come fallback
-                if ($slug === $target_lang || $slug === 'italiano' || $slug === '') {
+                // Altre lingue: mostra TUTTO tranne italiano
+                if ($slug !== 'italiano') {
                     $file_id = get_post_meta($brochure_id, 'brochure-file', true);
                     if ($file_id && wp_get_attachment_url($file_id)) {
                         return true;
@@ -1039,21 +1035,24 @@ class ToroLayoutManager {
     /**
      * 🔧 Controlla se un tipo prodotto ha documenti (WPML aware)
      * Replica la logica di scheda-prodotto-dettaglio.php per consistency
-     * 
+     *
      * @param int $term_id ID del termine tipo_di_prodotto
      * @return bool True se ha documenti nella lingua corrente
      */
     private static function check_tipo_prodotto_has_documents($term_id) {
         $current = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : apply_filters('wpml_current_language', null);
         $default = apply_filters('wpml_default_language', null);
-        
-        // 🔧 DEBUG: Log info base se richiesto
-        if (isset($_GET['debug_docs'])) {
-            error_log("🔧 LAYOUT AVAILABILITY CHECK: Current Lang={$current}, Term ID={$term_id}");
+
+        // 🔧 DEBUG: Array per accumulare output HTML
+        $debug_output = [];
+        $debug_enabled = isset($_GET['debug_docs']);
+
+        if ($debug_enabled) {
+            $debug_output[] = "🔧 LAYOUT AVAILABILITY CHECK: Current Lang={$current}, Term ID={$term_id}";
         }
-        
+
         // Helper per controllare esistenza documenti per un campo
-        $check_field_exists = function($field, $meta_file_key) use ($term_id, $current, $default) {
+        $check_field_exists = function($field, $meta_file_key) use ($term_id, $current, $default, $debug_enabled, &$debug_output) {
             // 1. Prova PODS per lingua corrente
             $term_id_current = apply_filters('wpml_object_id', $term_id, 'tipo_di_prodotto', true, $current) ?: $term_id;
             $pod = pods('tipo_di_prodotto', $term_id_current, ['lang' => $current]);
@@ -1063,12 +1062,12 @@ class ToroLayoutManager {
             if (!is_array($items)) {
                 $items = [];
             }
-            
+
             // 🔧 DEBUG: PODS results
-            if (isset($_GET['debug_docs'])) {
-                error_log("🔧 LAYOUT CHECK: PODS field={$field}, items count=" . count($items));
+            if ($debug_enabled) {
+                $debug_output[] = "  PODS field={$field}, items count=" . count($items);
             }
-            
+
             // 2. Fallback a term_meta per lingua default
             if (empty($items)) {
                 $term_id_def = apply_filters('wpml_object_id', $term_id, 'tipo_di_prodotto', true, $default) ?: $term_id;
@@ -1076,64 +1075,84 @@ class ToroLayoutManager {
                 foreach ((array) $meta_items as $raw) {
                     $items[] = $raw;
                 }
-                
-                if (isset($_GET['debug_docs'])) {
-                    error_log("🔧 LAYOUT CHECK: term_meta items count=" . count($items));
+
+                if ($debug_enabled) {
+                    $debug_output[] = "  term_meta items count=" . count($items);
                 }
             }
-            
+
+            // 🔧 DEBUG PRE-FILTRO: Log TUTTI i documenti recuperati
+            if ($debug_enabled) {
+                $debug_output[] = "🔍 PRE-FILTRO: Field={$field}, Total items=" . count($items);
+                foreach ((array) $items as $idx => $raw) {
+                    $id = is_array($raw) && isset($raw['ID']) ? intval($raw['ID']) : (is_object($raw) && isset($raw->ID) ? intval($raw->ID) : intval($raw));
+                    $raw_str = is_array($raw) ? 'array[' . implode(',', array_keys($raw)) . ']' : (is_object($raw) ? 'object' : $raw);
+                    $debug_output[] = "  Item #{$idx}: ID={$id}, type=" . $raw_str;
+                }
+            }
+
             // 3. Controlla se almeno un documento è valido per la lingua corrente
             $has_valid_docs = false;
             foreach ((array) $items as $raw) {
                 $id = is_array($raw) && isset($raw['ID']) ? intval($raw['ID']) : (is_object($raw) && isset($raw->ID) ? intval($raw->ID) : intval($raw));
                 if (!$id) continue;
-                
+
                 $elem_id = apply_filters('wpml_object_id', $id, $field === 'scheda_prodotto_tipo' ? 'scheda_prodotto' : 'documento_prodotto', true, $current) ?: $id;
                 $slug = wp_get_post_terms($elem_id, 'lingua_aggiuntiva', ['fields'=>'slugs'])[0] ?? '';
-                
-                // Logica lingua identica a scheda-prodotto-dettaglio.php
+
+                // 🔧 DEBUG: Log dettagli documento
+                if ($debug_enabled) {
+                    $doc_title = get_the_title($elem_id);
+                    $file_id = get_post_meta($elem_id, $meta_file_key, true);
+                    $has_file = $file_id && wp_get_attachment_url($file_id) ? 'YES' : 'NO';
+                    $debug_output[] = "    Doc: original_id={$id}, elem_id={$elem_id}, slug='{$slug}', title='{$doc_title}', has_file={$has_file}";
+                }
+
+                // 🔧 FIX: Logica semplificata basata su doc-plus-view.php
                 if ($current === 'it') {
-                    // Italiano: accetta documenti italiani (o senza lingua)
-                    if (empty($slug) || $slug === 'italiano') {
+                    // Italiano: mostra SOLO documenti italiani (o senza lingua)
+                    if ($slug === 'italiano' || $slug === '') {
                         $file_id = get_post_meta($elem_id, $meta_file_key, true);
                         if ($file_id && wp_get_attachment_url($file_id)) {
                             $has_valid_docs = true;
-                            break;
+                            // 🔧 DEBUG: Rimosso break per vedere TUTTI i documenti
+                            if (!$debug_enabled) break;
                         }
                     }
                 } else {
-                    // Altre lingue: priorità lingua target > italiano fallback
-                    $lang_map = ['en' => 'inglese', 'fr' => 'francese', 'es' => 'spagnolo'];
-                    $target_lang = $lang_map[$current] ?? '';
-                    
-                    // Accetta target language O italiano come fallback
-                    if ($slug === $target_lang || $slug === 'italiano' || $slug === '') {
+                    // Altre lingue: mostra TUTTO tranne italiano
+                    if ($slug !== 'italiano') {
                         $file_id = get_post_meta($elem_id, $meta_file_key, true);
                         if ($file_id && wp_get_attachment_url($file_id)) {
                             $has_valid_docs = true;
-                            break;
+                            // 🔧 DEBUG: Rimosso break per vedere TUTTI i documenti
+                            if (!$debug_enabled) break;
                         }
                     }
                 }
             }
-            
-            if (isset($_GET['debug_docs'])) {
-                error_log("🔧 LAYOUT CHECK: Field {$field} has_valid_docs=" . ($has_valid_docs ? 'YES' : 'NO'));
+
+            if ($debug_enabled) {
+                $debug_output[] = "✅ RESULT Field {$field}: has_valid_docs=" . ($has_valid_docs ? 'YES' : 'NO');
             }
-            
+
             return $has_valid_docs;
         };
         
         // Controlla entrambi i tipi di documenti
         $has_schede = $check_field_exists('scheda_prodotto_tipo', 'scheda-prodotto');
         $has_docs = $check_field_exists('documento_prodotto_tipo', 'documento-prodotto');
-        
+
         $result = $has_schede || $has_docs;
-        
-        if (isset($_GET['debug_docs'])) {
-            error_log("🔧 LAYOUT CHECK FINAL: Term {$term_id}, Lang {$current}, Result=" . ($result ? 'HAS_DOCS' : 'NO_DOCS'));
+
+        if ($debug_enabled) {
+            $debug_output[] = "\n🎯 FINAL RESULT: Term {$term_id}, Lang {$current}, Result=" . ($result ? 'HAS_DOCS ✅' : 'NO_DOCS ❌');
+            $debug_output[] = "  has_schede={$has_schede}, has_docs={$has_docs}";
+
+            // Output HTML debug
+            echo self::debug_output(implode("\n", $debug_output));
         }
-        
+
         return $result;
     }
     
