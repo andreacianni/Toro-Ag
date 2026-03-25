@@ -43,7 +43,8 @@ function ta_render_video_tipo_prodotto_v2_shortcode( $atts ) {
         if ( ($current_lang === 'it' && $first_lingua !== 'italiano') || ($current_lang !== 'it' && $first_lingua === 'italiano') ) continue;
 
         $video_link = get_post_meta($video_id, 'video_link', true);
-        $youtube_embed = str_replace('https://youtu.be/', 'https://www.youtube.com/embed/', $video_link);
+        $embed = wp_oembed_get($video_link);
+        if (! $embed ) continue;
 
         $flag_html = ($current_lang !== 'it' && function_exists('toroag_get_flag_html')) ? toroag_get_flag_html($first_lingua) : '';
 
@@ -56,7 +57,7 @@ function ta_render_video_tipo_prodotto_v2_shortcode( $atts ) {
         $output .= '</div>';
         $output .= '<div class="card-body p-0">';
         $output .= '<div class="fluid-width-video-wrapper" style="padding-top: 56.25%;">';
-        $output .= '<iframe title="' . esc_attr($video->post_title) . '" src="' . esc_url($youtube_embed) . '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+        $output .= $embed;
         $output .= '</div></div></div>';
     }
 
