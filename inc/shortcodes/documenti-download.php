@@ -38,6 +38,9 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
         $lang = function_exists('icl_object_id')
             ? apply_filters('wpml_current_language', null)
             : 'it';
+        $default_lang = function_exists('icl_object_id')
+            ? apply_filters('wpml_default_language', null)
+            : 'it';
 
         // definisco l'ordine delle lingue
         $lang_order = function_exists( 'toroag_get_language_order' )
@@ -346,6 +349,12 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
                 
                 // Recupera brochure associate alla coltura
                 $brochure_ids = get_term_meta( $coltura_term_id, 'brochure_coltura', false );
+                if ( empty( $brochure_ids ) ) {
+                    $default_coltura_term_id = function_exists( 'icl_object_id' )
+                        ? apply_filters( 'wpml_object_id', $coltura_term->term_id, 'coltura', true, $default_lang )
+                        : $coltura_term->term_id;
+                    $brochure_ids = get_term_meta( $default_coltura_term_id ?: $coltura_term->term_id, 'brochure_coltura', false );
+                }
                 
                 foreach ( (array) $brochure_ids as $brochure_data ) {
                     $brochure_id = is_array($brochure_data) && isset($brochure_data['ID']) ? 
@@ -396,7 +405,8 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
         if ( ! empty( $brochure_applicazioni ) ) {
             $altra_documentazione_products[] = [
                 'ID' => 0,
-                'title' => 'Applicazioni',
+                // Titolo traducibile della card "Applicazioni".
+                'title' => __( 'Applicazioni', 'toro-ag' ),
                 'schede' => [],
                 'docs' => $brochure_applicazioni,
             ];
