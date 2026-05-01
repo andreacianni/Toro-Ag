@@ -48,6 +48,21 @@ function unregister_et_project_cpt() {
 }
 add_action('init', 'unregister_et_project_cpt', 100);
 
+// Limita la search pubblica frontend ai soli contenuti principali
+function toro_ag_limit_public_search_post_types( $query ) {
+    if ( is_admin() || ! $query->is_main_query() || ! $query->is_search() ) {
+        return;
+    }
+
+    if ( ( defined( 'REST_REQUEST' ) && REST_REQUEST ) || wp_doing_ajax() ) {
+        return;
+    }
+
+    $query->set( 'post_type', array( 'post', 'page', 'prodotto' ) );
+    $query->set( 'post_status', 'publish' );
+}
+add_action( 'pre_get_posts', 'toro_ag_limit_public_search_post_types' );
+
 // Aggiunge Bootstrap 5.3.3 e Bootstrap Icons
 function aggiungi_bootstrap() {
     // Frontend
