@@ -44,6 +44,15 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
             ? toroag_get_language_order()
             : [];
 
+        // Front page corrente, tradotta nella lingua attiva se WPML è presente.
+        $current_front_page_id = (int) get_option( 'page_on_front' );
+        if ( function_exists( 'icl_object_id' ) ) {
+            $translated_front_page_id = apply_filters( 'wpml_object_id', $current_front_page_id, 'page', false, $lang );
+            if ( $translated_front_page_id ) {
+                $current_front_page_id = (int) $translated_front_page_id;
+            }
+        }
+
         $terms = get_terms(['taxonomy'=>'tipo_di_prodotto','hide_empty'=>false]);
         if ( is_wp_error($terms) || empty($terms) ) {
             return '<p>'.esc_html__('Nessun termine trovato','toro-ag').'.</p>';
@@ -128,13 +137,21 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
         // SEZIONE 2: ALTRA DOCUMENTAZIONE
         
         // Helper per raccogliere documenti dalle pagine
-        $collect_page_docs = function( $page_id, $meta_key, $file_meta_key ) use ( $lang, $lang_order ) {
+        $collect_page_docs = function( $page_id, $meta_key, $file_meta_key ) use ( $lang, $lang_order, $current_front_page_id ) {
             $items = [];
             $docs_ids = get_post_meta( $page_id, $meta_key, false );
             
             foreach ( (array) $docs_ids as $did ) {
                 $doc_id = is_array($did) && isset($did['ID']) ? $did['ID'] : (is_object($did) && isset($did->ID) ? $did->ID : intval($did));
                 if ( ! $doc_id ) continue;
+
+                // Nella card "Homepage" nascondo questi documenti specifici.
+                if ( (int) $page_id === $current_front_page_id ) {
+                    $hidden_homepage_doc_ids = [ 3172, 3177 ];
+                    if ( in_array( (int) $doc_id, $hidden_homepage_doc_ids, true ) ) {
+                        continue;
+                    }
+                }
                 
                 // WPML: traduzione del documento
                 if ( function_exists('icl_object_id') ) {
@@ -175,7 +192,7 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
         };
 
         // Helper per raccogliere doc_plus
-        $collect_doc_plus = function( $page_id ) use ( $lang, $lang_order ) {
+        $collect_doc_plus = function( $page_id ) use ( $lang, $lang_order, $current_front_page_id ) {
             $items = [];
             $doc_plus_ids = get_post_meta( $page_id, 'doc_plus_inpage', false );
             
@@ -186,6 +203,14 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
                                 $doc_plus_data->ID : intval($doc_plus_data));
                 
                 if ( ! $doc_plus_id ) continue;
+
+                // Nella card "Homepage" nascondo questi documenti specifici.
+                if ( (int) $page_id === $current_front_page_id ) {
+                    $hidden_homepage_doc_ids = [ 3172, 3177 ];
+                    if ( in_array( (int) $doc_plus_id, $hidden_homepage_doc_ids, true ) ) {
+                        continue;
+                    }
+                }
                 
                 // WPML: traduzione del doc_plus
                 if ( function_exists('icl_object_id') ) {
@@ -261,6 +286,13 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
             while ( $pages_query->have_posts() ) {
                 $pages_query->the_post();
                 $page_id = get_the_ID();
+
+                // Card/pagine da non mostrare mai in "Altra Documentazione"
+                // ID già noti e stabili, inclusi sia per la lingua IT che EN.
+                $hidden_page_ids = [ 3109, 3134 ];
+                if ( in_array( (int) $page_id, $hidden_page_ids, true ) ) {
+                    continue;
+                }
                 
                 // WPML: usa la versione tradotta della pagina
                 if ( function_exists('icl_object_id') ) {
@@ -274,7 +306,7 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
                 $schede_pagina = $collect_page_docs( $page_id, 'schede_pagina', 'scheda-prodotto' );
                 $documenti_pagina = $collect_page_docs( $page_id, 'documenti_pagina', 'documento-prodotto' );
                 $doc_plus_pagina = $collect_doc_plus( $page_id );
-                
+
                 // Unisci tutti i documenti
                 $all_docs_raw = array_merge( $schede_pagina, $documenti_pagina, $doc_plus_pagina );
                 
