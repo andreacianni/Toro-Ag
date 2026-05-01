@@ -9,3 +9,7 @@ debug-log/
 docs/
 toro-wpml-helper.php
 wp-cli.phar
+# Local Codex / FTP / compare files
+.codex/
+.env.ftp
+.remote-compare/
