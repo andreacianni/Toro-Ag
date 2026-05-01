@@ -13,3 +13,4 @@ wp-cli.phar
 .codex/
 .env.ftp
 .remote-compare/
+.codex
