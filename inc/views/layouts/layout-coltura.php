@@ -19,7 +19,9 @@ if (!defined('ABSPATH')) {
 $sections = get_query_var('toro_layout_sections', []);
 $atts = get_query_var('toro_layout_atts', []);
 $term = get_queried_object();
-$has_sidebar = isset($sections['brochures']) || isset($sections['documents']);
+$has_brochures = isset($sections['brochures']);
+$has_documents = isset($sections['documents']);
+$has_sidebar = $has_brochures || $has_documents;
 
 // CSS classes per layout stacked
 $container_classes = ['toro-layout-coltura', 'container-fluid', 'px-0'];
@@ -56,15 +58,20 @@ if ($atts['responsive'] === 'true') {
             <?php if ($has_sidebar): ?>
             <!-- Sidebar Brochure + Documents -->
             <div class="toro-sidebar-content col-lg-3">
-                <?php if (isset($sections['brochures'])): ?>
+                <?php if ($has_brochures): ?>
                 <div class="toro-sidebar-brochures mb-4">
                     <?= $sections['brochures']; ?>
                 </div>
                 <?php endif; ?>
 
-                <?php if (isset($sections['documents'])): ?>
-                <div class="toro-sidebar-documents">
-                    <?= $sections['documents']; ?>
+                <?php if ($has_documents): ?>
+                <div class="toro-sidebar-brochures mb-4">
+                    <h5 class="fw-bold border-bottom px-3 py-2 mb-4">
+                        <?= esc_html__('Documenti', 'toro-ag'); ?>
+                    </h5>
+                    <div class="coltura-brochure">
+                        <?= $sections['documents']; ?>
+                    </div>
                 </div>
                 <?php endif; ?>
             </div>
