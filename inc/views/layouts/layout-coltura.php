@@ -19,6 +19,7 @@ if (!defined('ABSPATH')) {
 $sections = get_query_var('toro_layout_sections', []);
 $atts = get_query_var('toro_layout_atts', []);
 $term = get_queried_object();
+$has_sidebar = isset($sections['brochures']) || isset($sections['documents']);
 
 // CSS classes per layout stacked
 $container_classes = ['toro-layout-coltura', 'container-fluid', 'px-0'];
@@ -34,7 +35,7 @@ if ($atts['responsive'] === 'true') {
         <div class="row">
             
             <!-- Main Content: Descrizione + Products Stack -->
-            <div class="toro-main-content <?= isset($sections['brochures']) ? 'col-lg-9' : 'col-12'; ?>">
+            <div class="toro-main-content <?= $has_sidebar ? 'col-lg-9' : 'col-12'; ?>">
                 
                 <?php if (isset($sections['description'])): ?>
                 <!-- Descrizione -->
@@ -52,10 +53,20 @@ if ($atts['responsive'] === 'true') {
                 
             </div>
             
-            <?php if (isset($sections['brochures'])): ?>
-            <!-- Brochure Sidebar -->
+            <?php if ($has_sidebar): ?>
+            <!-- Sidebar Brochure + Documents -->
             <div class="toro-sidebar-content col-lg-3">
-                <?= $sections['brochures']; ?>
+                <?php if (isset($sections['brochures'])): ?>
+                <div class="toro-sidebar-brochures mb-4">
+                    <?= $sections['brochures']; ?>
+                </div>
+                <?php endif; ?>
+
+                <?php if (isset($sections['documents'])): ?>
+                <div class="toro-sidebar-documents">
+                    <?= $sections['documents']; ?>
+                </div>
+                <?php endif; ?>
             </div>
             <?php endif; ?>
             
