@@ -17,6 +17,12 @@
     flex: 1; /* Prende tutto lo spazio disponibile nella card */
 }
 
+.toro-sidebar-brochures .col.mb-4.layout-card.imgsup {
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 100%;
+}
+
 /* ================================
    LAYOUT BILANCIATO E SIDEBAR COMPATTA
    ================================ */
