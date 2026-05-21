@@ -398,6 +398,7 @@ class ToroLayoutManager {
         $availability = [
             'has_description' => !empty($term->description),
             'has_products' => self::check_term_has_products($term->term_id, 'coltura'),
+            'has_documents' => self::check_coltura_has_doc_plus($term->term_id),
             'has_brochures' => self::check_coltura_has_brochures($term->term_id)
         ];
         
@@ -539,6 +540,10 @@ class ToroLayoutManager {
                 if ($content_map['has_products']) {
                     $sections[] = 'products';
                 }
+
+                if ($content_map['has_documents']) {
+                    $sections[] = 'documents';
+                }
                 
                 // Brochure se disponibili
                 if ($content_map['has_brochures']) {
@@ -642,6 +647,9 @@ class ToroLayoutManager {
                     // Riusa shortcode [brochure_coltura_dettaglio] con layout adattato
                     $brochure_layout = $atts['brochure_layout'] ?? 'card';
                     return do_shortcode('[brochure_coltura_dettaglio layout="' . $brochure_layout . '"]');
+
+                case 'documents':
+                    return do_shortcode('[doc_plus_coltura layout="card-imgsup"]');
                     
                 default:
                     return '';
@@ -1031,7 +1039,53 @@ class ToroLayoutManager {
         
         return false;
     }
-    
+
+    /**
+     * Controlla se una coltura ha doc_plus associati (WPML aware)
+     *
+     * @param int $term_id ID del termine coltura
+     * @return bool True se ha doc_plus nella lingua corrente
+     */
+    private static function check_coltura_has_doc_plus($term_id) {
+        $current = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : apply_filters('wpml_current_language', null);
+        $default = apply_filters('wpml_default_language', null);
+
+        $term_id_current = apply_filters('wpml_object_id', $term_id, 'coltura', true, $current) ?: $term_id;
+        $pod = pods('coltura', $term_id_current, ['lang' => $current]);
+        $items = ($pod && $pod->exists()) ? $pod->field('doc_plus_coltura') : [];
+
+        if (!is_array($items)) {
+            $items = [];
+        }
+
+        if (empty($items)) {
+            $term_id_def = apply_filters('wpml_object_id', $term_id, 'coltura', true, $default) ?: $term_id;
+            $meta_items = get_term_meta($term_id_def, 'doc_plus_coltura', false);
+            foreach ((array) $meta_items as $raw) {
+                $items[] = $raw;
+            }
+        }
+
+        foreach ((array) $items as $raw) {
+            $id = is_array($raw) && isset($raw['ID']) ? intval($raw['ID']) : (is_object($raw) && isset($raw->ID) ? intval($raw->ID) : intval($raw));
+            if (!$id) continue;
+
+            $doc_id = apply_filters('wpml_object_id', $id, 'doc_plus', true, $current) ?: $id;
+            $pod_doc = pods('doc_plus', $doc_id, ['lang' => $current]);
+
+            if (!$pod_doc || !method_exists($pod_doc, 'exists') || !$pod_doc->exists()) {
+                $fallback_doc_id = apply_filters('wpml_object_id', $id, 'doc_plus', true, $default) ?: $id;
+                $pod_doc = pods('doc_plus', $fallback_doc_id, ['lang' => $default]);
+            }
+
+            if ($pod_doc && method_exists($pod_doc, 'exists') && $pod_doc->exists()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * 🔧 Controlla se un tipo prodotto ha documenti (WPML aware)
      * Replica la logica di scheda-prodotto-dettaglio.php per consistency
