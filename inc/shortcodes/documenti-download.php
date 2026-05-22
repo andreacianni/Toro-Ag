@@ -332,6 +332,7 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
         // SCHEDA APPLICAZIONI (brochure colture)
         $colture_terms = get_terms(['taxonomy'=>'coltura','hide_empty'=>false]);
         $brochure_applicazioni = [];
+        $doc_plus_applicazioni = [];
         
         if ( ! is_wp_error($colture_terms) && ! empty($colture_terms) ) {
             foreach ( $colture_terms as $coltura_term ) {
@@ -393,22 +394,127 @@ if ( ! function_exists( 'toroag_elenco_prodotti_con_dettagli' ) ) {
                 }
             }
         }
+
+        // Recupera i doc_plus collegati alle colture
+        if ( ! is_wp_error($colture_terms) && ! empty($colture_terms) ) {
+            foreach ( $colture_terms as $coltura_term ) {
+                $current_lang = $lang;
+                $default_lang = function_exists( 'icl_object_id' )
+                    ? apply_filters( 'wpml_default_language', null )
+                    : 'it';
+
+                $term_id_current = function_exists( 'icl_object_id' )
+                    ? ( apply_filters( 'wpml_object_id', $coltura_term->term_id, 'coltura', true, $current_lang ) ?: $coltura_term->term_id )
+                    : $coltura_term->term_id;
+
+                $pod_term = function_exists( 'pods' ) ? pods( 'coltura', $term_id_current, array( 'lang' => $current_lang ) ) : null;
+                $items = ( $pod_term && method_exists( $pod_term, 'exists' ) && $pod_term->exists() ) ? $pod_term->field( 'doc_plus_coltura' ) : array();
+
+                if ( ! is_array( $items ) ) {
+                    $items = array();
+                }
+
+                if ( empty( $items ) ) {
+                    $term_id_def = function_exists( 'icl_object_id' )
+                        ? ( apply_filters( 'wpml_object_id', $coltura_term->term_id, 'coltura', true, $default_lang ) ?: $coltura_term->term_id )
+                        : $coltura_term->term_id;
+                    foreach ( (array) get_term_meta( $term_id_def, 'doc_plus_coltura', false ) as $raw ) {
+                        $items[] = $raw;
+                    }
+                }
+
+                foreach ( (array) $items as $raw ) {
+                    $doc_plus_id = is_array( $raw ) && isset( $raw['ID'] ) ? intval( $raw['ID'] ) :
+                        ( is_object( $raw ) && isset( $raw->ID ) ? intval( $raw->ID ) : intval( $raw ) );
+
+                    if ( ! $doc_plus_id ) {
+                        continue;
+                    }
+
+                    if ( function_exists( 'icl_object_id' ) ) {
+                        $translated_doc_plus = apply_filters( 'wpml_object_id', $doc_plus_id, 'doc_plus', true, $current_lang );
+                        if ( $translated_doc_plus ) {
+                            $doc_plus_id = $translated_doc_plus;
+                        }
+                    }
+
+                    $pod_doc_plus = function_exists( 'pods' ) ? pods( 'doc_plus', $doc_plus_id, array( 'lang' => $current_lang ) ) : null;
+                    if ( ! $pod_doc_plus || ! method_exists( $pod_doc_plus, 'exists' ) || ! $pod_doc_plus->exists() ) {
+                        $fallback_doc_plus_id = function_exists( 'icl_object_id' )
+                            ? ( apply_filters( 'wpml_object_id', $doc_plus_id, 'doc_plus', true, $default_lang ) ?: $doc_plus_id )
+                            : $doc_plus_id;
+                        $pod_doc_plus = function_exists( 'pods' ) ? pods( 'doc_plus', $fallback_doc_plus_id, array( 'lang' => $default_lang ) ) : null;
+                    }
+
+                    if ( ! $pod_doc_plus || ! method_exists( $pod_doc_plus, 'exists' ) || ! $pod_doc_plus->exists() ) {
+                        continue;
+                    }
+
+                    $raw_meta = get_post_meta( $pod_doc_plus->ID(), 'doc_plus_allegati', false );
+                    foreach ( (array) $raw_meta as $e ) {
+                        $allegato_id = is_array( $e ) && isset( $e['ID'] ) ? intval( $e['ID'] ) :
+                            ( is_object( $e ) && isset( $e->ID ) ? intval( $e->ID ) : intval( $e ) );
+
+                        if ( ! $allegato_id ) {
+                            continue;
+                        }
+
+                        if ( function_exists( 'icl_object_id' ) ) {
+                            $translated_allegato = apply_filters( 'wpml_object_id', $allegato_id, 'documenti_prodotto', true, $current_lang );
+                            if ( $translated_allegato ) {
+                                $allegato_id = $translated_allegato;
+                            }
+                        }
+
+                        $slugs = wp_get_post_terms( $allegato_id, 'lingua_aggiuntiva', [ 'fields' => 'slugs' ] );
+                        $term_slug = ! empty( $slugs ) ? $slugs[0] : 'altre';
+
+                        $visible = ( $lang === 'it' && $term_slug === 'italiano' )
+                                 || ( $lang !== 'it' && $term_slug !== 'italiano' );
+                        if ( ! $visible ) {
+                            continue;
+                        }
+
+                        $fid = get_post_meta( $allegato_id, 'documento-prodotto', true );
+                        if ( $fid && ( $url = wp_get_attachment_url( $fid ) ) ) {
+                            $doc_plus_applicazioni[] = [
+                                'title' => get_the_title( $allegato_id ),
+                                'url'   => $url,
+                                'lang'  => $term_slug,
+                            ];
+                        }
+                    }
+                }
+            }
+        }
         
         // Ordina le brochure per priorità lingua
-        usort( $brochure_applicazioni, function($a,$b) use($lang_order) {
+        $applicazioni_docs = array_merge( $brochure_applicazioni, $doc_plus_applicazioni );
+
+        // Deduplifica per URL
+        $unique_applicazioni_docs = [];
+        $seen_urls = [];
+        foreach ( $applicazioni_docs as $doc ) {
+            if ( ! in_array( $doc['url'], $seen_urls, true ) ) {
+                $unique_applicazioni_docs[] = $doc;
+                $seen_urls[] = $doc['url'];
+            }
+        }
+
+        usort( $unique_applicazioni_docs, function($a,$b) use($lang_order) {
             $pA = $lang_order[$a['lang']] ?? 4;
             $pB = $lang_order[$b['lang']] ?? 4;
             return $pA <=> $pB;
         });
         
         // Aggiungi le brochure applicazioni ai prodotti della sezione "Altra Documentazione"
-        if ( ! empty( $brochure_applicazioni ) ) {
+        if ( ! empty( $unique_applicazioni_docs ) ) {
             $altra_documentazione_products[] = [
                 'ID' => 0,
                 // Titolo traducibile della card "Applicazioni".
                 'title' => __( 'Applicazioni', 'toro-ag' ),
                 'schede' => [],
-                'docs' => $brochure_applicazioni,
+                'docs' => $unique_applicazioni_docs,
             ];
         }
 
