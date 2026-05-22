@@ -67,7 +67,7 @@ if ($atts['responsive'] === 'true') {
                 <?php if ($has_documents): ?>
                 <div class="toro-sidebar-brochures mb-4">
                     <h5 class="fw-bold border-bottom px-3 py-2 mb-4">
-                        <?= esc_html__('Documenti', 'toro-ag'); ?>
+                        <?= esc_html__('Scarica la Brochure', 'toro-ag'); ?>
                     </h5>
                     <div class="coltura-brochure">
                         <?= $sections['documents']; ?>
