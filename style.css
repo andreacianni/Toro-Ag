@@ -855,9 +855,9 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 
 .layout-card.imgsx .card-body p,
 .layout-card.imgsx .card-body i, .layout-card.imgdx .card-body p,
-.layout-card.imgdx .card-body i, .layout-card.imgup .card-body p,
-.layout-card.imgup .card-body i {
-  color: #cd2027;
+.layout-card.imgdx .card-body i, .layout-card.imgsup .card-body p,
+.layout-card.imgsup .card-body i {
+  color: #cd2027 !important;
 }
 
 .documenti-sidebar {
@@ -1165,4 +1165,6 @@ a.btn-activate-now:hover {
   border-color: #6d8d5b !important;
   background-image: initial;
   background-color: #FFFFFF;
-}/*# sourceMappingURL=style.css.map */
+}
+
+/*# sourceMappingURL=style.css.map */

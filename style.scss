@@ -14,6 +14,9 @@ Template: Divi
 /* You can add your own CSS styles here. Use !important to overwrite styles if needed. */
 /* COMPILATO DA SCSS */
 
+@use "sass:color";
+
+
 /* Stili per regioni senza rivenditori */
 .form-control option.muted {
   color: #6c757d !important;
@@ -206,7 +209,7 @@ $brand-red-hover: #b01c22;
     font-size: 1rem;
     
     &:hover {
-      background-color: darken(#0d6efd, 5%);
+      background-color: color.adjust(#0d6efd, $lightness: -5%);
     }
   }
 }
@@ -641,7 +644,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
       transition: all 0.2s ease;
       
       &:hover {
-        color: darken($brand-red, 10%);
+        color: color.adjust($brand-red, $lightness: -10%);
         text-decoration: underline;
       }
       
@@ -842,7 +845,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
             flex-shrink: 0;
             
             &:hover {
-              border-color: lighten(#cd2027, 20%);
+              border-color: color.adjust(#cd2027, $lightness: 20%);
             }
             
             &:checked {
@@ -884,7 +887,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
           
           // Quando radio è selezionato
           input[type="radio"]:checked + .wpcf7-list-item-label {
-            color: darken(#495057, 15%);
+            color: color.adjust(#495057, $lightness: -15%);
             font-weight: 600;
           }
         }
@@ -896,7 +899,7 @@ NUOVO LAYOUT FORMS - 2 COLONNE
               border-color: #dc3545; // Rosso per errore
               
               &:hover {
-                border-color: darken(#dc3545, 10%);
+                border-color: color.adjust(#dc3545, $lightness: -10%);
               }
             }
           }
@@ -1043,14 +1046,13 @@ NUOVO LAYOUT FORMS - 2 COLONNE
 .layout-card{
   &.imgsx,
   &.imgdx,
-  &.imgup{
+  &.imgsup{
     .card-body{
       p,
       i{
-        color:$brand-red;
+        color:$brand-red !important;
       }
     }
-
   }
 }
 
