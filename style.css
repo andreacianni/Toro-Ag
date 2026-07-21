@@ -860,6 +860,15 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   color: #cd2027 !important;
 }
 
+.doc-plus-view-layout-clean .doc-plus-link-title,
+.doc-plus-view-layout-card-imgsup .doc-plus-link-title,
+.doc-plus-view-layout-card-imgsx .doc-plus-link-title,
+.doc-plus-view-layout-card-imgdx .doc-plus-link-title,
+.doc-plus-view-layout-single .doc-plus-link-title,
+.doc-plus-view-layout-multiple .doc-plus-link-title {
+  padding-top: 0.18em;
+}
+
 .documenti-sidebar {
   max-height: calc(100vh - 160px);
   overflow-y: auto;

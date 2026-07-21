@@ -86,21 +86,32 @@ foreach ( $doc_plus_data as $index => $doc ):
                     echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top px-xl-5" alt="Cover">';
                     echo '</a>';
                 }
-                    echo '<div class="card-body pt-4 text-center">';
+                    echo '<div class="card-body pt-4 px-4 text-center">';
+                    echo '<ul class="list-group list-group-flush d-inline-block text-start mw-100 mb-0 ps-0">';
+                    $attachment_count = count( $filtered );
+                    $attachment_index = 0;
                     foreach ( $filtered as $att ) {
+                        $attachment_index++;
                         $title = esc_html( $att['title'] );
                         $url   = esc_url( $att['url'] );
                         $slug  = $att['lang']['slug'];
                         // *** MODIFICATO: aggiunta bandiera prima del titolo e icona dopo il titolo ***
                         $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $url ) : 'bi-file-earmark-text';
-                        echo '<p class="mb-3"><a href="' . $url . '" target="_blank" class="text-decoration-none">';
+                        $border_class = $attachment_index < $attachment_count ? ' border-bottom' : '';
+                        echo '<li class="list-group-item border-0 bg-transparent px-0 py-2' . $border_class . '">';
+                        echo '<a href="' . $url . '" target="_blank" class="d-flex align-items-start gap-2 text-decoration-none">';
                         if ( $slug !== 'italiano' ) {
-                            echo toroag_get_flag_html( $slug ) . ' ';
+                            echo '<span class="flex-shrink-0">' . toroag_get_flag_html( $slug ) . '</span>';
                         }
-                        echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
-                        echo '</a></p>';
+                        echo '<span class="doc-plus-link-title flex-grow-1 text-break lh-sm">' . $title . '</span>';
+                        if ( $current_lang === 'it' ) {
+                            echo ' <i class="' . esc_attr( $icon_class ) . '"></i>';
+                        } else {
+                            // echo ' <i class="' . esc_attr( $icon_class ) . '"></i>';
+                        }
+                        echo '</a></li>';
                     }
-                    echo '</div>';
+                    echo '</ul></div>';
                 echo '</div>';
             echo '</div>';
             break;
@@ -207,16 +218,21 @@ foreach ( $doc_plus_data as $index => $doc ):
                 if ( ! empty( $doc['cover_url'] ) ) {
                     echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top img-fluid w-100" alt="Cover">';
                 }
-                echo '<div class="card-body pt-4 text-center">';
+                echo '<div class="card-body pt-4 px-4 text-center">';
                 $att = $first_attachment;
                 $title = esc_html( $att['title'] );
                 $slug  = $att['lang']['slug'];
                 $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $att['url'] ) : 'bi-file-earmark-text';
-                echo '<p class="mb-3">';
+                echo '<p class="mb-3 d-inline-flex align-items-start gap-2 text-start mw-100">';
                 if ( $slug !== 'italiano' ) {
-                    echo toroag_get_flag_html( $slug ) . ' ';
+                    echo '<span class="flex-shrink-0">' . toroag_get_flag_html( $slug ) . '</span>';
                 }
-                echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
+                echo '<span class="doc-plus-link-title flex-grow-1 text-break lh-sm">' . $title . '</span>';
+                if ( $current_lang === 'it' ) {
+                    echo ' <i class="' . esc_attr( $icon_class ) . '"></i>';
+                } else {
+                    // echo ' <i class="' . esc_attr( $icon_class ) . '"></i>';
+                }
                 echo '</p>';
                 echo '</div></div></a>';
             } else {
@@ -225,20 +241,31 @@ foreach ( $doc_plus_data as $index => $doc ):
                 if ( ! empty( $doc['cover_url'] ) ) {
                     echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top img-fluid w-100" alt="Cover">';
                 }
-                echo '<div class="card-body pt-4 text-center">';
+                echo '<div class="card-body pt-4 px-4">';
+                echo '<ul class="list-group list-group-flush mb-0 ps-0">';
+                $attachment_count = count( $filtered );
+                $attachment_index = 0;
                 foreach ( $filtered as $att ) {
+                    $attachment_index++;
                     $title = esc_html( $att['title'] );
                     $url   = esc_url( $att['url'] );
                     $slug  = $att['lang']['slug'];
                     $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $url ) : 'bi-file-earmark-text';
-                    echo '<p class="mb-3"><a href="' . $url . '" target="_blank" class="text-decoration-none">';
+                    $border_class = $attachment_index < $attachment_count ? ' border-bottom' : '';
+                    echo '<li class="list-group-item border-0 bg-transparent px-0 py-2' . $border_class . '">';
+                    echo '<a href="' . $url . '" target="_blank" class="d-flex align-items-start gap-2 text-decoration-none">';
                     if ( $slug !== 'italiano' ) {
-                        echo toroag_get_flag_html( $slug ) . ' ';
+                        echo '<span class="flex-shrink-0">' . toroag_get_flag_html( $slug ) . '</span>';
                     }
-                    echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
-                    echo '</a></p>';
+                    echo '<span class="doc-plus-link-title flex-grow-1 text-start text-break lh-sm">' . $title . '</span>';
+                    if ( $current_lang === 'it' ) {
+                        echo ' <i class="' . esc_attr( $icon_class ) . '"></i>';
+                    } else {
+                        // echo ' <i class="' . esc_attr( $icon_class ) . '"></i>';
+                    }
+                    echo '</a></li>';
                 }
-                echo '</div></div>';
+                echo '</ul></div></div>';
             }
             echo '</div>';
             break;
@@ -260,17 +287,22 @@ foreach ( $doc_plus_data as $index => $doc ):
                     echo '</div>';
                     // Colonna testo a destra
                     echo '<div class="col-md-8 d-flex align-items-center">';
-                    echo '<div class="card-body">';
+                    echo '<div class="card-body px-4">';
                         $att = $first_attachment;
                         $title = esc_html( $att['title'] );
                         $slug  = $att['lang']['slug'];
                         $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $att['url'] ) : 'bi-file-earmark-text';
-                        echo "<p class=\"\">";
+                        echo '<p class="mb-0 d-flex align-items-start gap-2">';
                         if ( $slug !== 'italiano' ) {
-                            echo toroag_get_flag_html( $slug ) . ' ';
+                            echo '<span class="flex-shrink-0">' . toroag_get_flag_html( $slug ) . '</span>';
                         }
-                        echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
-                        echo "</p>";
+                        echo '<span class="doc-plus-link-title flex-grow-1 text-start text-break lh-sm">' . $title . '</span>';
+                        if ( $current_lang === 'it' ) {
+                            echo ' <i class="' . esc_attr( $icon_class ) . ' flex-shrink-0"></i>';
+                        } else {
+                            // echo ' <i class="' . esc_attr( $icon_class ) . ' flex-shrink-0"></i>';
+                        }
+                        echo '</p>';
                     echo '</div></div>';
                 echo '</div></div></a>';
             } else {
@@ -286,21 +318,31 @@ foreach ( $doc_plus_data as $index => $doc ):
                     echo '</div>';
                     // Colonna testo a destra
                     echo '<div class="col-md-8 d-flex align-items-center">';
-                    echo '<div class="card-body">';
+                    echo '<div class="card-body px-4">';
+                    echo '<ul class="list-group list-group-flush mb-0 ps-0">';
+                    $attachment_count = count( $filtered );
+                    $attachment_index = 0;
                         foreach ( $filtered as $att ) {
+                            $attachment_index++;
                             $title = esc_html( $att['title'] );
                             $url   = esc_url( $att['url'] );
                             $slug  = $att['lang']['slug'];
                             $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $url ) : 'bi-file-earmark-text';
-                            echo "<p class=\"\">";
-                            echo "<a href=\"{$url}\" target=\"_blank\">";
+                            $border_class = $attachment_index < $attachment_count ? ' border-bottom' : '';
+                            echo '<li class="list-group-item border-0 bg-transparent px-0 py-2' . $border_class . '">';
+                            echo '<a href="' . $url . '" target="_blank" class="d-flex align-items-start gap-2 text-decoration-none">';
                             if ( $slug !== 'italiano' ) {
-                                echo toroag_get_flag_html( $slug ) . ' ';
+                                echo '<span class="flex-shrink-0">' . toroag_get_flag_html( $slug ) . '</span>';
                             }
-                            echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
-                            echo "</a></p>";
+                            echo '<span class="doc-plus-link-title flex-grow-1 text-start text-break lh-sm">' . $title . '</span>';
+                            if ( $current_lang === 'it' ) {
+                                echo ' <i class="' . esc_attr( $icon_class ) . ' flex-shrink-0"></i>';
+                            } else {
+                                // echo ' <i class="' . esc_attr( $icon_class ) . ' flex-shrink-0"></i>';
+                            }
+                            echo '</a></li>';
                         }
-                    echo '</div></div>';
+                    echo '</ul></div></div>';
                 echo '</div></div>';
             }
             echo '</div>';
@@ -315,16 +357,21 @@ foreach ( $doc_plus_data as $index => $doc ):
                 echo '<div class="card h-100">';
                 echo '<div class="row g-0 align-items-stretch">';
                     // Colonna testo a sinistra
-                    echo '<div class="col-md-8 d-flex align-items-center"><div class="card-body">';
+                    echo '<div class="col-md-8 d-flex align-items-center"><div class="card-body px-4">';
                         $att = $first_attachment;
                         $title = esc_html( $att['title'] );
                         $slug  = $att['lang']['slug'];
                         $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $att['url'] ) : 'bi-file-earmark-text';
-                        echo "<p>";
+                        echo '<p class="mb-0 d-flex align-items-start gap-2">';
                         if ( $slug !== 'italiano' ) {
-                            echo toroag_get_flag_html( $slug ) . ' ';
+                            echo '<span class="flex-shrink-0">' . toroag_get_flag_html( $slug ) . '</span>';
                         }
-                        echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
+                        echo '<span class="doc-plus-link-title flex-grow-1 text-start text-break lh-sm">' . $title . '</span>';
+                        if ( $current_lang === 'it' ) {
+                            echo ' <i class="' . esc_attr( $icon_class ) . ' flex-shrink-0"></i>';
+                        } else {
+                            // echo ' <i class="' . esc_attr( $icon_class ) . ' flex-shrink-0"></i>';
+                        }
                         echo '</p>';
                     echo '</div></div>';
                     // Colonna immagine a destra
@@ -340,20 +387,31 @@ foreach ( $doc_plus_data as $index => $doc ):
                 echo '<div class="card h-100">';
                 echo '<div class="row g-0 align-items-stretch">';
                     // Colonna testo a sinistra
-                    echo '<div class="col-md-8 d-flex align-items-center"><div class="card-body">';
+                    echo '<div class="col-md-8 d-flex align-items-center"><div class="card-body px-4">';
+                    echo '<ul class="list-group list-group-flush mb-0 ps-0">';
+                    $attachment_count = count( $filtered );
+                    $attachment_index = 0;
                         foreach ( $filtered as $att ) {
+                            $attachment_index++;
                             $title = esc_html( $att['title'] );
                             $url   = esc_url( $att['url'] );
                             $slug  = $att['lang']['slug'];
                             $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $url ) : 'bi-file-earmark-text';
-                            echo "<p><a href=\"{$url}\" target=\"_blank\">";
+                            $border_class = $attachment_index < $attachment_count ? ' border-bottom' : '';
+                            echo '<li class="list-group-item border-0 bg-transparent px-0 py-2' . $border_class . '">';
+                            echo '<a href="' . $url . '" target="_blank" class="d-flex align-items-start gap-2 text-decoration-none">';
                             if ( $slug !== 'italiano' ) {
-                                echo toroag_get_flag_html( $slug ) . ' ';
+                                echo '<span class="flex-shrink-0">' . toroag_get_flag_html( $slug ) . '</span>';
                             }
-                            echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
-                            echo '</a></p>';
+                            echo '<span class="doc-plus-link-title flex-grow-1 text-start text-break lh-sm">' . $title . '</span>';
+                            if ( $current_lang === 'it' ) {
+                                echo ' <i class="' . esc_attr( $icon_class ) . ' flex-shrink-0"></i>';
+                            } else {
+                                // echo ' <i class="' . esc_attr( $icon_class ) . ' flex-shrink-0"></i>';
+                            }
+                            echo '</a></li>';
                         }
-                    echo '</div></div>';
+                    echo '</ul></div></div>';
                     // Colonna immagine a destra
                     echo '<div class="col-md-4">';
                         if ( ! empty( $doc['cover_url'] ) ) {
@@ -383,7 +441,12 @@ foreach ( $doc_plus_data as $index => $doc ):
                 if ( $slug !== 'italiano' ) {
                     echo toroag_get_flag_html( $slug ) . ' ';
                 }
-                echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
+                echo $title;
+                if ( $current_lang === 'it' ) {
+                    echo ' <i class="' . esc_attr( $icon_class ) . '"></i>';
+                } else {
+                    // echo ' <i class="' . esc_attr( $icon_class ) . '"></i>';
+                }
                 echo '</a></h5>';
             }
             echo '</div></div></div>';
@@ -396,20 +459,25 @@ foreach ( $doc_plus_data as $index => $doc ):
                 if ( ! empty( $doc['cover_url'] ) ) {
                     echo '<img src="' . esc_url( $doc['cover_url'] ) . '" class="card-img-top" alt="Cover">';
                 }
-                echo '<div class="card-body text-center">';
+                echo '<div class="card-body px-4 text-center">';
+                    echo '<ul class="list-group list-group-flush d-inline-block text-start mw-100 mb-0 ps-0">';
+                    $attachment_count = count( $filtered );
+                    $attachment_index = 0;
                     foreach ( $filtered as $att ) {
+                        $attachment_index++;
                         $title = esc_html( $att['title'] );
                         $url   = esc_url( $att['url'] );
                         $slug  = $att['lang']['slug'];
-                        // *** MODIFICATO: aggiunta bandiera prima del titolo e icona dopo il titolo ***
-                        $icon_class = function_exists('toroag_get_icon_class') ? toroag_get_icon_class( $url ) : 'bi-file-earmark-text';
-                        echo "<p><a href=\"{$url}\" target=\"_blank\" class=\"text-decoration-none\">";
+                        $border_class = $attachment_index < $attachment_count ? ' border-bottom' : '';
+                        echo '<li class="list-group-item border-0 bg-transparent px-0 py-2' . $border_class . '">';
+                        echo '<a href="' . $url . '" target="_blank" class="d-flex align-items-start gap-2 text-decoration-none">';
                         if ( $slug !== 'italiano' ) {
-                            echo toroag_get_flag_html( $slug ) . ' ';
+                            echo '<span class="flex-shrink-0">' . toroag_get_flag_html( $slug ) . '</span>';
                         }
-                        echo $title . ' <i class="' . esc_attr( $icon_class ) . '"></i>';
-                        echo '</a></p>';
+                        echo '<span class="doc-plus-link-title flex-grow-1 text-break lh-sm">' . $title . '</span>';
+                        echo '</a></li>';
                     }
+                    echo '</ul>';
                 echo '</div>';
             echo '</div>';
             break;

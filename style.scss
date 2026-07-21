@@ -1056,6 +1056,17 @@ NUOVO LAYOUT FORMS - 2 COLONNE
   }
 }
 
+.doc-plus-view-layout-clean,
+.doc-plus-view-layout-card-imgsup,
+.doc-plus-view-layout-card-imgsx,
+.doc-plus-view-layout-card-imgdx,
+.doc-plus-view-layout-single,
+.doc-plus-view-layout-multiple {
+  .doc-plus-link-title {
+    padding-top: 0.18em;
+  }
+}
+
 // Sidebar documenti
 .documenti-sidebar {
   max-height: calc(100vh - 160px); // 140px top + 20px bottom margin
