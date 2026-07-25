@@ -1176,4 +1176,28 @@ a.btn-activate-now:hover {
   background-color: #FFFFFF;
 }
 
+/* [video_pagina]: fallback a una colonna; il layout a due colonne usa il container reale. */
+.video-pagina {
+  container-type: inline-size;
+}
+
+.video-pagina__item {
+  flex: 0 0 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+@supports (container-type: inline-size) {
+  .video-pagina__item {
+    flex-basis: 50%;
+    max-width: 50%;
+  }
+  @container (max-width: 599px) {
+    .video-pagina__item {
+      flex-basis: 100%;
+      max-width: 100%;
+    }
+  }
+}
+
 /*# sourceMappingURL=style.css.map */

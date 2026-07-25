@@ -255,8 +255,12 @@ function ac_video_pagina_shortcode($atts = []) {
         echo '<h3 class="text-start fs-4 fw-bold border-bottom ps-1 py-2 my-4">' . esc_html($atts['titolo']) . '</h3>';
     }
 
-    echo '<div id="video-pagina-wrapper">';
-    echo '<div class="d-flex flex-wrap justify-content-start" id="video-pagina-grid">';
+    // Punto unico per il futuro cambio tra allineamento centrato e sinistra.
+    $grid_alignment = 'center';
+    $grid_alignment_class = $grid_alignment === 'start' ? 'justify-content-start' : 'justify-content-center';
+
+    echo '<div id="video-pagina-wrapper" class="video-pagina">';
+    echo '<div class="video-pagina__grid d-flex flex-wrap ' . esc_attr($grid_alignment_class) . '" id="video-pagina-grid">';
 
     foreach ($video_ids as $id) {
         $src  = get_post_meta($id, 'video_link', true);
@@ -264,7 +268,7 @@ function ac_video_pagina_shortcode($atts = []) {
         if (! $oemb) {
             continue;
         }
-        echo '<div class="p-2" style="flex: 0 0 50%;">';
+        echo '<div class="video-pagina__item p-2">';
         echo '<div class="card h-100">';
         echo '<div class="embed-responsive embed-responsive-16by9 w-100">' . $oemb . '</div>';
         echo '<div class="card-body">';
