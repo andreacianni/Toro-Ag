@@ -8,11 +8,11 @@ Questa roadmap considera gli shortcode trovati in uso corrente nel database e qu
 
 | Shortcode | Evidenza d’uso | Responsività attuale | Livello di rischio | Motivo sintetico | Stato |
 | --------- | -------------- | -------------------- | ------------------ | ---------------- | ----- |
-| `[toro_layout_prodotto]` | 2 contenuti / 2 occorrenze | completa | basso | Orchestratore di griglie `.toro-grid` con media query. | da analizzare |
-| `[toro_layout_tipo_prodotto]` | 1 / 1 | completa | basso | Orchestratore di griglie `.toro-grid` con media query. | da analizzare |
-| `[toro_layout_coltura]` | 1 / 1 | completa | basso | Orchestratore di griglie `.toro-grid` con media query. | da analizzare |
+| `[toro_layout_prodotto]` | 2 contenuti / 2 occorrenze | completa | basso | Orchestratore `.toro-grid` già responsive. | chiuso come già responsive |
+| `[toro_layout_tipo_prodotto]` | 1 / 1 | completa | basso | Orchestratore `.toro-grid` già responsive. | chiuso come già responsive |
+| `[toro_layout_coltura]` | 1 / 1 | completa | basso | Orchestratore `.toro-grid` già responsive. | chiuso come già responsive |
 | `[elenco_prodotti_con_dettagli]` | 2 / 2 | parziale | medio | Uso corrente `layout="card"`; shortcode con layout alternativi a colonne. | da analizzare |
-| `[area_agenti_unificato]` | 1 / 1 | completa | basso | Include condizionalmente la galleria documenti responsive. | da analizzare |
+| `[area_agenti_unificato]` | 1 / 1 | non verificata pubblicamente | fuori scope | Pagina non pubblicamente raggiungibile. | sospeso fino a pubblicazione |
 | `[toro_tipi_prod]` | 2 / 2 | completa | basso | CSS Grid `.toro-grid` con media query. | da analizzare |
 | `[toro_colture]` | 2 / 2 | completa | basso | CSS Grid `.toro-grid` con media query. | da analizzare |
 | `[toro_prodotti_tipo]` | 1 / 1 | completa | basso | CSS Grid `.toro-grid` con media query. | da analizzare |
@@ -23,12 +23,14 @@ Questa roadmap considera gli shortcode trovati in uso corrente nel database e qu
 | `[video_tipo_prodotto_standalone]` | 2 / 2 (uso noto) | completa | basso | Griglia Bootstrap: 1 colonna, da `md` fino a 2 e da `lg` fino a 3; `columns` limita a 1–3. | verificato dal codice |
 | `[doc_plus]` | 12 / 14 | verificata e implementata | chiuso | Default Bootstrap per numero elementi; `griglia` esplicita invariata. | step chiuso |
 
-## Priorità di analisi
+## Esito finale della pratica
 
-1. **Shortcode non responsive:** nessuno rilevato tra quelli in uso con griglia.
-2. **Parzialmente responsive a rischio alto:** `[video_pagina]`.
-3. **Parzialmente responsive a rischio medio:** `[elenco_prodotti_con_dettagli]`.
-4. **Responsive ma con implementazione fragile o da verificare:** `[area_agenti_unificato]` e gli shortcode orchestratori `[toro_layout_prodotto]`, `[toro_layout_tipo_prodotto]`, `[toro_layout_coltura]`.
+- `[video_pagina]`: chiuso, implementato e approvato.
+- `[doc_plus]`: chiuso, implementato e approvato.
+- `[toro_layout_prodotto]`, `[toro_layout_tipo_prodotto]`, `[toro_layout_coltura]`: chiusi come già responsive.
+- `[area_agenti_unificato]`: sospeso e fuori scope finché la relativa pagina non sarà pubblicamente raggiungibile.
+- Gli altri shortcode non sono stati selezionati per questa pratica: nessun prossimo shortcode è pianificato.
+- **Pratica complessiva chiusa.**
 
 ## Stato step `[video_pagina]`
 
@@ -37,7 +39,7 @@ Questa roadmap considera gli shortcode trovati in uso corrente nel database e qu
 - Il singolo elemento e l'ultima card dispari sono centrati senza espandere la card nel layout a due colonne.
 - La scelta `centrato` / `sinistra` è centralizzata nella callback ed è facilmente reversibile.
 - I moduli Divi duplicati nelle pagine interne sono residui nascosti e sono esclusi dallo scope del fix.
-- **Step chiuso.** Il prossimo shortcode da analizzare è ancora da decidere.
+- **Step chiuso.** Nessun prossimo shortcode è previsto nella pratica conclusa.
 
 ## Stato step `[doc_plus]`
 
