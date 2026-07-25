@@ -21,13 +21,13 @@ Questa roadmap considera gli shortcode trovati in uso corrente nel database e qu
 | `[toro_colture_page]` | 2 / 2 | completa | basso | CSS Grid con colonne dinamiche e media query. | da analizzare |
 | `[video_pagina]` | 4 / 4 | verificata e implementata | chiuso | Griglia fino a 2 colonne, basata sulla larghezza reale del contenitore. | step chiuso |
 | `[video_tipo_prodotto_standalone]` | 2 / 2 (uso noto) | completa | basso | Griglia Bootstrap: 1 colonna, da `md` fino a 2 e da `lg` fino a 3; `columns` limita a 1–3. | verificato dal codice |
-| `[doc_plus]` | 12 / 14 | parziale | medio | Griglia dipendente dall’attributo `griglia`; in uso `row-cols-1`. | da analizzare |
+| `[doc_plus]` | 12 / 14 | verificata e implementata | chiuso | Default Bootstrap per numero elementi; `griglia` esplicita invariata. | step chiuso |
 
 ## Priorità di analisi
 
 1. **Shortcode non responsive:** nessuno rilevato tra quelli in uso con griglia.
 2. **Parzialmente responsive a rischio alto:** `[video_pagina]`.
-3. **Parzialmente responsive a rischio medio:** `[elenco_prodotti_con_dettagli]`, `[doc_plus]`.
+3. **Parzialmente responsive a rischio medio:** `[elenco_prodotti_con_dettagli]`.
 4. **Responsive ma con implementazione fragile o da verificare:** `[area_agenti_unificato]` e gli shortcode orchestratori `[toro_layout_prodotto]`, `[toro_layout_tipo_prodotto]`, `[toro_layout_coltura]`.
 
 ## Stato step `[video_pagina]`
@@ -38,6 +38,20 @@ Questa roadmap considera gli shortcode trovati in uso corrente nel database e qu
 - La scelta `centrato` / `sinistra` è centralizzata nella callback ed è facilmente reversibile.
 - I moduli Divi duplicati nelle pagine interne sono residui nascosti e sono esclusi dallo scope del fix.
 - **Step chiuso.** Il prossimo shortcode da analizzare è ancora da decidere.
+
+## Stato step `[doc_plus]`
+
+- **Pagine analizzate:** 3415 IT — *I Vantaggi della Goccia* e 3442 EN — *The Drip’s Advantages*.
+- **Problemi iniziali:** i layout senza `griglia` esplicita mantenevano 3 (`clean`) o 4 (`modern`/`card-imgsup`) colonne fino a tablet e mobile; card e testi risultavano compressi, con una riga finale anomala in `card-imgsup` EN.
+- **Decisione approvata:** default responsive Bootstrap centralizzato in `inc/views/doc-plus-view.php`, determinato dal numero di elementi. L'attributo `griglia` ha priorità assoluta e non viene modificato.
+  - 1 elemento: `row row-cols-1`.
+  - 3 elementi: `row row-cols-1 row-cols-md-2 row-cols-lg-3`.
+  - 4 elementi: `row row-cols-1 row-cols-md-2 row-cols-xl-4`.
+  - 2 elementi o oltre 4: fallback `row`, comportamento preesistente.
+- **Test e verifica visiva:** PASS a 1440, 1024, 768 e 390 px; nessun overflow orizzontale rilevato. Desktop invariato; tablet e mobile leggibili con 2/1 colonne secondo le regole.
+- **Screenshot:** `docs/references/Screenshot-responsive/doc-plus-advantages/` (serie iniziale, `-test` e `-test2`; non versionati).
+- **Deploy:** nessuno eseguito. **Step chiuso.**
+- **Punti aperti:** 2 elementi e oltre 4 conservano intenzionalmente il comportamento precedente; richiederanno una decisione dedicata solo se emergeranno casi reali problematici. La logica non deduce la larghezza del contenitore Divi.
 
 ## Metodo per le analisi successive
 
