@@ -43,6 +43,7 @@ if ( ! function_exists('ta_render_video_prodotto_v2_shortcode') ) {
 
             $lingua_terms = wp_get_post_terms($video_id, 'lingua_aggiuntiva', ['fields' => 'slugs']);
             $first_lingua = $lingua_terms[0] ?? '';
+            if (!$first_lingua) continue;
             if ( ($current_lang === 'it' && $first_lingua !== 'italiano') || ($current_lang !== 'it' && $first_lingua === 'italiano') ) continue;
 
             $video_link = get_post_meta($video_id, 'video_link', true);
@@ -52,7 +53,7 @@ if ( ! function_exists('ta_render_video_prodotto_v2_shortcode') ) {
             $lingua_name = $lingua_names[0] ?? '';
             $flag_html = ($current_lang !== 'it' && function_exists('toroag_get_flag_html')) ? toroag_get_flag_html($first_lingua) : '';
 
-            $output .= '<div class="card shadow-sm mb-4">';
+            $output .= '<div class="card shadow-sm mb-4" data-product-video data-lang="' . esc_attr($first_lingua) . '">';
             $output .= '<div class="card-header">';
             $output .= '<a href="' . esc_url($video_link) . '" target="_blank" rel="noopener noreferrer" class="fw-bold">'. $flag_html . ' ' . esc_html($video->post_title) .'</a>';
             $output .= '</div>';

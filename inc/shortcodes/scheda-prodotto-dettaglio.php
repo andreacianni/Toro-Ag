@@ -5,8 +5,15 @@
  * Uso: [scheda_prodotto_dettaglio]
  */
 
+if (! function_exists('ta_product_documents_filter_string')) {
+    function ta_product_documents_filter_string($name, $default) {
+        do_action('wpml_register_single_string', 'Toro Product Documents Filter', $name, $default);
+        return apply_filters('wpml_translate_single_string', $default, 'Toro Product Documents Filter', $name);
+    }
+}
+
 if (! function_exists('ta_render_documenti_prodotto_view')) {
-    function ta_render_documenti_prodotto_view($terms_data) {
+    function ta_render_documenti_prodotto_view($terms_data, $unified_card = false) {
         ob_start();
         // Nessun contenuto da mostrare - verifica se ci sono effettivamente items nei gruppi
         $has_content = false;
@@ -39,6 +46,74 @@ if (! function_exists('ta_render_documenti_prodotto_view')) {
         // Conteggi per pluralizzazione
         $schede_count = count($prod['schede'] ?: []);
         $docs_count   = count($prod['docs'] ?: []);
+
+        if ($unified_card) {
+            ?>
+            <div class="product-documents" data-product-documents-card>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                        <strong><?= esc_html($prod['download_title'] ?? __('Download', 'toro-ag')); ?></strong>
+                    </div>
+                    <div class="card-body small">
+                    <?php if ($schede_count > 0): ?>
+                        <section class="product-documents-section" data-product-documents-section="sheets">
+                            <div class="card-subtitle text-body-secondary mb-2">
+                                <?= esc_html($prod['sheets_title'] ?? __('Schede', 'toro-ag')); ?>:
+                            </div>
+                                <?php foreach ($prod['schede'] as $group): ?>
+                                    <div class="row align-items-center mb-2" data-product-documents-group data-lang="<?= esc_attr($group['lang']); ?>">
+                                        <div class="col-auto">
+                                            <?php if ($group['lang'] !== 'italiano' && function_exists('toroag_get_flag_html')): ?>
+                                                <?= toroag_get_flag_html($group['lang']); ?>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="col">
+                                            <?php foreach ($group['items'] as $item): ?>
+                                                <a href="<?= esc_url($item['url']); ?>" class="doc-link d-block mb-1" target="_blank" rel="noopener noreferrer">
+                                                    <?php if (function_exists('toroag_get_icon_class')): ?>
+                                                        <i class="bi <?= esc_attr(toroag_get_icon_class($item['url'])); ?> me-1"></i>
+                                                    <?php endif; ?>
+                                                    <?= esc_html($item['title']); ?>
+                                                </a>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                        </section>
+                    <?php endif; ?>
+
+                    <?php if ($docs_count > 0): ?>
+                        <section class="product-documents-section" data-product-documents-section="documents">
+                            <div class="card-subtitle text-body-secondary<?php echo $schede_count > 0 ? ' mt-3' : ''; ?> mb-2">
+                                <?= esc_html($prod['documents_title'] ?? __('Documenti', 'toro-ag')); ?>:
+                            </div>
+                                <?php foreach ($prod['docs'] as $group): ?>
+                                    <div class="row align-items-center mb-2" data-product-documents-group data-lang="<?= esc_attr($group['lang']); ?>">
+                                        <div class="col-auto">
+                                            <?php if ($group['lang'] !== 'italiano' && function_exists('toroag_get_flag_html')): ?>
+                                                <?= toroag_get_flag_html($group['lang']); ?>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="col">
+                                            <?php foreach ($group['items'] as $item): ?>
+                                                <a href="<?= esc_url($item['url']); ?>" class="doc-link d-block mb-1" target="_blank" rel="noopener noreferrer">
+                                                    <?php if (function_exists('toroag_get_icon_class')): ?>
+                                                        <i class="bi <?= esc_attr(toroag_get_icon_class($item['url'])); ?> me-1"></i>
+                                                    <?php endif; ?>
+                                                    <?= esc_html($item['title']); ?>
+                                                </a>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                        </section>
+                    <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <?php
+            return ob_get_clean();
+        }
         ?>
         <div class="product-documents">
             <div class="row g-3">
@@ -123,6 +198,19 @@ if (! function_exists('ta_scheda_prodotto_dettaglio_shortcode')) {
         $current = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : apply_filters('wpml_current_language', null);
         $default = apply_filters('wpml_default_language', null);
 
+        wp_enqueue_script(
+            'toro-product-documents-filter',
+            get_stylesheet_directory_uri() . '/assets/js/product-documents-filter.js',
+            [],
+            filemtime(get_stylesheet_directory() . '/assets/js/product-documents-filter.js'),
+            true
+        );
+        wp_localize_script('toro-product-documents-filter', 'toroProductDocumentsFilter', [
+            'currentLang'     => $current,
+            'chooseLanguage'  => ta_product_documents_filter_string('Choose language', 'Choose language'),
+            'allLanguages'    => ta_product_documents_filter_string('All languages', 'All languages'),
+        ]);
+
         // Raccoglie e raggruppa elementi schede e documenti
         $get_grouped = function($field, $meta_file_key) use ($post, $current, $default) {
             $groups = [];
@@ -150,6 +238,7 @@ if (! function_exists('ta_scheda_prodotto_dettaglio_shortcode')) {
                 if (!$id) continue;
                 $elem_id = apply_filters('wpml_object_id', $id, $field === 'scheda_prodotto' ? 'scheda_prodotto' : 'documento_prodotto', true, $current) ?: $id;
                 $slug = wp_get_post_terms($elem_id, 'lingua_aggiuntiva', ['fields'=>'slugs'])[0] ?? '';
+                if (!$slug) continue;
                 // 🔧 FIX: Logica semplificata basata su doc-plus-view.php
                 if ($current === 'it') {
                     // Italiano: mostra SOLO documenti italiani (o senza lingua)
@@ -186,13 +275,16 @@ if (! function_exists('ta_scheda_prodotto_dettaglio_shortcode')) {
         $terms_data = [[
             'term_name' => '',
             'products'  => [[
-                'title' => '',
-                'schede'=> $schede,
-                'docs'  => $docs,
+                'title'           => '',
+                'schede'          => $schede,
+                'docs'            => $docs,
+                'download_title'  => ta_product_documents_filter_string('Download', 'Download'),
+                'sheets_title'    => ta_product_documents_filter_string('Schede', 'Schede'),
+                'documents_title' => ta_product_documents_filter_string('Documenti', 'Documenti'),
             ]],
         ]];
 
-        return ta_render_documenti_prodotto_view($terms_data);
+        return ta_render_documenti_prodotto_view($terms_data, true);
     }
 }
 

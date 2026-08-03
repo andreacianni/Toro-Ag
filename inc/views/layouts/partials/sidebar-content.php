@@ -13,15 +13,29 @@ if (!defined('ABSPATH')) exit;
 $sections = get_query_var('toro_sections', []);
 ?>
 
-<?php if (isset($sections['documents'])): ?>
-<div class="toro-layout-documents-section mb-4">
-    <?php echo $sections['documents']; ?>
-</div>
-<?php endif; ?>
+<?php
+$current_language = defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : apply_filters('wpml_current_language', null);
+if (isset($sections['documents']) || isset($sections['videos'])):
+?>
+<div class="toro-product-documents-sidebar" data-product-documents-sidebar>
+    <?php if ($current_language !== 'it'): ?>
+    <div class="toro-product-documents-filter documenti-filter mb-3" data-product-documents-filter hidden>
+        <h6 class="fw-bold mb-2 small"><?php echo esc_html(ta_product_documents_filter_string('Choose language', 'Choose language')); ?></h6>
+        <div class="d-flex flex-wrap gap-1" data-product-documents-filter-controls></div>
+    </div>
+    <?php endif; ?>
 
-<?php if (isset($sections['videos'])): ?>
-<div class="toro-layout-videos-section">
-    <?php echo $sections['videos']; ?>
+    <?php if (isset($sections['documents'])): ?>
+    <div class="toro-layout-documents-section mb-4">
+        <?php echo $sections['documents']; ?>
+    </div>
+    <?php endif; ?>
+
+    <?php if (isset($sections['videos'])): ?>
+    <div class="toro-layout-videos-section">
+        <?php echo $sections['videos']; ?>
+    </div>
+    <?php endif; ?>
 </div>
 <?php endif; ?>
 
